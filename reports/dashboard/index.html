@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Energy Analytics Dashboard</title>
+  <style>
+    :root {
+      --ink:#0f1f24;
+      --muted:#5b727c;
+      --accent:#0b5f83;
+      --accent2:#b55000;
+      --bg:#f5f8f9;
+      --card:#ffffff;
+      --line:#d9e2e7;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:linear-gradient(130deg,#eef4f7,#f8fbfc); color:var(--ink); font-family:'IBM Plex Sans','Segoe UI',sans-serif; }
+    header { padding:16px 20px; border-bottom:1px solid var(--line); background:rgba(255,255,255,.9); position:sticky; top:0; z-index:10; backdrop-filter: blur(4px); }
+    h1 { margin:0; font-size:20px; }
+    .sub { color:var(--muted); font-size:13px; margin-top:4px; }
+    .layout { display:grid; grid-template-columns:280px 1fr; min-height:calc(100vh - 74px); }
+    .side { border-right:1px solid var(--line); padding:14px; background:#fbfdfe; }
+    .main { padding:18px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:12px; }
+    label { display:block; font-size:12px; color:var(--muted); margin:8px 0 4px; }
+    select,input { width:100%; padding:8px; border:1px solid #c9d6dd; border-radius:8px; }
+    .tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+    .tab-btn { border:1px solid #c8d5dd; background:#fff; padding:7px 10px; border-radius:999px; font-size:12px; cursor:pointer; }
+    .tab-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .tab { display:none; }
+    .tab.active { display:block; }
+    .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .kpi { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; }
+    .kpi .v { font-size:22px; font-weight:700; margin:6px 0 2px; }
+    .m { color:var(--muted); font-size:12px; }
+    .chart { width:100%; border:1px solid var(--line); border-radius:10px; background:#fff; padding:6px; }
+    details { margin-top:6px; }
+    .foot { color:var(--muted); font-size:12px; margin-top:12px; }
+    .dl a { display:block; margin:4px 0; color:#0a4f6f; text-decoration:none; }
+    @media (max-width:900px) { .layout{grid-template-columns:1fr;} .side{border-right:0;border-bottom:1px solid var(--line);} .grid3{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Energy Analytics Dashboard</h1>
+  <div class='sub'>Processed-data dashboard for ERCOT (HB_NORTH) covering milestones 1-5.</div>
+</header>
+<div class='layout'>
+  <aside class='side'>
+    <div class='card'>
+      <b>Scenario Controls</b>
+      <label title='Select market region/zone for all pages.'>Region selector</label>
+      <select id='region'><option>ERCOT</option></select>
+      <label title='Load scenario multiplier for KPI projections.'>Load scenario</label>
+      <select id='load_scn'><option value='0.95'>Low</option><option value='1.0' selected>Base</option><option value='1.07'>High</option></select>
+      <label title='Queue completion assumption used in supply KPIs.'>Queue completion</label>
+      <select id='queue_scn'><option value='p50' selected>P50</option><option value='p90'>P90</option></select>
+      <label title='Market tightness modifies implied congestion assumptions.'>Market tightness</label>
+      <select id='tight_scn'><option value='0.85'>Low congestion</option><option value='1.0' selected>Base</option><option value='1.25'>High congestion</option></select>
+    </div>
+    <div class='card'>
+      <b>Finance Knobs</b>
+      <label title='Installed cost per kW.'>Capex (USD/kW)</label>
+      <input id='capex' type='number' value='1150' step='25'>
+      <label title='Fixed annual operating cost per kW.'>Opex (USD/kW-yr)</label>
+      <input id='opex' type='number' value='18' step='1'>
+      <label title='Discount rate proxy for weighted average cost of capital.'>WACC</label>
+      <input id='wacc' type='number' value='0.1' step='0.005'>
+      <label title='Debt interest rate assumption.'>Debt rate</label>
+      <input id='debt' type='number' value='0.06' step='0.005'>
+      <label title='Revenue structure for the project case.'>Contract type</label>
+      <select id='contract_type'><option value='contracted' selected>Contracted</option><option value='merchant'>Merchant</option></select>
+      <label title='Power purchase agreement proxy price.'>PPA price (USD/MWh)</label>
+      <input id='ppa' type='number' value='36.46' step='0.5'>
+      <label title='Annual energy degradation assumption.'>Degradation</label>
+      <input id='degrade' type='number' value='0.005' step='0.001'>
+    </div>
+  </aside>
+  <main class='main'>
+    <div class='tabs'>
+      <button class='tab-btn active' data-tab='overview'>Overview</button>
+      <button class='tab-btn' data-tab='load'>Load</button>
+      <button class='tab-btn' data-tab='supply'>Supply</button>
+      <button class='tab-btn' data-tab='markets'>Markets</button>
+      <button class='tab-btn' data-tab='finance'>Finance</button>
+      <button class='tab-btn' data-tab='downloads'>Downloads</button>
+    </div>
+
+    <section id='overview' class='tab active'>
+      <div class='grid3'>
+        <div class='kpi'><div class='m'>Average Price (USD/MWh)</div><div class='v' id='k_avg_price'>-</div></div>
+        <div class='kpi'><div class='m'>Solar Capture (USD/MWh)</div><div class='v' id='k_solar'>-</div></div>
+        <div class='kpi'><div class='m'>Base NPV (MUSD)</div><div class='v' id='k_npv'>-</div></div>
+      </div>
+      <div class='foot'>Definitions: capture price = profile-weighted average price; congestion proxy = absolute deviation from 24h moving-average price.</div>
+    </section>
+
+    <section id='load' class='tab'>
+      <h3>Load and Weather</h3>
+      <img class='chart' src='../charts/ercot_load.svg' alt='Hourly load chart (MW)'>
+      <img class='chart' src='../charts/ercot_temperature.svg' alt='Hourly temperature chart (F)'>
+      <img class='chart' src='../charts/ercot_load_forecast_scenarios.svg' alt='Load forecast scenarios chart (avg MW)'>
+      <div class='foot'>Units: MW for load, F for temperature.</div>
+    </section>
+
+    <section id='supply' class='tab'>
+      <h3>Supply Queue Outlook</h3>
+      <img class='chart' src='../charts/ercot_queue_expected_online_mw.svg' alt='Queue expected online MW by year'>
+      <div class='kpi'><div class='m'>Selected Queue Scenario Total (MW)</div><div class='v' id='k_queue_total'>-</div></div>
+      <div class='foot'>P50/P90 represent expected online capacity under different completion assumptions.</div>
+    </section>
+
+    <section id='markets' class='tab'>
+      <h3>Market Metrics</h3>
+      <img class='chart' src='../charts/ercot_price.svg' alt='Hub price chart (USD/MWh)'>
+      <div class='grid3'>
+        <div class='kpi'><div class='m'>Wind Capture (USD/MWh)</div><div class='v' id='k_wind'>-</div></div>
+        <div class='kpi'><div class='m'>Congestion Mean (USD/MWh)</div><div class='v' id='k_cong'>-</div></div>
+        <div class='kpi'><div class='m'>Negative Price Share (%)</div><div class='v' id='k_neg'>-</div></div>
+      </div>
+      <details><summary>Metric Notes</summary><div class='foot'>Negative price share = hours with price < 0 divided by total hours in modeled period.</div></details>
+    </section>
+
+    <section id='finance' class='tab'>
+      <h3>Project Finance</h3>
+      <div class='grid3'>
+        <div class='kpi'><div class='m'>Scenario IRR</div><div class='v' id='k_irr'>-</div></div>
+        <div class='kpi'><div class='m'>Min DSCR</div><div class='v' id='k_dscr'>-</div></div>
+        <div class='kpi'><div class='m'>LCOE (USD/MWh)</div><div class='v' id='k_lcoe'>-</div></div>
+      </div>
+      <img class='chart' src='../charts/ercot_finance_sensitivity.svg' alt='Finance sensitivity chart'>
+      <div class='foot'>Finance KPIs are scenario-linked to price/capex controls and provide directional screening outputs.</div>
+    </section>
+
+    <section id='downloads' class='tab'>
+      <h3>Downloads and Report</h3>
+      <div class='dl'>
+        <a href='../../data/marts/ercot_market_metrics.csv' download>Download market metrics CSV</a>
+        <a href='../../data/marts/ercot_load_backtest.csv' download>Download load backtest CSV</a>
+        <a href='../../data/marts/ercot_load_forecast_scenarios.csv' download>Download load scenarios CSV</a>
+        <a href='../../data/marts/ercot_finance_scenarios.csv' download>Download finance scenarios CSV</a>
+        <a href='../../data/marts/ercot_finance_sensitivity.csv' download>Download finance sensitivity CSV</a>
+        <a href='../../data/marts/ercot_queue_calibration.csv' download>Download queue calibration CSV</a>
+        <a href='../../data/curated/ercot_queue_expected_online_mw.csv' download>Download queue outlook CSV</a>
+        <a href='summary_report.html' target='_blank'>Open auto-generated summary report</a>
+      </div>
+      <div class='foot'>Dashboard runtime uses processed tables only and does not fetch external data.</div>
+    </section>
+  </main>
+</div>
+
+<script>
+const DATA = {"region": "ERCOT", "hub": "HB_NORTH", "kpis": {"avg_price": 36.552778, "solar_capture": 36.460153, "wind_capture": 36.729282, "congestion_mean": 5.856129, "negative_share": 0.0, "base_npv": -32.0446, "base_irr": 0.0059}, "series": {"load": [44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0, 44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0, 44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0], "price": [29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 36.4, 37.2, 38.0, 38.8, 34.0, 34.8, 49.6, 50.4, 51.2, 52.0, 52.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 38.8, 34.0, 34.8, 35.6, 36.4, 37.2, 52.0, 52.8, 48.0, 48.8, 49.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 35.6, 36.4, 37.2, 38.0, 38.8, 34.0, 48.8, 49.6, 50.4, 51.2, 52.0, 33.8, 29.0, 29.8], "temperature": [53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 60.0, 60.0, 60.0, 60.0, 69.0, 69.0, 69.0, 69.0, 69.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 61.5, 61.5, 61.5, 61.5, 70.5, 70.5, 70.5, 70.5, 70.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 63.0, 63.0, 63.0, 63.0, 72.0, 72.0, 72.0, 72.0, 72.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0], "years": ["2024", "2025", "2026", "2027", "2028", "2029", "2030"], "queue_p50": [260.0, 160.0, 326.55, 54.8, 37.5, 49.5, 35.0], "queue_p90": [260.0, 160.0, 230.55, 0.0, 12.5, 27.5, 0.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -43.5921, "after_tax_npv_musd": -43.0441, "irr": -0.0503, "min_dscr": 0.8109, "avg_dscr": 0.8502, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 7.4929}, "merchant|low|base": {"npv_musd": -53.5958, "after_tax_npv_musd": -51.6968, "irr": -0.0701, "min_dscr": 0.7298, "avg_dscr": 0.7652, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 7.4929}, "merchant|low|high": {"npv_musd": -63.5994, "after_tax_npv_musd": -60.3496, "irr": -0.0874, "min_dscr": 0.6635, "avg_dscr": 0.6956, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 7.4929}, "merchant|base|low": {"npv_musd": -32.6923, "after_tax_npv_musd": -34.8692, "irr": -0.008, "min_dscr": 1.0037, "avg_dscr": 1.0499, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 8.8152}, "merchant|base|base": {"npv_musd": -42.696, "after_tax_npv_musd": -43.522, "irr": -0.0295, "min_dscr": 0.9033, "avg_dscr": 0.9449, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 8.8152}, "merchant|base|high": {"npv_musd": -52.6996, "after_tax_npv_musd": -52.1747, "irr": -0.0481, "min_dscr": 0.8212, "avg_dscr": 0.859, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 8.8152}, "merchant|high|low": {"npv_musd": -21.7925, "after_tax_npv_musd": -26.6944, "irr": 0.0301, "min_dscr": 1.1965, "avg_dscr": 1.2496, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 10.1375}, "merchant|high|base": {"npv_musd": -31.7962, "after_tax_npv_musd": -35.3471, "irr": 0.0067, "min_dscr": 1.0769, "avg_dscr": 1.1247, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 10.1375}, "merchant|high|high": {"npv_musd": -41.7998, "after_tax_npv_musd": -43.9999, "irr": -0.0134, "min_dscr": 0.979, "avg_dscr": 1.0224, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 10.1375}, "contracted|low|low": {"npv_musd": -33.8885, "after_tax_npv_musd": -35.7664, "irr": -0.0124, "min_dscr": 0.9826, "avg_dscr": 1.028, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 8.6701}, "contracted|low|base": {"npv_musd": -43.8922, "after_tax_npv_musd": -44.4192, "irr": -0.0337, "min_dscr": 0.8843, "avg_dscr": 0.9252, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 8.6701}, "contracted|low|high": {"npv_musd": -53.8959, "after_tax_npv_musd": -53.0719, "irr": -0.0521, "min_dscr": 0.8039, "avg_dscr": 0.8411, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 8.6701}, "contracted|base|low": {"npv_musd": -22.0409, "after_tax_npv_musd": -26.8807, "irr": 0.0293, "min_dscr": 1.1921, "avg_dscr": 1.2451, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 10.1073}, "contracted|base|base": {"npv_musd": -32.0446, "after_tax_npv_musd": -35.5335, "irr": 0.0059, "min_dscr": 1.0729, "avg_dscr": 1.1206, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 10.1073}, "contracted|base|high": {"npv_musd": -42.0483, "after_tax_npv_musd": -44.1862, "irr": -0.0142, "min_dscr": 0.9754, "avg_dscr": 1.0187, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 10.1073}, "contracted|high|low": {"npv_musd": -10.1933, "after_tax_npv_musd": -17.995, "irr": 0.068, "min_dscr": 1.4017, "avg_dscr": 1.4622, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 11.5446}, "contracted|high|base": {"npv_musd": -20.197, "after_tax_npv_musd": -26.6478, "irr": 0.0422, "min_dscr": 1.2615, "avg_dscr": 1.316, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 11.5446}, "contracted|high|high": {"npv_musd": -30.2007, "after_tax_npv_musd": -35.3005, "irr": 0.0203, "min_dscr": 1.1468, "avg_dscr": 1.1963, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 11.5446}}};
+
+function fmt(n, d=2) { return Number(n).toFixed(d); }
+function scenarioKeyFromControls() {
+  const price = document.getElementById('tight_scn').value;
+  const contractType = document.getElementById('contract_type').value;
+  const capex = Number(document.getElementById('capex').value);
+  const baseCapex = 1150;
+  let priceCase = 'base';
+  if (Number(price) < 1) priceCase = 'low';
+  if (Number(price) > 1) priceCase = 'high';
+  let capexCase = 'base';
+  if (capex < baseCapex) capexCase = 'low';
+  if (capex > baseCapex) capexCase = 'high';
+  return contractType + '|' + priceCase + '|' + capexCase;
+}
+
+function refresh() {
+  const loadMult = Number(document.getElementById('load_scn').value);
+  const tightMult = Number(document.getElementById('tight_scn').value);
+  const queueMode = document.getElementById('queue_scn').value;
+
+  const avgPrice = DATA.kpis.avg_price * tightMult;
+  const solar = DATA.kpis.solar_capture * tightMult;
+  const wind = DATA.kpis.wind_capture * tightMult;
+  const cong = DATA.kpis.congestion_mean * tightMult;
+  const neg = Math.min(DATA.kpis.negative_share * tightMult, 1);
+
+  document.getElementById('k_avg_price').textContent = fmt(avgPrice);
+  document.getElementById('k_solar').textContent = fmt(solar);
+  document.getElementById('k_wind').textContent = fmt(wind);
+  document.getElementById('k_cong').textContent = fmt(cong);
+  document.getElementById('k_neg').textContent = fmt(neg * 100, 1);
+
+  const qArr = queueMode === 'p50' ? DATA.series.queue_p50 : DATA.series.queue_p90;
+  const qTotal = qArr.reduce((a,b)=>a+b,0) * loadMult;
+  document.getElementById('k_queue_total').textContent = fmt(qTotal, 1);
+
+  const key = scenarioKeyFromControls();
+  const s = DATA.finance_scenarios[key] || DATA.finance_scenarios['contracted|base|base'];
+  document.getElementById('k_npv').textContent = fmt(s.npv_musd, 2);
+  document.getElementById('k_irr').textContent = fmt(s.irr, 3);
+  document.getElementById('k_dscr').textContent = fmt(s.min_dscr, 2);
+  document.getElementById('k_lcoe').textContent = fmt(s.lcoe_usd_mwh, 2);
+}
+
+for (const btn of document.querySelectorAll('.tab-btn')) {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+}
+
+for (const id of ['load_scn','queue_scn','tight_scn','contract_type','capex','opex','wacc','debt','ppa','degrade']) {
+  document.getElementById(id).addEventListener('input', refresh);
+}
+refresh();
+</script>
+</body>
+</html>

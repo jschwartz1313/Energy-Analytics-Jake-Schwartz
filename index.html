@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Energy Analytics Portfolio</title>
+  <style>
+    :root {
+      --ink: #0f1f24;
+      --muted: #5b727c;
+      --accent: #0b5f83;
+      --accent2: #b55000;
+      --bg: #eef4f7;
+      --card: #ffffff;
+      --line: #d9e2e7;
+      --hero-bg: #0b3d52;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'IBM Plex Sans','Segoe UI',system-ui,sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #0b3d52 0%, #0b5f83 60%, #0f7ea8 100%);
+      color: #fff;
+      padding: 56px 24px 48px;
+      text-align: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: .06em;
+      padding: 4px 14px;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+    .hero h1 { font-size: clamp(24px,5vw,42px); font-weight: 700; margin-bottom: 14px; }
+    .hero p  { max-width: 640px; margin: 0 auto 28px; opacity: .85; font-size: 16px; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .btn {
+      display: inline-block; padding: 12px 26px; border-radius: 8px;
+      font-size: 14px; font-weight: 600; text-decoration: none; transition: opacity .15s;
+    }
+    .btn:hover { opacity: .85; }
+    .btn-primary  { background: #fff; color: var(--hero-bg); }
+    .btn-outline  { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.6); }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 44px 0; }
+    section + section { border-top: 1px solid var(--line); }
+    h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .section-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+
+    /* ── KPI strip ── */
+    .kpi-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 14px; }
+    .kpi {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 16px 18px;
+    }
+    .kpi .label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .kpi .value { font-size: 28px; font-weight: 700; color: var(--accent); }
+    .kpi .unit  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Charts grid ── */
+    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: 16px; }
+    .chart-card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 14px; overflow: hidden;
+    }
+    .chart-card h3 { font-size: 13px; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .05em; }
+    .chart-card img { width: 100%; border-radius: 6px; display: block; }
+
+    /* ── Modules ── */
+    .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 14px; }
+    .module-card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 18px;
+    }
+    .module-letter {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 16px; margin-bottom: 10px;
+    }
+    .module-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .module-card p  { font-size: 13px; color: var(--muted); }
+
+    /* ── Finance table ── */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+    th { background: #eef3f5; font-weight: 600; }
+    tbody tr:hover { background: #f7fafc; }
+
+    /* ── Docs links ── */
+    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 10px; }
+    .doc-link {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 10px; padding: 12px 14px;
+      text-decoration: none; color: var(--ink); font-size: 13px; font-weight: 600;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .doc-link:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(11,95,131,.08); }
+    .doc-link span.icon { font-size: 18px; }
+
+    /* ── Tech stack ── */
+    .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .tag {
+      background: #deeaf0; color: #0b3d52; border-radius: 6px;
+      font-size: 12px; font-weight: 600; padding: 4px 10px;
+    }
+
+    /* ── Pipeline ── */
+    .pipeline {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+      font-size: 13px; margin-top: 14px;
+    }
+    .pipe-step {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 8px; padding: 8px 14px; font-weight: 600;
+    }
+    .pipe-arrow { color: var(--muted); font-size: 18px; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--hero-bg); color: rgba(255,255,255,.65);
+      text-align: center; padding: 20px; font-size: 13px;
+    }
+    footer a { color: rgba(255,255,255,.85); }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 16px 36px; }
+      section { padding: 30px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-tag">Energy Analytics Portfolio</div>
+  <h1>Data Center Load Growth,<br>Renewables &amp; Market Impacts</h1>
+  <p>An end-to-end analytics pipeline covering load forecasting, interconnection queue analytics,
+     wholesale market metrics, and solar project finance — focused on ERCOT.</p>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="reports/dashboard/index.html">View Interactive Dashboard</a>
+    <a class="btn btn-outline"  href="reports/dashboard/summary_report.html">Summary Report</a>
+    <a class="btn btn-outline"  href="https://github.com/jschwartz1313/Energy-Analytics" target="_blank" rel="noopener">GitHub Repo</a>
+  </div>
+</div>
+
+<!-- ── Key metrics ── -->
+<div class="container">
+  <section>
+    <h2>Key Metrics — ERCOT (HB_NORTH)</h2>
+    <p class="section-sub">Base scenario outputs from the processed analytics pipeline.</p>
+    <div class="kpi-strip">
+      <div class="kpi">
+        <div class="label">Average Hub Price</div>
+        <div class="value">36.55</div>
+        <div class="unit">USD / MWh</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Solar Capture Price</div>
+        <div class="value">36.46</div>
+        <div class="unit">USD / MWh</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Wind Capture Price</div>
+        <div class="value">36.73</div>
+        <div class="unit">USD / MWh</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Congestion Proxy (mean)</div>
+        <div class="value">5.86</div>
+        <div class="unit">USD / MWh</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Base Case IRR</div>
+        <div class="value">0.6%</div>
+        <div class="unit">Contracted · 100 MW solar</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Base Case LCOE</div>
+        <div class="value">60.16</div>
+        <div class="unit">USD / MWh</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Charts ── -->
+  <section>
+    <h2>Pipeline Outputs</h2>
+    <p class="section-sub">Charts generated from the reproducible pipeline — open the dashboard for interactive controls.</p>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Hourly Load (MW)</h3>
+        <img src="reports/charts/ercot_load.svg" alt="ERCOT hourly load">
+      </div>
+      <div class="chart-card">
+        <h3>Hub Price (USD/MWh)</h3>
+        <img src="reports/charts/ercot_price.svg" alt="ERCOT hub price">
+      </div>
+      <div class="chart-card">
+        <h3>Temperature (°F)</h3>
+        <img src="reports/charts/ercot_temperature.svg" alt="ERCOT temperature">
+      </div>
+      <div class="chart-card">
+        <h3>Load Forecast Scenarios</h3>
+        <img src="reports/charts/ercot_load_forecast_scenarios.svg" alt="Load forecast scenarios">
+      </div>
+      <div class="chart-card">
+        <h3>Queue Expected Online MW</h3>
+        <img src="reports/charts/ercot_queue_expected_online_mw.svg" alt="Queue expected online MW">
+      </div>
+      <div class="chart-card">
+        <h3>Finance Sensitivity</h3>
+        <img src="reports/charts/ercot_finance_sensitivity.svg" alt="Finance sensitivity">
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Analytics Modules ── -->
+  <section>
+    <h2>Analytics Modules</h2>
+    <p class="section-sub">Four modules built in sequence, each producing validated analytical outputs.</p>
+    <div class="modules-grid">
+      <div class="module-card">
+        <div class="module-letter">A</div>
+        <h3>Load &amp; Demand Forecasting</h3>
+        <p>Baseline regional load model with temperature sensitivity, day-of-week, and seasonality. Data center growth overlay with Low / Base / High scenarios to 2030.</p>
+      </div>
+      <div class="module-card">
+        <div class="module-letter">B</div>
+        <h3>Interconnection Queue</h3>
+        <p>Normalized ISO queue data with completion-probability modeling. Expected online MW by year per technology — P50 / P90 buildout trajectories for solar, wind, and storage.</p>
+      </div>
+      <div class="module-card">
+        <div class="module-letter">C</div>
+        <h3>Market Metrics</h3>
+        <p>Generation-weighted capture prices for solar and wind, congestion proxy (basis deviation), negative-price hours, and curtailment indicators.</p>
+      </div>
+      <div class="module-card">
+        <div class="module-letter">D</div>
+        <h3>Project Finance</h3>
+        <p>Transparent solar pro-forma with merchant and contracted structures. Outputs: LCOE, NPV, IRR, DSCR, and a full scenario matrix across load × supply × price assumptions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Finance table ── -->
+  <section>
+    <h2>Base Solar Finance Case — Contracted, 100 MW</h2>
+    <p class="section-sub">Stylized pro-forma under base price and base capex assumptions. Not an investment recommendation.</p>
+    <table>
+      <thead>
+        <tr><th>Metric</th><th>Value</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>NPV</td><td>−32.04 MUSD</td><td>10% WACC, 20-yr project life</td></tr>
+        <tr><td>After-tax NPV</td><td>−35.53 MUSD</td><td>25% corporate tax rate proxy</td></tr>
+        <tr><td>IRR</td><td>0.6%</td><td>Contracted base scenario</td></tr>
+        <tr><td>Min DSCR</td><td>1.07×</td><td>60% debt, 6% rate, 15-yr tenor</td></tr>
+        <tr><td>LCOE</td><td>60.16 USD/MWh</td><td>1,150 USD/kW capex, 18 USD/kW-yr opex</td></tr>
+        <tr><td>Year 1 Revenue</td><td>10.11 MUSD</td><td>Capture price × generation × PPA premium</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Data pipeline ── -->
+  <section>
+    <h2>Pipeline Architecture</h2>
+    <p class="section-sub">Layered, reproducible data flow — one command rebuilds all outputs.</p>
+    <div class="pipeline">
+      <div class="pipe-step">Samples / URLs</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">data/raw</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">data/staged</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">data/curated</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">data/marts</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">Charts · Dashboard · Reports</div>
+    </div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted);">
+      All transforms are reproducible via <code>make all</code>. Schema contracts, QA checks, and ingestion
+      manifests are enforced at each stage. Dependency versions are pinned in <code>requirements-lock.txt</code>.
+    </p>
+    <div class="tech-tags" style="margin-top:14px;">
+      <span class="tag">Python 3.12</span>
+      <span class="tag">pandas</span>
+      <span class="tag">DuckDB</span>
+      <span class="tag">pyarrow / Parquet</span>
+      <span class="tag">statsmodels</span>
+      <span class="tag">scikit-learn</span>
+      <span class="tag">Makefile</span>
+      <span class="tag">GitHub Actions CI</span>
+      <span class="tag">ruff · black</span>
+      <span class="tag">pre-commit</span>
+    </div>
+  </section>
+
+  <!-- ── Documentation ── -->
+  <section>
+    <h2>Documentation</h2>
+    <p class="section-sub">Method notes, assumptions, and data dictionary for full transparency.</p>
+    <div class="docs-grid">
+      <a class="doc-link" href="docs/assumptions.md"><span class="icon">📋</span> Assumptions Table</a>
+      <a class="doc-link" href="docs/data_dictionary.md"><span class="icon">📖</span> Data Dictionary</a>
+      <a class="doc-link" href="docs/architecture.md"><span class="icon">🏗</span> Architecture</a>
+      <a class="doc-link" href="docs/method_load.md"><span class="icon">📈</span> Load Model</a>
+      <a class="doc-link" href="docs/method_queue.md"><span class="icon">🔌</span> Queue Model</a>
+      <a class="doc-link" href="docs/method_markets.md"><span class="icon">💹</span> Markets Model</a>
+      <a class="doc-link" href="docs/method_finance.md"><span class="icon">💰</span> Finance Model</a>
+      <a class="doc-link" href="reports/qa_report.md"><span class="icon">✅</span> QA Report</a>
+    </div>
+    <p style="margin-top:14px;font-size:13px;color:var(--muted);">
+      Note: <code>.md</code> links open the raw Markdown on GitHub Pages. For formatted views, browse the
+      <a href="https://github.com/jschwartz1313/Energy-Analytics/tree/main/docs" target="_blank" rel="noopener">docs/ folder on GitHub</a>.
+    </p>
+  </section>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>Energy Analytics Portfolio · ERCOT region · Data is stylized sample output for demonstration purposes.</p>
+  <p style="margin-top:6px;">
+    <a href="https://github.com/jschwartz1313/Energy-Analytics" target="_blank" rel="noopener">GitHub</a> ·
+    <a href="reports/dashboard/index.html">Dashboard</a> ·
+    <a href="reports/dashboard/summary_report.html">Summary Report</a>
+  </p>
+</footer>
+
+</body>
+</html>

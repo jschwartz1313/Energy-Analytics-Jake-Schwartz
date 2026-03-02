@@ -1,0 +1,16 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1000' height='360'>
+<rect x='0' y='0' width='100%' height='100%' fill='white'/>
+<text x='20' y='24' font-size='16' font-family='Arial'>ERCOT Load Forecast Scenarios (Avg MW)</text>
+<text x='8' y='45' font-size='11' font-family='Arial'>71463.8</text>
+<text x='8' y='325' font-size='11' font-family='Arial'>48002.8</text>
+<line x1='60' y1='320' x2='980' y2='320' stroke='#666'/>
+<line x1='60' y1='40' x2='60' y2='320' stroke='#666'/>
+<polyline fill='none' stroke='#1E7A50' stroke-width='2' points='60.00,320.00 213.33,314.27 366.67,308.48 520.00,302.64 673.33,296.74 826.67,290.78 980.00,284.76'/>
+<polyline fill='none' stroke='#0D3D91' stroke-width='2' points='60.00,308.66 213.33,291.13 366.67,273.08 520.00,254.48 673.33,235.33 826.67,215.60 980.00,195.28'/>
+<polyline fill='none' stroke='#B55000' stroke-width='2' points='60.00,291.64 213.33,255.56 366.67,217.32 520.00,176.79 673.33,133.82 826.67,88.28 980.00,40.00'/>
+<text x='60' y='352' font-size='10' font-family='Arial'>2026</text>
+<text x='860' y='352' font-size='10' font-family='Arial'>2032</text>
+<text x='700' y='26' font-size='11' font-family='Arial' fill='#1E7A50'>Low</text>
+<text x='790' y='26' font-size='11' font-family='Arial' fill='#0D3D91'>Base</text>
+<text x='880' y='26' font-size='11' font-family='Arial' fill='#B55000'>High</text>
+</svg>
