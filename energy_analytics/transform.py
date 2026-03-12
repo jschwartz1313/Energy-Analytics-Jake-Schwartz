@@ -25,8 +25,8 @@ def _read_table(path: str, key_col: str) -> dict[str, dict[str, str]]:
     return out
 
 
-def run_transform() -> None:
-    cfg = load_config()
+def run_transform(config_path: str = "config/data_sources.yml") -> None:
+    cfg = load_config(config_path)
     raw = cfg["raw_output"]
     staged = Path(cfg["staged_output"]["panel_csv"])
     curated = Path(cfg["curated_output"]["panel_csv"])

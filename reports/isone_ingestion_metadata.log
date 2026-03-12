@@ -1,0 +1,14 @@
+[2026-03-12T01:47:12.694588Z] ingest:load mode=sample source_type=sample source_ref=data/samples/isone_load_sample.csv rows=72 bytes=2544 sha256=1ed9e7dd0b43
+[2026-03-12T01:47:12.695158Z] ingest:price mode=sample source_type=sample source_ref=data/samples/isone_price_sample.csv rows=72 bytes=3592 sha256=8448800b3e58
+[2026-03-12T01:47:12.695627Z] ingest:weather mode=sample source_type=sample source_ref=data/samples/isone_weather_sample.csv rows=72 bytes=2436 sha256=69918b87d04b
+[2026-03-12T01:47:12.696854Z] ingest:queue mode=sample source_type=sample source_ref=data/samples/isone_queue_sample.csv rows=7 bytes=683 sha256=7029df211fea
+[2026-03-12T01:47:12.696965Z] ingest_manifest:path=reports/isone_ingestion_manifest.json records=4
+[2026-03-12T01:47:12.696991Z] ingest complete region=ISO-NE mode=sample
+[2026-03-12T01:47:12.736840Z] transform:panel rows=72 staged=data/staged/isone_hourly_panel_staged.csv curated=data/curated/isone_hourly_panel.csv
+[2026-03-12T01:47:12.776874Z] forecast:backtest_rows=48 naive_rmse=200.00 weather_rmse=987.59
+[2026-03-12T01:47:12.815994Z] queue_transform:normalized_rows=7 outlook_rows=7 calibration_rows=0 empirical_tech_rates={}
+[2026-03-12T01:47:12.855078Z] markets:hours=72 solar_capture=53.086 wind_capture=48.876 negative_hours=0
+[2026-03-12T01:47:12.896373Z] finance:scenarios=18 base_npv_musd=-68.263 base_after_tax_npv_musd=-64.697 base_irr=-0.089
+[2026-03-12T01:47:12.935997Z] charts:created reports/charts/isone_load.svg reports/charts/isone_price.svg reports/charts/isone_temperature.svg reports/charts/isone_queue_expected_online_mw.svg reports/charts/isone_load_forecast_scenarios.svg
+[2026-03-12T01:47:12.975331Z] qa:rows=72 failures=0 report=reports/isone_qa_report.md
+[2026-03-12T01:47:13.022188Z] dashboard:generated iso_count=7 isos=['ERCOT', 'CAISO', 'PJM', 'MISO', 'SPP', 'NYISO', 'ISO-NE'] summary=reports/dashboard/summary_report.html

@@ -161,13 +161,15 @@ def _triple_line_svg(
         f.write("</svg>\n")
 
 
-def run_charts() -> None:
-    cfg = load_config()
+def run_charts(config_path: str = "config/data_sources.yml") -> None:
+    cfg = load_config(config_path)
     panel_path = Path(cfg["curated_output"]["panel_csv"])
     forecast_scenarios_path = Path(cfg["forecast_output"]["scenarios_csv"])
     queue_outlook_path = Path(cfg["curated_output"]["queue_outlook_csv"])
     out_dir = Path(cfg["reports"]["charts_dir"])
     log_path = cfg["reports"]["metadata_log"]
+    region = cfg["region"]
+    prefix = region.lower().replace("-", "").replace(".", "")
 
     timestamps: list[str] = []
     loads: list[float] = []
@@ -182,13 +184,13 @@ def run_charts() -> None:
             temps.append(float(row["temperature_f"]))
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    load_svg = out_dir / "ercot_load.svg"
-    price_svg = out_dir / "ercot_price.svg"
-    temp_svg = out_dir / "ercot_temperature.svg"
+    load_svg = out_dir / f"{prefix}_load.svg"
+    price_svg = out_dir / f"{prefix}_price.svg"
+    temp_svg = out_dir / f"{prefix}_temperature.svg"
 
-    _line_svg("ERCOT Hourly Load (MW)", timestamps, loads, load_svg, "#0D3D91")
-    _line_svg("ERCOT Hub Price (USD/MWh)", timestamps, prices, price_svg, "#1E7A50")
-    _line_svg("ERCOT Temperature (F)", timestamps, temps, temp_svg, "#B55000")
+    _line_svg(f"{region} Hourly Load (MW)", timestamps, loads, load_svg, "#0D3D91")
+    _line_svg(f"{region} Hub Price (USD/MWh)", timestamps, prices, price_svg, "#1E7A50")
+    _line_svg(f"{region} Temperature (F)", timestamps, temps, temp_svg, "#B55000")
 
     annual: dict[str, tuple[float, float]] = {}
     with queue_outlook_path.open("r", encoding="utf-8", newline="") as f:
@@ -204,9 +206,9 @@ def run_charts() -> None:
     years = sorted(annual.keys())
     annual_p50 = [annual[y][0] for y in years]
     annual_p90 = [annual[y][1] for y in years]
-    queue_svg = out_dir / "ercot_queue_expected_online_mw.svg"
+    queue_svg = out_dir / f"{prefix}_queue_expected_online_mw.svg"
     _dual_line_svg(
-        "ERCOT Queue Expected Online MW by COD Year",
+        f"{region} Queue Expected Online MW by COD Year",
         years,
         annual_p50,
         annual_p90,
@@ -229,9 +231,9 @@ def run_charts() -> None:
     low = [by_scenario.get("low", {}).get(y, 0.0) for y in years]
     base = [by_scenario.get("base", {}).get(y, 0.0) for y in years]
     high = [by_scenario.get("high", {}).get(y, 0.0) for y in years]
-    forecast_svg = out_dir / "ercot_load_forecast_scenarios.svg"
+    forecast_svg = out_dir / f"{prefix}_load_forecast_scenarios.svg"
     _triple_line_svg(
-        "ERCOT Load Forecast Scenarios (Avg MW)",
+        f"{region} Load Forecast Scenarios (Avg MW)",
         years,
         low,
         base,

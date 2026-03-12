@@ -1,0 +1,20 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='900' height='300'>
+<rect x='0' y='0' width='100%' height='100%' fill='white'/>
+<text x='20' y='20' font-size='16' font-family='Arial'>Finance Sensitivity (Delta NPV, MUSD)</text>
+<line x1='500' y1='22' x2='500' y2='280' stroke='#333'/>
+<text x='20' y='50' font-size='12' font-family='Arial'>Price -10%</text>
+<rect x='429.45' y='30' width='70.55' height='30' fill='#B55000'/>
+<text x='508.00' y='50' font-size='11' font-family='Arial'>-3.56</text>
+<text x='20' y='92' font-size='12' font-family='Arial'>Price +10%</text>
+<rect x='500.00' y='72' width='70.55' height='30' fill='#1E7A50'/>
+<text x='578.55' y='92' font-size='11' font-family='Arial'>3.56</text>
+<text x='20' y='134' font-size='12' font-family='Arial'>Capex -10%</text>
+<rect x='500.00' y='114' width='189.45' height='30' fill='#1E7A50'/>
+<text x='697.45' y='134' font-size='11' font-family='Arial'>9.57</text>
+<text x='20' y='176' font-size='12' font-family='Arial'>Capex +10%</text>
+<rect x='310.55' y='156' width='189.45' height='30' fill='#B55000'/>
+<text x='508.00' y='176' font-size='11' font-family='Arial'>-9.57</text>
+<text x='20' y='218' font-size='12' font-family='Arial'>Price -10% & Capex +10%</text>
+<rect x='240.00' y='198' width='260.00' height='30' fill='#B55000'/>
+<text x='508.00' y='218' font-size='11' font-family='Arial'>-13.13</text>
+</svg>

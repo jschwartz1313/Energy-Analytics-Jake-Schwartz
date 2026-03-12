@@ -1,0 +1,11 @@
+queue_id,project_name,technology_raw,mw,status_raw,queue_date,target_cod,bus,county
+MI-4001,Iowa Wind Prairie Alpha,Wind,400,Active,2022-05-18,2027-04-01,Bus-MI-A,Poweshiek
+MI-4002,Illinois Wind Plains II,Wind,350,In Study,2023-09-07,2028-10-01,Bus-MI-B,DeKalb
+MI-4003,Minnesota Solar Farm I,Solar PV,220,Submitted,2024-02-14,2029-03-01,Bus-MI-C,Freeborn
+MI-4004,Indiana Wind Beta,Wind,300,Under Construction,2021-11-22,2026-12-01,Bus-MI-D,White
+MI-4005,Missouri River Wind III,Wind,450,Active,2022-03-30,2027-08-01,Bus-MI-E,Atchison
+MI-4006,Iowa Battery Storage Node,BESS,180,In Study,2023-12-05,2028-07-01,Bus-MI-F,Story
+MI-4007,Wisconsin Wind Delta,Wind,280,Operational,2019-07-16,2024-10-01,Bus-MI-G,Fond du Lac
+MI-4008,Illinois Solar Hub,Solar PV,190,Submitted,2024-06-19,2030-01-01,Bus-MI-H,Sangamon
+MI-4009,Michigan Wind Farm IV,Wind,320,Active,2023-04-25,2028-02-01,Bus-MI-I,Mason
+MI-4010,Ohio Wind Storage,Wind+BESS,260,Cancelled,2020-08-14,2025-11-01,Bus-MI-J,Huron

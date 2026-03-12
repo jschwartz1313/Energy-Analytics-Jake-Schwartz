@@ -1,0 +1,11 @@
+queue_id,project_name,technology_raw,mw,status_raw,queue_date,target_cod,bus,county
+SP-5001,Kansas Wind Prairie I,Wind,500,Active,2022-06-10,2027-05-01,Bus-SP-A,Barton
+SP-5002,Oklahoma Wind Plains II,Wind,420,In Study,2023-01-25,2028-06-01,Bus-SP-B,Woodward
+SP-5003,Texas Panhandle Wind III,Wind,380,Under Construction,2021-08-14,2026-09-01,Bus-SP-C,Potter
+SP-5004,Nebraska Wind Delta,Wind,350,Active,2022-11-03,2027-11-01,Bus-SP-D,Sherman
+SP-5005,Kansas Solar Hub,Solar PV,200,Submitted,2024-03-18,2029-05-01,Bus-SP-E,Pratt
+SP-5006,Oklahoma Storage Node,BESS,140,In Study,2023-07-29,2028-09-01,Bus-SP-F,Blaine
+SP-5007,South Dakota Wind Farm,Wind,460,Operational,2019-04-22,2024-08-01,Bus-SP-G,Hand
+SP-5008,Kansas Wind Alpha V,Wind,330,Active,2023-05-15,2028-04-01,Bus-SP-H,Ellis
+SP-5009,Missouri Wind Beta,Wind,290,Submitted,2024-08-07,2030-03-01,Bus-SP-I,Atchison
+SP-5010,Oklahoma Solar Array,Solar PV,180,Cancelled,2020-09-11,2025-10-01,Bus-SP-J,Comanche

@@ -46,8 +46,8 @@ def _mape(actual: list[float], pred: list[float]) -> float:
     return sum(abs((a - p) / a) for a, p in pairs) / len(pairs)
 
 
-def run_forecast() -> None:
-    cfg = load_config()
+def run_forecast(config_path: str = "config/data_sources.yml") -> None:
+    cfg = load_config(config_path)
     panel_path = Path(cfg["curated_output"]["panel_csv"])
     backtest_path = Path(cfg["forecast_output"]["backtest_csv"])
     metrics_path = Path(cfg["forecast_output"]["backtest_metrics_csv"])

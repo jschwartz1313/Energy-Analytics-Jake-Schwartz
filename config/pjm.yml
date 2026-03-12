@@ -1,0 +1,60 @@
+region: PJM
+timezone: America/New_York
+hub: WESTERN_HUB
+ingestion:
+  mode: sample
+  allow_real_to_sample_fallback: true
+  enforce_contracts: true
+  contracts_path: config/schema_contracts.yml
+  manifest_output: reports/pjm_ingestion_manifest.json
+  raw_snapshot_dir: data/raw/snapshots
+sample_data:
+  load: data/samples/pjm_load_sample.csv
+  price: data/samples/pjm_price_sample.csv
+  weather: data/samples/pjm_weather_sample.csv
+  queue: data/samples/pjm_queue_sample.csv
+raw_output:
+  load: data/raw/pjm_load.csv
+  price: data/raw/pjm_price.csv
+  weather: data/raw/pjm_weather.csv
+  queue: data/raw/pjm_queue.csv
+staged_output:
+  panel_csv: data/staged/pjm_hourly_panel_staged.csv
+  queue_csv: data/staged/pjm_queue_normalized.csv
+curated_output:
+  panel_csv: data/curated/pjm_hourly_panel.csv
+  panel_parquet: data/curated/pjm_hourly_panel.parquet
+  queue_outlook_csv: data/curated/pjm_queue_expected_online_mw.csv
+forecast_output:
+  backtest_csv: data/marts/pjm_load_backtest.csv
+  backtest_metrics_csv: data/marts/pjm_load_backtest_metrics.csv
+  scenarios_csv: data/marts/pjm_load_forecast_scenarios.csv
+markets_output:
+  metrics_csv: data/marts/pjm_market_metrics.csv
+  hourly_csv: data/marts/pjm_market_hourly_enriched.csv
+  findings_md: reports/pjm_market_findings.md
+queue_model_output:
+  calibration_csv: data/marts/pjm_queue_calibration.csv
+finance_output:
+  scenarios_csv: data/marts/pjm_finance_scenarios.csv
+  summary_csv: data/marts/pjm_finance_summary.csv
+  sensitivity_csv: data/marts/pjm_finance_sensitivity.csv
+  sensitivity_chart_svg: reports/charts/pjm_finance_sensitivity.svg
+finance_assumptions:
+  capacity_mw: 100
+  solar_capacity_factor: 0.22
+  project_life_years: 20
+  degradation_rate: 0.005
+  capex_per_kw: 1200
+  fixed_opex_per_kw_year: 17
+  debt_fraction: 0.60
+  debt_rate: 0.06
+  debt_tenor_years: 15
+  equity_discount_rate: 0.10
+  merchant_basis_discount: 0.90
+  contracted_price_adder_usd_mwh: 2.0
+  tax_rate: 0.25
+reports:
+  qa_report: reports/pjm_qa_report.md
+  metadata_log: reports/pjm_ingestion_metadata.log
+  charts_dir: reports/charts

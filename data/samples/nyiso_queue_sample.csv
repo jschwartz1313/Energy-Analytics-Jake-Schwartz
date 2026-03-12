@@ -1,0 +1,9 @@
+queue_id,project_name,technology_raw,mw,status_raw,queue_date,target_cod,bus,county
+Q-NY001,Atlantic Shores Offshore Wind,Wind,1510,Active,2021-04-15,2027-12-01,Bus-NY1,Offshore
+Q-NY002,Sunrise Wind,Wind,924,Under Construction,2020-08-10,2026-09-01,Bus-NY2,Offshore
+Q-NY003,Empire Wind 1,Wind,816,Active,2022-01-20,2028-06-01,Bus-NY3,Offshore
+Q-NY004,Brooklyn Queens Solar,Solar PV,45,In Study,2023-05-12,2027-03-01,Bus-NY4,Kings
+Q-NY005,Ravenswood Battery,BESS,316,Submitted,2024-02-08,2028-12-01,Bus-NY5,Queens
+Q-NY006,Capital District Solar,Solar PV,38,Active,2022-11-30,2026-08-01,Bus-NY6,Albany
+Q-NY007,Hudson Valley Storage,BESS,200,In Study,2023-09-15,2028-04-01,Bus-NY7,Orange
+Q-NY008,Long Island Solar Farm,Solar PV,90,Submitted,2024-04-01,2029-01-01,Bus-NY8,Suffolk

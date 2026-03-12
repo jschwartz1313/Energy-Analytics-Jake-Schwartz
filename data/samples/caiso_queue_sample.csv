@@ -1,0 +1,11 @@
+queue_id,project_name,technology_raw,mw,status_raw,queue_date,target_cod,bus,county
+CA-2001,Mojave Desert Solar I,Solar PV,350,Active,2023-03-14,2027-06-01,Bus-CA-A,San Bernardino
+CA-2002,Salton Sea Battery Hub,BESS,200,In Study,2023-08-22,2028-04-01,Bus-CA-B,Riverside
+CA-2003,Central Valley Solar II,Solar PV,280,Submitted,2024-01-10,2029-01-01,Bus-CA-C,Kings
+CA-2004,Diablo Wind Offshore,Offshore Wind,600,In Study,2022-06-05,2030-09-01,Bus-CA-D,San Luis Obispo
+CA-2005,Imperial Valley Solar III,Solar PV,400,Under Construction,2021-09-18,2026-08-01,Bus-CA-E,Imperial
+CA-2006,Bay Area Storage Node,Battery,150,Active,2023-11-30,2027-12-01,Bus-CA-F,Alameda
+CA-2007,Tehachapi Wind Farm,Wind,240,Operational,2019-05-12,2024-11-01,Bus-CA-G,Kern
+CA-2008,Sacramento Solar IV,Solar PV,175,Submitted,2024-05-08,2029-07-01,Bus-CA-H,Sacramento
+CA-2009,Morro Bay Offshore Wind,Offshore Wind,800,In Study,2023-02-28,2031-06-01,Bus-CA-I,San Luis Obispo
+CA-2010,San Diego Flex Storage,BESS,120,Active,2022-10-17,2027-03-01,Bus-CA-J,San Diego

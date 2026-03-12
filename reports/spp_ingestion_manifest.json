@@ -1,0 +1,81 @@
+{
+  "manifest_generated_at_utc": "2026-03-12T01:47:12.061140Z",
+  "record_count": 4,
+  "records": [
+    {
+      "dataset": "load",
+      "target_path": "data/raw/spp_load.csv",
+      "source_type": "sample",
+      "source_ref": "data/samples/spp_load_sample.csv",
+      "retrieved_at_utc": "2026-03-12T01:47:12.058482Z",
+      "file_bytes": 2261,
+      "sha256": "2b6b9c0cdecfe3249ed5c0b8f8c4c14e9f8a1daf807d2593b21d23a19505886a",
+      "row_count": 72,
+      "columns": [
+        "timestamp_utc",
+        "region",
+        "load_mw"
+      ],
+      "contract_valid": true,
+      "contract_errors": []
+    },
+    {
+      "dataset": "price",
+      "target_path": "data/raw/spp_price.csv",
+      "source_type": "sample",
+      "source_ref": "data/samples/spp_price_sample.csv",
+      "retrieved_at_utc": "2026-03-12T01:47:12.059191Z",
+      "file_bytes": 2991,
+      "sha256": "c1080fb139f25e99383731b64074b61589fe5d92b16eeb874d67fe400de94e6b",
+      "row_count": 72,
+      "columns": [
+        "timestamp_utc",
+        "region",
+        "hub",
+        "price_usd_mwh"
+      ],
+      "contract_valid": true,
+      "contract_errors": []
+    },
+    {
+      "dataset": "weather",
+      "target_path": "data/raw/spp_weather.csv",
+      "source_type": "sample",
+      "source_ref": "data/samples/spp_weather_sample.csv",
+      "retrieved_at_utc": "2026-03-12T01:47:12.059717Z",
+      "file_bytes": 2195,
+      "sha256": "d6602c8598c1276efe956a19ea3175ebe2e849ac7fa152bbd749aa980117967c",
+      "row_count": 72,
+      "columns": [
+        "timestamp_utc",
+        "region",
+        "temperature_f"
+      ],
+      "contract_valid": true,
+      "contract_errors": []
+    },
+    {
+      "dataset": "queue",
+      "target_path": "data/raw/spp_queue.csv",
+      "source_type": "sample",
+      "source_ref": "data/samples/spp_queue_sample.csv",
+      "retrieved_at_utc": "2026-03-12T01:47:12.061081Z",
+      "file_bytes": 958,
+      "sha256": "2669dcf65151ecf00eb4514287b921c1c734935fc11ee1ce42bf59014f2289b3",
+      "row_count": 10,
+      "columns": [
+        "queue_id",
+        "project_name",
+        "technology_raw",
+        "mw",
+        "status_raw",
+        "queue_date",
+        "target_cod",
+        "bus",
+        "county"
+      ],
+      "contract_valid": true,
+      "contract_errors": []
+    }
+  ]
+}

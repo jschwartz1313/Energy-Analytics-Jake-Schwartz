@@ -1,0 +1,8 @@
+queue_id,project_name,technology_raw,mw,status_raw,queue_date,target_cod,bus,county
+Q-NE001,New England Wind 1,Wind,800,Active,2022-03-10,2027-08-01,Bus-NE1,Offshore
+Q-NE002,SouthCoast Wind,Wind,1200,Under Construction,2020-11-05,2026-12-01,Bus-NE2,Offshore
+Q-NE003,Vermont Solar Array,Solar PV,48,Active,2023-02-14,2026-07-01,Bus-NE3,Addison
+Q-NE004,Maine Battery Hub,BESS,150,In Study,2023-08-20,2028-03-01,Bus-NE4,Cumberland
+Q-NE005,CT Solar Farm,Solar,35,Submitted,2024-01-10,2027-11-01,Bus-NE5,Hartford
+Q-NE006,MA Offshore Wind,Wind,400,Active,2022-07-01,2028-09-01,Bus-NE6,Offshore
+Q-NE007,NH Storage Project,Battery,100,Submitted,2024-03-15,2029-01-01,Bus-NE7,Grafton

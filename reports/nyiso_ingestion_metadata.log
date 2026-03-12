@@ -1,0 +1,14 @@
+[2026-03-12T01:47:12.376085Z] ingest:load mode=sample source_type=sample source_ref=data/samples/nyiso_load_sample.csv rows=72 bytes=2405 sha256=86ed8f0a4269
+[2026-03-12T01:47:12.376695Z] ingest:price mode=sample source_type=sample source_ref=data/samples/nyiso_price_sample.csv rows=72 bytes=2703 sha256=bdda3e06eaf8
+[2026-03-12T01:47:12.377216Z] ingest:weather mode=sample source_type=sample source_ref=data/samples/nyiso_weather_sample.csv rows=72 bytes=2339 sha256=29ce159b6e55
+[2026-03-12T01:47:12.378585Z] ingest:queue mode=sample source_type=sample source_ref=data/samples/nyiso_queue_sample.csv rows=8 bytes=776 sha256=21f4a31914ed
+[2026-03-12T01:47:12.378727Z] ingest_manifest:path=reports/nyiso_ingestion_manifest.json records=4
+[2026-03-12T01:47:12.378758Z] ingest complete region=NYISO mode=sample
+[2026-03-12T01:47:12.418218Z] transform:panel rows=72 staged=data/staged/nyiso_hourly_panel_staged.csv curated=data/curated/nyiso_hourly_panel.csv
+[2026-03-12T01:47:12.457364Z] forecast:backtest_rows=48 naive_rmse=309.57 weather_rmse=1402.44
+[2026-03-12T01:47:12.496133Z] queue_transform:normalized_rows=8 outlook_rows=7 calibration_rows=0 empirical_tech_rates={}
+[2026-03-12T01:47:12.535083Z] markets:hours=72 solar_capture=75.979 wind_capture=61.765 negative_hours=0
+[2026-03-12T01:47:12.576093Z] finance:scenarios=18 base_npv_musd=-34.901 base_after_tax_npv_musd=-40.175 base_irr=0.017
+[2026-03-12T01:47:12.615242Z] charts:created reports/charts/nyiso_load.svg reports/charts/nyiso_price.svg reports/charts/nyiso_temperature.svg reports/charts/nyiso_queue_expected_online_mw.svg reports/charts/nyiso_load_forecast_scenarios.svg
+[2026-03-12T01:47:12.654573Z] qa:rows=72 failures=0 report=reports/nyiso_qa_report.md
+[2026-03-12T01:47:13.022160Z] dashboard:generated iso_count=7 isos=['ERCOT', 'CAISO', 'PJM', 'MISO', 'SPP', 'NYISO', 'ISO-NE'] summary=reports/dashboard/summary_report.html

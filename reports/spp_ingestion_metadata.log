@@ -1,0 +1,14 @@
+[2026-03-12T01:47:12.058525Z] ingest:load mode=sample source_type=sample source_ref=data/samples/spp_load_sample.csv rows=72 bytes=2261 sha256=2b6b9c0cdecf
+[2026-03-12T01:47:12.059222Z] ingest:price mode=sample source_type=sample source_ref=data/samples/spp_price_sample.csv rows=72 bytes=2991 sha256=c1080fb139f2
+[2026-03-12T01:47:12.059740Z] ingest:weather mode=sample source_type=sample source_ref=data/samples/spp_weather_sample.csv rows=72 bytes=2195 sha256=d6602c8598c1
+[2026-03-12T01:47:12.061109Z] ingest:queue mode=sample source_type=sample source_ref=data/samples/spp_queue_sample.csv rows=10 bytes=958 sha256=2669dcf65151
+[2026-03-12T01:47:12.061222Z] ingest_manifest:path=reports/spp_ingestion_manifest.json records=4
+[2026-03-12T01:47:12.061254Z] ingest complete region=SPP mode=sample
+[2026-03-12T01:47:12.100252Z] transform:panel rows=72 staged=data/staged/spp_hourly_panel_staged.csv curated=data/curated/spp_hourly_panel.csv
+[2026-03-12T01:47:12.139721Z] forecast:backtest_rows=48 naive_rmse=304.48 weather_rmse=3415.82
+[2026-03-12T01:47:12.178707Z] queue_transform:normalized_rows=10 outlook_rows=8 calibration_rows=2 empirical_tech_rates={}
+[2026-03-12T01:47:12.217696Z] markets:hours=72 solar_capture=29.155 wind_capture=22.063 negative_hours=0
+[2026-03-12T01:47:12.258398Z] finance:scenarios=18 base_npv_musd=-45.219 base_after_tax_npv_musd=-43.915 base_irr=-0.064
+[2026-03-12T01:47:12.297535Z] charts:created reports/charts/spp_load.svg reports/charts/spp_price.svg reports/charts/spp_temperature.svg reports/charts/spp_queue_expected_online_mw.svg reports/charts/spp_load_forecast_scenarios.svg
+[2026-03-12T01:47:12.336365Z] qa:rows=72 failures=0 report=reports/spp_qa_report.md
+[2026-03-12T01:47:13.022134Z] dashboard:generated iso_count=7 isos=['ERCOT', 'CAISO', 'PJM', 'MISO', 'SPP', 'NYISO', 'ISO-NE'] summary=reports/dashboard/summary_report.html

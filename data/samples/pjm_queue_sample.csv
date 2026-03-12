@@ -1,0 +1,12 @@
+queue_id,project_name,technology_raw,mw,status_raw,queue_date,target_cod,bus,county
+PJ-3001,Appalachian Solar Fields I,Solar PV,300,Active,2023-04-11,2027-08-01,Bus-PJ-A,Allegheny
+PJ-3002,Atlantic Shore Offshore Wind,Offshore Wind,1200,In Study,2022-07-19,2031-05-01,Bus-PJ-B,Ocean
+PJ-3003,Ohio Valley Gas Peaker,Gas CT,180,Submitted,2023-11-02,2028-03-01,Bus-PJ-C,Franklin
+PJ-3004,Delmarva Solar II,Solar PV,220,Under Construction,2021-06-25,2026-10-01,Bus-PJ-D,Wicomico
+PJ-3005,Appalachian Wind Alpha,Wind,280,Active,2022-01-14,2027-01-01,Bus-PJ-E,Grant
+PJ-3006,Mid-Atlantic Battery Storage,BESS,160,In Study,2024-02-08,2028-11-01,Bus-PJ-F,Baltimore
+PJ-3007,Susquehanna Solar III,Solar PV,195,Operational,2019-08-20,2024-07-01,Bus-PJ-G,Lancaster
+PJ-3008,Carolina Offshore Wind Beta,Offshore Wind,900,In Study,2023-05-16,2030-12-01,Bus-PJ-H,Brunswick
+PJ-3009,Pittsburgh Flex Storage,Battery,130,Active,2023-09-04,2028-06-01,Bus-PJ-I,Allegheny
+PJ-3010,Virginia Solar IV,Solar PV,260,Submitted,2024-07-22,2030-04-01,Bus-PJ-J,Louisa
+PJ-3011,Lake Erie Wind Farm,Wind,320,Cancelled,2020-03-11,2025-09-01,Bus-PJ-K,Erie

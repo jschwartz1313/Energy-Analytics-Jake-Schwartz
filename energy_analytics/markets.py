@@ -95,8 +95,8 @@ def _quantile(values: list[float], q: float) -> float:
     return s[idx]
 
 
-def run_markets() -> None:
-    cfg = load_config()
+def run_markets(config_path: str = "config/data_sources.yml") -> None:
+    cfg = load_config(config_path)
     panel_path = Path(cfg["curated_output"]["panel_csv"])
     hourly_out = Path(cfg["markets_output"]["hourly_csv"])
     metrics_out = Path(cfg["markets_output"]["metrics_csv"])

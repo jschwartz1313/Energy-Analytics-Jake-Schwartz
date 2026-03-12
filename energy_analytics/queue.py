@@ -153,8 +153,8 @@ def _calibration_rows(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     return out
 
 
-def run_queue_transform() -> None:
-    cfg = load_config()
+def run_queue_transform(config_path: str = "config/data_sources.yml") -> None:
+    cfg = load_config(config_path)
     raw_path = Path(cfg["raw_output"]["queue"])
     staged_path = Path(cfg["staged_output"]["queue_csv"])
     outlook_path = Path(cfg["curated_output"]["queue_outlook_csv"])

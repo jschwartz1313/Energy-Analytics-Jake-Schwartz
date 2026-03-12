@@ -164,3 +164,17 @@
 [2026-02-18T21:29:02.031676Z] ingest:queue mode=sample source_type=sample source_ref=data/samples/ercot_queue_sample.csv rows=12 bytes=1085 sha256=d6c3f74e6316
 [2026-02-18T21:29:02.032111Z] ingest_manifest:path=reports/ingestion_manifest.json records=4
 [2026-02-18T21:29:02.032224Z] ingest complete region=ERCOT mode=sample
+[2026-03-12T01:47:10.767686Z] ingest:load mode=sample source_type=sample source_ref=data/samples/ercot_load_sample.csv rows=72 bytes=2405 sha256=e33ec06a9c04
+[2026-03-12T01:47:10.768445Z] ingest:price mode=sample source_type=sample source_ref=data/samples/ercot_price_sample.csv rows=72 bytes=3063 sha256=3ed02848809a
+[2026-03-12T01:47:10.769019Z] ingest:weather mode=sample source_type=sample source_ref=data/samples/ercot_weather_sample.csv rows=72 bytes=2339 sha256=a8293968180b
+[2026-03-12T01:47:10.770918Z] ingest:queue mode=sample source_type=sample source_ref=data/samples/ercot_queue_sample.csv rows=12 bytes=1085 sha256=d6c3f74e6316
+[2026-03-12T01:47:10.771191Z] ingest_manifest:path=reports/ingestion_manifest.json records=4
+[2026-03-12T01:47:10.771229Z] ingest complete region=ERCOT mode=sample
+[2026-03-12T01:47:10.813660Z] transform:panel rows=72 staged=data/staged/ercot_hourly_panel_staged.csv curated=data/curated/ercot_hourly_panel.csv
+[2026-03-12T01:47:10.853638Z] forecast:backtest_rows=48 naive_rmse=0.00 weather_rmse=1799.04
+[2026-03-12T01:47:10.893428Z] queue_transform:normalized_rows=12 outlook_rows=11 calibration_rows=3 empirical_tech_rates={'wind': 0.3333}
+[2026-03-12T01:47:10.933422Z] markets:hours=72 solar_capture=36.460 wind_capture=36.729 negative_hours=0
+[2026-03-12T01:47:10.975173Z] finance:scenarios=18 base_npv_musd=-32.045 base_after_tax_npv_musd=-35.533 base_irr=0.006
+[2026-03-12T01:47:11.015146Z] charts:created reports/charts/ercot_load.svg reports/charts/ercot_price.svg reports/charts/ercot_temperature.svg reports/charts/ercot_queue_expected_online_mw.svg reports/charts/ercot_load_forecast_scenarios.svg
+[2026-03-12T01:47:11.056091Z] qa:rows=72 failures=0 report=reports/qa_report.md
+[2026-03-12T01:47:13.021741Z] dashboard:generated iso_count=7 isos=['ERCOT', 'CAISO', 'PJM', 'MISO', 'SPP', 'NYISO', 'ISO-NE'] summary=reports/dashboard/summary_report.html

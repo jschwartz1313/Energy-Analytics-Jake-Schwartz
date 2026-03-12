@@ -59,8 +59,8 @@ FINANCE_SCENARIO_REQUIRED_COLUMNS = {
 }
 
 
-def run_qa() -> None:
-    cfg = load_config()
+def run_qa(config_path: str = "config/data_sources.yml") -> None:
+    cfg = load_config(config_path)
     panel_path = Path(cfg["curated_output"]["panel_csv"])
     queue_path = Path(cfg["staged_output"]["queue_csv"])
     queue_outlook_path = Path(cfg["curated_output"]["queue_outlook_csv"])

@@ -25,8 +25,8 @@ def _write_snapshot(out_path: Path, snapshot_root: Path) -> None:
     shutil.copy2(out_path, snap)
 
 
-def run_ingest(mode_override: str | None = None) -> None:
-    cfg = load_config()
+def run_ingest(mode_override: str | None = None, config_path: str = "config/data_sources.yml") -> None:
+    cfg = load_config(config_path)
     ingest_cfg = cfg.get("ingestion", {})
     mode = mode_override or ingest_cfg.get("mode", "sample")
     allow_fallback = bool(ingest_cfg.get("allow_real_to_sample_fallback", True))

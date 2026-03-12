@@ -1,0 +1,14 @@
+[2026-03-12T01:47:11.096913Z] ingest:load mode=sample source_type=sample source_ref=data/samples/caiso_load_sample.csv rows=72 bytes=2405 sha256=a105c4c73a77
+[2026-03-12T01:47:11.097744Z] ingest:price mode=sample source_type=sample source_ref=data/samples/caiso_price_sample.csv rows=72 bytes=2778 sha256=6cdcebce86eb
+[2026-03-12T01:47:11.098261Z] ingest:weather mode=sample source_type=sample source_ref=data/samples/caiso_weather_sample.csv rows=72 bytes=2339 sha256=f3836d297cbe
+[2026-03-12T01:47:11.099568Z] ingest:queue mode=sample source_type=sample source_ref=data/samples/caiso_queue_sample.csv rows=10 bytes=1031 sha256=cf9ff9e32e3d
+[2026-03-12T01:47:11.099686Z] ingest_manifest:path=reports/caiso_ingestion_manifest.json records=4
+[2026-03-12T01:47:11.099715Z] ingest complete region=CAISO mode=sample
+[2026-03-12T01:47:11.139592Z] transform:panel rows=72 staged=data/staged/caiso_hourly_panel_staged.csv curated=data/curated/caiso_hourly_panel.csv
+[2026-03-12T01:47:11.179201Z] forecast:backtest_rows=48 naive_rmse=154.78 weather_rmse=2870.50
+[2026-03-12T01:47:11.219042Z] queue_transform:normalized_rows=10 outlook_rows=8 calibration_rows=1 empirical_tech_rates={}
+[2026-03-12T01:47:11.258092Z] markets:hours=72 solar_capture=17.623 wind_capture=43.230 negative_hours=9
+[2026-03-12T01:47:11.299737Z] finance:scenarios=18 base_npv_musd=-70.485 base_after_tax_npv_musd=-63.864 base_irr=-0.169
+[2026-03-12T01:47:11.339352Z] charts:created reports/charts/caiso_load.svg reports/charts/caiso_price.svg reports/charts/caiso_temperature.svg reports/charts/caiso_queue_expected_online_mw.svg reports/charts/caiso_load_forecast_scenarios.svg
+[2026-03-12T01:47:11.379135Z] qa:rows=72 failures=0 report=reports/caiso_qa_report.md
+[2026-03-12T01:47:13.022031Z] dashboard:generated iso_count=7 isos=['ERCOT', 'CAISO', 'PJM', 'MISO', 'SPP', 'NYISO', 'ISO-NE'] summary=reports/dashboard/summary_report.html

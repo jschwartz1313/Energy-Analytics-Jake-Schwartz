@@ -1,0 +1,60 @@
+region: CAISO
+timezone: America/Los_Angeles
+hub: NP15
+ingestion:
+  mode: sample
+  allow_real_to_sample_fallback: true
+  enforce_contracts: true
+  contracts_path: config/schema_contracts.yml
+  manifest_output: reports/caiso_ingestion_manifest.json
+  raw_snapshot_dir: data/raw/snapshots
+sample_data:
+  load: data/samples/caiso_load_sample.csv
+  price: data/samples/caiso_price_sample.csv
+  weather: data/samples/caiso_weather_sample.csv
+  queue: data/samples/caiso_queue_sample.csv
+raw_output:
+  load: data/raw/caiso_load.csv
+  price: data/raw/caiso_price.csv
+  weather: data/raw/caiso_weather.csv
+  queue: data/raw/caiso_queue.csv
+staged_output:
+  panel_csv: data/staged/caiso_hourly_panel_staged.csv
+  queue_csv: data/staged/caiso_queue_normalized.csv
+curated_output:
+  panel_csv: data/curated/caiso_hourly_panel.csv
+  panel_parquet: data/curated/caiso_hourly_panel.parquet
+  queue_outlook_csv: data/curated/caiso_queue_expected_online_mw.csv
+forecast_output:
+  backtest_csv: data/marts/caiso_load_backtest.csv
+  backtest_metrics_csv: data/marts/caiso_load_backtest_metrics.csv
+  scenarios_csv: data/marts/caiso_load_forecast_scenarios.csv
+markets_output:
+  metrics_csv: data/marts/caiso_market_metrics.csv
+  hourly_csv: data/marts/caiso_market_hourly_enriched.csv
+  findings_md: reports/caiso_market_findings.md
+queue_model_output:
+  calibration_csv: data/marts/caiso_queue_calibration.csv
+finance_output:
+  scenarios_csv: data/marts/caiso_finance_scenarios.csv
+  summary_csv: data/marts/caiso_finance_summary.csv
+  sensitivity_csv: data/marts/caiso_finance_sensitivity.csv
+  sensitivity_chart_svg: reports/charts/caiso_finance_sensitivity.svg
+finance_assumptions:
+  capacity_mw: 100
+  solar_capacity_factor: 0.28
+  project_life_years: 20
+  degradation_rate: 0.005
+  capex_per_kw: 1100
+  fixed_opex_per_kw_year: 17
+  debt_fraction: 0.60
+  debt_rate: 0.06
+  debt_tenor_years: 15
+  equity_discount_rate: 0.10
+  merchant_basis_discount: 0.90
+  contracted_price_adder_usd_mwh: 2.0
+  tax_rate: 0.25
+reports:
+  qa_report: reports/caiso_qa_report.md
+  metadata_log: reports/caiso_ingestion_metadata.log
+  charts_dir: reports/charts

@@ -6,97 +6,42 @@
   <title>Energy Analytics Portfolio</title>
   <style>
     :root {
-      --ink: #0f1f24;
-      --muted: #5b727c;
-      --accent: #0b5f83;
-      --accent2: #b55000;
-      --bg: #eef4f7;
-      --card: #ffffff;
-      --line: #d9e2e7;
-      --hero-bg: #0b3d52;
+      --ink: #0f1f24; --muted: #5b727c; --accent: #0b5f83; --accent2: #b55000;
+      --bg: #eef4f7; --card: #ffffff; --line: #d9e2e7; --hero-bg: #0b3d52;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'IBM Plex Sans','Segoe UI',system-ui,sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
 
     /* ── Navbar ── */
-    .navbar {
-      background: #fff;
-      border-bottom: 1px solid var(--line);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .navbar-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 52px;
-    }
-    .navbar-brand {
-      font-weight: 700; font-size: 15px;
-      color: var(--hero-bg); text-decoration: none; letter-spacing: -.01em;
-      cursor: pointer;
-    }
+    .navbar { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 100; }
+    .navbar-inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 52px; }
+    .navbar-brand { font-weight: 700; font-size: 15px; color: var(--hero-bg); text-decoration: none; letter-spacing: -.01em; cursor: pointer; }
     .navbar-links { display: flex; gap: 4px; align-items: center; }
-    .navbar-links button {
-      font-size: 13px; font-weight: 500; color: var(--muted);
-      background: none; border: none; cursor: pointer;
-      padding: 6px 12px; border-radius: 6px;
-      font-family: inherit;
-      transition: background .15s, color .15s;
-    }
+    .navbar-links button { font-size: 13px; font-weight: 500; color: var(--muted); background: none; border: none; cursor: pointer; padding: 6px 12px; border-radius: 6px; font-family: inherit; transition: background .15s, color .15s; }
     .navbar-links button:hover { background: var(--bg); color: var(--ink); }
     .navbar-links button.active { color: var(--accent); font-weight: 600; background: #e8f2f8; }
-    .navbar-links a {
-      font-size: 13px; font-weight: 500; color: var(--muted);
-      text-decoration: none; padding: 6px 12px; border-radius: 6px;
-      transition: background .15s, color .15s;
-    }
+    .navbar-links a { font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; padding: 6px 12px; border-radius: 6px; transition: background .15s, color .15s; }
     .navbar-links a:hover { background: var(--bg); color: var(--ink); }
 
     /* ── Views ── */
     .view { display: none; }
     .view.active { display: block; }
 
-    /* ── Page-section jump strip (home only) ── */
-    .page-nav {
-      background: var(--card); border-bottom: 1px solid var(--line);
-      display: flex; flex-wrap: wrap; gap: 0; overflow-x: auto;
-    }
-    .page-nav a {
-      font-size: 12px; font-weight: 600; color: var(--muted);
-      text-decoration: none; padding: 10px 18px; white-space: nowrap;
-      border-bottom: 2px solid transparent;
-      transition: color .15s, border-color .15s;
-    }
+    /* ── Page-section jump strip ── */
+    .page-nav { background: var(--card); border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; overflow-x: auto; }
+    .page-nav a { font-size: 12px; font-weight: 600; color: var(--muted); text-decoration: none; padding: 10px 18px; white-space: nowrap; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; }
     .page-nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
     /* ── Hero ── */
-    .hero {
-      background: linear-gradient(135deg, #0b3d52 0%, #0b5f83 60%, #0f7ea8 100%);
-      color: #fff; padding: 56px 24px 48px; text-align: center;
-    }
-    .hero-tag {
-      display: inline-block; background: rgba(255,255,255,.15);
-      border: 1px solid rgba(255,255,255,.25); border-radius: 999px;
-      font-size: 12px; letter-spacing: .06em; padding: 4px 14px;
-      margin-bottom: 18px; text-transform: uppercase;
-    }
+    .hero { background: linear-gradient(135deg, #0b3d52 0%, #0b5f83 60%, #0f7ea8 100%); color: #fff; padding: 56px 24px 48px; text-align: center; }
+    .hero-tag { display: inline-block; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; font-size: 12px; letter-spacing: .06em; padding: 4px 14px; margin-bottom: 18px; text-transform: uppercase; }
     .hero h1 { font-size: clamp(24px,5vw,42px); font-weight: 700; margin-bottom: 14px; }
-    .hero p  { max-width: 640px; margin: 0 auto 28px; opacity: .85; font-size: 16px; }
+    .hero p { max-width: 640px; margin: 0 auto 28px; opacity: .85; font-size: 16px; }
     .btn-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-    .btn {
-      display: inline-block; padding: 12px 26px; border-radius: 8px;
-      font-size: 14px; font-weight: 600; text-decoration: none;
-      border: none; cursor: pointer; font-family: inherit;
-      transition: opacity .15s;
-    }
+    .btn { display: inline-block; padding: 12px 26px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; font-family: inherit; transition: opacity .15s; }
     .btn:hover { opacity: .85; }
     .btn-primary { background: #fff; color: var(--hero-bg); }
-    .btn-outline  { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.6); }
+    .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.6); }
 
     /* ── Layout ── */
     .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
@@ -110,7 +55,7 @@
     .kpi { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
     .kpi .label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
     .kpi .value { font-size: 28px; font-weight: 700; color: var(--accent); }
-    .kpi .unit  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .kpi .unit { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
     /* ── Charts grid ── */
     .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: 16px; }
@@ -121,14 +66,9 @@
     /* ── Modules ── */
     .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 14px; }
     .module-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
-    .module-letter {
-      width: 34px; height: 34px; border-radius: 8px;
-      background: var(--accent); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 16px; margin-bottom: 10px;
-    }
+    .module-letter { width: 34px; height: 34px; border-radius: 8px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; margin-bottom: 10px; }
     .module-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-    .module-card p  { font-size: 13px; color: var(--muted); }
+    .module-card p { font-size: 13px; color: var(--muted); }
 
     /* ── Finance table ── */
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -138,13 +78,7 @@
 
     /* ── Docs links ── */
     .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 10px; }
-    .doc-link {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: 10px; padding: 12px 14px;
-      text-decoration: none; color: var(--ink); font-size: 13px; font-weight: 600;
-      transition: border-color .15s, box-shadow .15s;
-    }
+    .doc-link { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; text-decoration: none; color: var(--ink); font-size: 13px; font-weight: 600; transition: border-color .15s, box-shadow .15s; }
     .doc-link:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(11,95,131,.08); }
     .doc-link span.icon { font-size: 18px; }
 
@@ -156,6 +90,25 @@
     .pipeline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; margin-top: 14px; }
     .pipe-step { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; font-weight: 600; }
     .pipe-arrow { color: var(--muted); font-size: 18px; }
+
+    /* ── ISO selector banner ── */
+    .iso-banner {
+      background: #fff; border-bottom: 1px solid var(--line);
+      padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .iso-banner label { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .iso-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+    .iso-tab {
+      border: 1px solid #c8d5dd; background: #fff; padding: 6px 14px;
+      border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: background .15s, color .15s, border-color .15s;
+    }
+    .iso-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .iso-tab:hover:not(.active) { background: var(--bg); }
+    .iso-badge {
+      font-size: 11px; background: #e8f2f8; color: var(--accent);
+      border-radius: 4px; padding: 2px 6px; margin-left: 4px;
+    }
 
     /* ── Dashboard view ── */
     .dash-layout { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 52px); }
@@ -178,27 +131,25 @@
     .dl a { display: block; margin: 4px 0; color: #0a4f6f; text-decoration: none; }
 
     /* ── Summary view ── */
-    .summary-header {
-      background: linear-gradient(135deg, #0b3d52 0%, #0b5f83 100%);
-      color: #fff; padding: 36px 20px 28px;
-    }
-    .summary-header-inner { max-width: 900px; margin: 0 auto; }
+    .summary-header { background: linear-gradient(135deg, #0b3d52 0%, #0b5f83 100%); color: #fff; padding: 36px 20px 28px; }
+    .summary-header-inner { max-width: 1100px; margin: 0 auto; }
     .summary-header h1 { font-size: clamp(20px,4vw,30px); font-weight: 700; margin-bottom: 6px; }
     .summary-header .meta { opacity: .75; font-size: 13px; }
-    .summary-content { max-width: 900px; margin: 0 auto; padding: 32px 20px 48px; }
+    .summary-content { max-width: 1100px; margin: 0 auto; padding: 32px 20px 48px; }
     .summary-content h2 { font-size: 18px; font-weight: 700; margin: 28px 0 12px; }
     .summary-content h2:first-child { margin-top: 0; }
-    .card-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 12px; margin-bottom: 8px; }
-    .s-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
-    .s-card .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-    .s-card .value { font-size: 22px; font-weight: 700; color: var(--accent); }
-    .s-card .unit { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .summary-content ul { padding-left: 20px; }
     .summary-content ul li { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+    .summary-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+    .summary-table th, .summary-table td { border-bottom: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+    .summary-table th { background: #eef3f5; font-weight: 600; font-size: 12px; white-space: nowrap; }
+    .summary-table tbody tr:last-child td { border-bottom: none; }
+    .summary-table tbody tr:hover { background: #f7fafc; }
 
     /* ── Footer ── */
     footer { background: var(--hero-bg); color: rgba(255,255,255,.65); text-align: center; padding: 20px; font-size: 13px; }
     footer a { color: rgba(255,255,255,.85); text-decoration: none; }
+    footer button { background: none; border: none; color: rgba(255,255,255,.85); cursor: pointer; font-family: inherit; font-size: 13px; }
 
     @media (max-width: 900px) {
       .dash-layout { grid-template-columns: 1fr; }
@@ -227,12 +178,10 @@
   </div>
 </nav>
 
-<!-- ════════════════════════════════════════
+<!-- ════════════════════════════════
      VIEW: HOME
-════════════════════════════════════════ -->
+════════════════════════════════ -->
 <div id="view-home" class="view active">
-
-  <!-- Section jump strip -->
   <div class="page-nav">
     <a href="#metrics">Key Metrics</a>
     <a href="#charts">Charts</a>
@@ -241,13 +190,11 @@
     <a href="#pipeline">Pipeline</a>
     <a href="#docs">Documentation</a>
   </div>
-
-  <!-- Hero -->
   <div class="hero">
     <div class="hero-tag">Energy Analytics Portfolio</div>
-    <h1>Data Center Load Growth,<br>Renewables &amp; Market Impacts</h1>
-    <p>An end-to-end analytics pipeline covering load forecasting, interconnection queue analytics,
-       wholesale market metrics, and solar project finance — focused on ERCOT.</p>
+    <h1>US ISO/RTO Analytics Platform</h1>
+    <p>An end-to-end analytics pipeline covering all major US power markets — load forecasting,
+       interconnection queue analytics, wholesale market metrics, and solar project finance.</p>
     <div class="btn-row">
       <button class="btn btn-primary" onclick="showView('dashboard')">View Interactive Dashboard</button>
       <button class="btn btn-outline" onclick="showView('summary')">Summary Report</button>
@@ -257,28 +204,22 @@
 
   <div class="container">
     <section id="metrics">
-      <h2>Key Metrics — ERCOT (HB_NORTH)</h2>
-      <p class="section-sub">Base scenario outputs from the processed analytics pipeline.</p>
-      <div class="kpi-strip">
-        <div class="kpi"><div class="label">Average Hub Price</div><div class="value">36.55</div><div class="unit">USD / MWh</div></div>
-        <div class="kpi"><div class="label">Solar Capture Price</div><div class="value">36.46</div><div class="unit">USD / MWh</div></div>
-        <div class="kpi"><div class="label">Wind Capture Price</div><div class="value">36.73</div><div class="unit">USD / MWh</div></div>
-        <div class="kpi"><div class="label">Congestion Proxy (mean)</div><div class="value">5.86</div><div class="unit">USD / MWh</div></div>
-        <div class="kpi"><div class="label">Base Case IRR</div><div class="value">0.6%</div><div class="unit">Contracted · 100 MW solar</div></div>
-        <div class="kpi"><div class="label">Base Case LCOE</div><div class="value">60.16</div><div class="unit">USD / MWh</div></div>
-      </div>
+      <h2>Key Metrics — All ISOs</h2>
+      <p class="section-sub">Base scenario outputs across all 7 US ISOs/RTOs.</p>
+      <div id="home-iso-tabs" class="iso-tabs" style="margin-bottom:20px;"></div>
+      <div id="home-kpi-strip" class="kpi-strip"></div>
     </section>
 
     <section id="charts">
       <h2>Pipeline Outputs</h2>
       <p class="section-sub">Charts generated from the reproducible pipeline — open the dashboard for interactive controls.</p>
       <div class="charts-grid">
-        <div class="chart-card"><h3>Hourly Load (MW)</h3><img src="reports/charts/ercot_load.svg" alt="ERCOT hourly load"></div>
-        <div class="chart-card"><h3>Hub Price (USD/MWh)</h3><img src="reports/charts/ercot_price.svg" alt="ERCOT hub price"></div>
-        <div class="chart-card"><h3>Temperature (°F)</h3><img src="reports/charts/ercot_temperature.svg" alt="ERCOT temperature"></div>
-        <div class="chart-card"><h3>Load Forecast Scenarios</h3><img src="reports/charts/ercot_load_forecast_scenarios.svg" alt="Load forecast scenarios"></div>
-        <div class="chart-card"><h3>Queue Expected Online MW</h3><img src="reports/charts/ercot_queue_expected_online_mw.svg" alt="Queue expected online MW"></div>
-        <div class="chart-card"><h3>Finance Sensitivity</h3><img src="reports/charts/ercot_finance_sensitivity.svg" alt="Finance sensitivity"></div>
+        <div class="chart-card"><h3>Hourly Load (MW)</h3><img id="home-chart-load" src="" alt="Hourly load"></div>
+        <div class="chart-card"><h3>Hub Price (USD/MWh)</h3><img id="home-chart-price" src="" alt="Hub price"></div>
+        <div class="chart-card"><h3>Temperature (°F)</h3><img id="home-chart-temp" src="" alt="Temperature"></div>
+        <div class="chart-card"><h3>Load Forecast Scenarios</h3><img id="home-chart-forecast" src="" alt="Load forecast"></div>
+        <div class="chart-card"><h3>Queue Expected Online MW</h3><img id="home-chart-queue" src="" alt="Queue outlook"></div>
+        <div class="chart-card"><h3>Finance Sensitivity</h3><img id="home-chart-finance" src="" alt="Finance sensitivity"></div>
       </div>
     </section>
 
@@ -286,43 +227,17 @@
       <h2>Analytics Modules</h2>
       <p class="section-sub">Four modules built in sequence, each producing validated analytical outputs.</p>
       <div class="modules-grid">
-        <div class="module-card">
-          <div class="module-letter">A</div>
-          <h3>Load &amp; Demand Forecasting</h3>
-          <p>Baseline regional load model with temperature sensitivity, day-of-week, and seasonality. Data center growth overlay with Low / Base / High scenarios to 2030.</p>
-        </div>
-        <div class="module-card">
-          <div class="module-letter">B</div>
-          <h3>Interconnection Queue</h3>
-          <p>Normalized ISO queue data with completion-probability modeling. Expected online MW by year per technology — P50 / P90 buildout trajectories for solar, wind, and storage.</p>
-        </div>
-        <div class="module-card">
-          <div class="module-letter">C</div>
-          <h3>Market Metrics</h3>
-          <p>Generation-weighted capture prices for solar and wind, congestion proxy (basis deviation), negative-price hours, and curtailment indicators.</p>
-        </div>
-        <div class="module-card">
-          <div class="module-letter">D</div>
-          <h3>Project Finance</h3>
-          <p>Transparent solar pro-forma with merchant and contracted structures. Outputs: LCOE, NPV, IRR, DSCR, and a full scenario matrix across load × supply × price assumptions.</p>
-        </div>
+        <div class="module-card"><div class="module-letter">A</div><h3>Load &amp; Demand Forecasting</h3><p>Baseline regional load model with temperature sensitivity, day-of-week, and seasonality. Data center growth overlay with Low / Base / High scenarios to 2030.</p></div>
+        <div class="module-card"><div class="module-letter">B</div><h3>Interconnection Queue</h3><p>Normalized ISO queue data with completion-probability modeling. Expected online MW by year per technology — P50 / P90 buildout trajectories for solar, wind, and storage.</p></div>
+        <div class="module-card"><div class="module-letter">C</div><h3>Market Metrics</h3><p>Generation-weighted capture prices for solar and wind, congestion proxy (basis deviation), negative-price hours, and curtailment indicators.</p></div>
+        <div class="module-card"><div class="module-letter">D</div><h3>Project Finance</h3><p>Transparent solar pro-forma with merchant and contracted structures. Outputs: LCOE, NPV, IRR, DSCR, and a full scenario matrix across load × supply × price assumptions.</p></div>
       </div>
     </section>
 
     <section id="finance">
-      <h2>Base Solar Finance Case — Contracted, 100 MW</h2>
+      <h2>Base Solar Finance — Contracted, 100 MW (by ISO)</h2>
       <p class="section-sub">Stylized pro-forma under base price and base capex assumptions. Not an investment recommendation.</p>
-      <table>
-        <thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>NPV</td><td>−32.04 MUSD</td><td>10% WACC, 20-yr project life</td></tr>
-          <tr><td>After-tax NPV</td><td>−35.53 MUSD</td><td>25% corporate tax rate proxy</td></tr>
-          <tr><td>IRR</td><td>0.6%</td><td>Contracted base scenario</td></tr>
-          <tr><td>Min DSCR</td><td>1.07×</td><td>60% debt, 6% rate, 15-yr tenor</td></tr>
-          <tr><td>LCOE</td><td>60.16 USD/MWh</td><td>1,150 USD/kW capex, 18 USD/kW-yr opex</td></tr>
-          <tr><td>Year 1 Revenue</td><td>10.11 MUSD</td><td>Capture price × generation × PPA premium</td></tr>
-        </tbody>
-      </table>
+      <div id="home-finance-table"></div>
     </section>
 
     <section id="pipeline">
@@ -337,7 +252,7 @@
         <div class="pipe-step">Charts · Dashboard · Reports</div>
       </div>
       <p style="margin-top:16px;font-size:13px;color:var(--muted);">
-        All transforms are reproducible via <code>make all</code>. Schema contracts, QA checks, and ingestion
+        All transforms are reproducible via <code>make all-regions</code>. Schema contracts, QA checks, and ingestion
         manifests are enforced at each stage. Dependency versions are pinned in <code>requirements-lock.txt</code>.
       </p>
       <div class="tech-tags" style="margin-top:14px;">
@@ -360,33 +275,34 @@
         <a class="doc-link" href="docs/method_finance.md"><span class="icon">💰</span> Finance Model</a>
         <a class="doc-link" href="reports/qa_report.md"><span class="icon">✅</span> QA Report</a>
       </div>
-      <p style="margin-top:14px;font-size:13px;color:var(--muted);">
-        Note: <code>.md</code> links open the raw Markdown on GitHub Pages. For formatted views, browse the
-        <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz/tree/main/docs" target="_blank" rel="noopener">docs/ folder on GitHub</a>.
-      </p>
     </section>
   </div>
 
   <footer>
-    <p>Energy Analytics Portfolio · ERCOT region · Data is stylized sample output for demonstration purposes.</p>
+    <p>Energy Analytics Portfolio · All US ISOs/RTOs · Data is stylized sample output for demonstration purposes.</p>
     <p style="margin-top:6px;">
       <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener">GitHub</a> ·
-      <span style="cursor:pointer;color:rgba(255,255,255,.85);" onclick="showView('dashboard')">Dashboard</span> ·
-      <span style="cursor:pointer;color:rgba(255,255,255,.85);" onclick="showView('summary')">Summary Report</span>
+      <button onclick="showView('dashboard')">Dashboard</button> ·
+      <button onclick="showView('summary')">Summary Report</button>
     </p>
   </footer>
 </div>
 
-<!-- ════════════════════════════════════════
+<!-- ════════════════════════════════
      VIEW: DASHBOARD
-════════════════════════════════════════ -->
+════════════════════════════════ -->
 <div id="view-dashboard" class="view">
+  <!-- ISO selector banner -->
+  <div class="iso-banner">
+    <label>ISO / RTO:</label>
+    <div class="iso-tabs" id="dash-iso-tabs"></div>
+  </div>
   <div class="dash-layout">
     <aside class="dash-side">
       <div class="dash-card">
         <b>Scenario Controls</b>
-        <label title="Select market region/zone for all pages.">Region selector</label>
-        <select id="region"><option>ERCOT</option></select>
+        <label>Region</label>
+        <select id="region" disabled></select>
         <label title="Load scenario multiplier for KPI projections.">Load scenario</label>
         <select id="load_scn"><option value="0.95">Low</option><option value="1.0" selected>Base</option><option value="1.07">High</option></select>
         <label title="Queue completion assumption used in supply KPIs.">Queue completion</label>
@@ -433,22 +349,22 @@
 
       <section id="d-load" class="tab">
         <h3>Load and Weather</h3>
-        <img class="chart" src="reports/charts/ercot_load.svg" alt="Hourly load chart (MW)">
-        <img class="chart" src="reports/charts/ercot_temperature.svg" alt="Hourly temperature chart (F)">
-        <img class="chart" src="reports/charts/ercot_load_forecast_scenarios.svg" alt="Load forecast scenarios chart (avg MW)">
+        <img class="chart" id="dash-chart-load" src="" alt="Hourly load chart (MW)">
+        <img class="chart" id="dash-chart-temp" src="" alt="Hourly temperature chart (F)">
+        <img class="chart" id="dash-chart-forecast" src="" alt="Load forecast scenarios chart (avg MW)">
         <div class="foot">Units: MW for load, F for temperature.</div>
       </section>
 
       <section id="d-supply" class="tab">
         <h3>Supply Queue Outlook</h3>
-        <img class="chart" src="reports/charts/ercot_queue_expected_online_mw.svg" alt="Queue expected online MW by year">
+        <img class="chart" id="dash-chart-queue" src="" alt="Queue expected online MW by year">
         <div class="dash-kpi"><div class="m">Selected Queue Scenario Total (MW)</div><div class="v" id="k_queue_total">-</div></div>
         <div class="foot">P50/P90 represent expected online capacity under different completion assumptions.</div>
       </section>
 
       <section id="d-markets" class="tab">
         <h3>Market Metrics</h3>
-        <img class="chart" src="reports/charts/ercot_price.svg" alt="Hub price chart (USD/MWh)">
+        <img class="chart" id="dash-chart-price" src="" alt="Hub price chart (USD/MWh)">
         <div class="grid3">
           <div class="dash-kpi"><div class="m">Wind Capture (USD/MWh)</div><div class="v" id="k_wind">-</div></div>
           <div class="dash-kpi"><div class="m">Congestion Mean (USD/MWh)</div><div class="v" id="k_cong">-</div></div>
@@ -464,70 +380,42 @@
           <div class="dash-kpi"><div class="m">Min DSCR</div><div class="v" id="k_dscr">-</div></div>
           <div class="dash-kpi"><div class="m">LCOE (USD/MWh)</div><div class="v" id="k_lcoe">-</div></div>
         </div>
-        <img class="chart" src="reports/charts/ercot_finance_sensitivity.svg" alt="Finance sensitivity chart">
+        <img class="chart" id="dash-chart-finsen" src="" alt="Finance sensitivity chart">
         <div class="foot">Finance KPIs are scenario-linked to price/capex controls and provide directional screening outputs.</div>
       </section>
 
       <section id="d-downloads" class="tab">
         <h3>Downloads and Report</h3>
-        <div class="dl">
-          <a href="data/marts/ercot_market_metrics.csv" download>Download market metrics CSV</a>
-          <a href="data/marts/ercot_load_backtest.csv" download>Download load backtest CSV</a>
-          <a href="data/marts/ercot_load_forecast_scenarios.csv" download>Download load scenarios CSV</a>
-          <a href="data/marts/ercot_finance_scenarios.csv" download>Download finance scenarios CSV</a>
-          <a href="data/marts/ercot_finance_sensitivity.csv" download>Download finance sensitivity CSV</a>
-          <a href="data/marts/ercot_queue_calibration.csv" download>Download queue calibration CSV</a>
-          <a href="data/curated/ercot_queue_expected_online_mw.csv" download>Download queue outlook CSV</a>
-          <a href="#" onclick="showView('summary');return false;">Open summary report</a>
-        </div>
+        <div id="downloads-list" class="dl"></div>
         <div class="foot">Dashboard runtime uses processed tables only and does not fetch external data.</div>
       </section>
     </main>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
+<!-- ════════════════════════════════
      VIEW: SUMMARY REPORT
-════════════════════════════════════════ -->
+════════════════════════════════ -->
 <div id="view-summary" class="view">
   <div class="summary-header">
     <div class="summary-header-inner">
       <h1>Energy Analytics Portfolio Summary</h1>
-      <div class="meta">Region: ERCOT &nbsp;|&nbsp; Hub: HB_NORTH &nbsp;|&nbsp; Generated from processed artifacts only.</div>
+      <div class="meta">All US ISOs/RTOs — Base contracted solar scenario — Generated from processed artifacts only.</div>
     </div>
   </div>
   <div class="summary-content">
-    <h2>Market Highlights</h2>
-    <div class="card-row">
-      <div class="s-card"><div class="label">Average Hub Price</div><div class="value">36.55</div><div class="unit">USD / MWh</div></div>
-      <div class="s-card"><div class="label">Solar Capture Price</div><div class="value">36.46</div><div class="unit">USD / MWh</div></div>
-      <div class="s-card"><div class="label">Wind Capture Price</div><div class="value">36.73</div><div class="unit">USD / MWh</div></div>
-      <div class="s-card"><div class="label">Congestion Proxy Mean</div><div class="value">5.86</div><div class="unit">USD / MWh</div></div>
-      <div class="s-card"><div class="label">Negative Price Share</div><div class="value">0.0%</div><div class="unit">of modeled hours</div></div>
-    </div>
-
-    <h2>Base Solar Finance Case</h2>
-    <table>
-      <thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
-      <tbody>
-        <tr><td>NPV</td><td>-32.04 MUSD</td><td>10% WACC, 20-yr project life</td></tr>
-        <tr><td>After-tax NPV</td><td>-35.53 MUSD</td><td>25% corporate tax rate proxy</td></tr>
-        <tr><td>IRR</td><td>0.6%</td><td>Contracted base scenario</td></tr>
-        <tr><td>Min DSCR</td><td>1.073×</td><td>60% debt, 6% rate, 15-yr tenor</td></tr>
-        <tr><td>LCOE</td><td>60.16 USD/MWh</td><td>1,150 USD/kW capex, 18 USD/kW-yr opex</td></tr>
-        <tr><td>Year 1 Revenue</td><td>10.11 MUSD</td><td>Capture price × generation × PPA premium</td></tr>
-      </tbody>
-    </table>
-
+    <h2>Market &amp; Finance Comparison — All ISOs</h2>
+    <div id="summary-table-container"></div>
     <h2>Limitations</h2>
     <ul>
-      <li>Uses sample data and stylized renewable generation profiles.</li>
+      <li>Uses sample data and stylized renewable generation profiles for all ISOs.</li>
       <li>Congestion is proxy-based, not a transmission power-flow model.</li>
       <li>Finance assumptions are centralized and scenario-based, not an investment recommendation.</li>
+      <li>Queue completion probabilities are heuristic-based using status and technology mix.</li>
     </ul>
   </div>
   <footer>
-    <p>Energy Analytics Portfolio · ERCOT region · Data is stylized sample output for demonstration purposes.</p>
+    <p>Energy Analytics Portfolio · All US ISOs/RTOs · Data is stylized sample output for demonstration purposes.</p>
     <p style="margin-top:6px;">
       <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener">GitHub</a>
     </p>
@@ -535,6 +423,11 @@
 </div>
 
 <script>
+// ── Multi-ISO data ──
+const ALL_DATA = {"ERCOT": {"region": "ERCOT", "hub": "HB_NORTH", "prefix": "ercot", "kpis": {"avg_price": 36.552778, "solar_capture": 36.460153, "wind_capture": 36.729282, "congestion_mean": 5.856129, "negative_share": 0.0, "base_npv": -32.0446, "base_irr": 0.0059}, "series": {"load": [44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0, 44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0, 44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0], "price": [29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 36.4, 37.2, 38.0, 38.8, 34.0, 34.8, 49.6, 50.4, 51.2, 52.0, 52.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 38.8, 34.0, 34.8, 35.6, 36.4, 37.2, 52.0, 52.8, 48.0, 48.8, 49.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 35.6, 36.4, 37.2, 38.0, 38.8, 34.0, 48.8, 49.6, 50.4, 51.2, 52.0, 33.8, 29.0, 29.8], "temperature": [53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 60.0, 60.0, 60.0, 60.0, 69.0, 69.0, 69.0, 69.0, 69.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 61.5, 61.5, 61.5, 61.5, 70.5, 70.5, 70.5, 70.5, 70.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 63.0, 63.0, 63.0, 63.0, 72.0, 72.0, 72.0, 72.0, 72.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0], "years": ["2024", "2025", "2026", "2027", "2028", "2029", "2030"], "queue_p50": [260.0, 160.0, 326.55, 54.8, 37.5, 49.5, 35.0], "queue_p90": [260.0, 160.0, 230.55, 0.0, 12.5, 27.5, 0.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -43.5921, "after_tax_npv_musd": -43.0441, "irr": -0.0503, "min_dscr": 0.8109, "avg_dscr": 0.8502, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 7.4929}, "merchant|low|base": {"npv_musd": -53.5958, "after_tax_npv_musd": -51.6968, "irr": -0.0701, "min_dscr": 0.7298, "avg_dscr": 0.7652, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 7.4929}, "merchant|low|high": {"npv_musd": -63.5994, "after_tax_npv_musd": -60.3496, "irr": -0.0874, "min_dscr": 0.6635, "avg_dscr": 0.6956, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 7.4929}, "merchant|base|low": {"npv_musd": -32.6923, "after_tax_npv_musd": -34.8692, "irr": -0.008, "min_dscr": 1.0037, "avg_dscr": 1.0499, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 8.8152}, "merchant|base|base": {"npv_musd": -42.696, "after_tax_npv_musd": -43.522, "irr": -0.0295, "min_dscr": 0.9033, "avg_dscr": 0.9449, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 8.8152}, "merchant|base|high": {"npv_musd": -52.6996, "after_tax_npv_musd": -52.1747, "irr": -0.0481, "min_dscr": 0.8212, "avg_dscr": 0.859, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 8.8152}, "merchant|high|low": {"npv_musd": -21.7925, "after_tax_npv_musd": -26.6944, "irr": 0.0301, "min_dscr": 1.1965, "avg_dscr": 1.2496, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 10.1375}, "merchant|high|base": {"npv_musd": -31.7962, "after_tax_npv_musd": -35.3471, "irr": 0.0067, "min_dscr": 1.0769, "avg_dscr": 1.1247, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 10.1375}, "merchant|high|high": {"npv_musd": -41.7998, "after_tax_npv_musd": -43.9999, "irr": -0.0134, "min_dscr": 0.979, "avg_dscr": 1.0224, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 10.1375}, "contracted|low|low": {"npv_musd": -33.8885, "after_tax_npv_musd": -35.7664, "irr": -0.0124, "min_dscr": 0.9826, "avg_dscr": 1.028, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 8.6701}, "contracted|low|base": {"npv_musd": -43.8922, "after_tax_npv_musd": -44.4192, "irr": -0.0337, "min_dscr": 0.8843, "avg_dscr": 0.9252, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 8.6701}, "contracted|low|high": {"npv_musd": -53.8959, "after_tax_npv_musd": -53.0719, "irr": -0.0521, "min_dscr": 0.8039, "avg_dscr": 0.8411, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 8.6701}, "contracted|base|low": {"npv_musd": -22.0409, "after_tax_npv_musd": -26.8807, "irr": 0.0293, "min_dscr": 1.1921, "avg_dscr": 1.2451, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 10.1073}, "contracted|base|base": {"npv_musd": -32.0446, "after_tax_npv_musd": -35.5335, "irr": 0.0059, "min_dscr": 1.0729, "avg_dscr": 1.1206, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 10.1073}, "contracted|base|high": {"npv_musd": -42.0483, "after_tax_npv_musd": -44.1862, "irr": -0.0142, "min_dscr": 0.9754, "avg_dscr": 1.0187, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 10.1073}, "contracted|high|low": {"npv_musd": -10.1933, "after_tax_npv_musd": -17.995, "irr": 0.068, "min_dscr": 1.4017, "avg_dscr": 1.4622, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 11.5446}, "contracted|high|base": {"npv_musd": -20.197, "after_tax_npv_musd": -26.6478, "irr": 0.0422, "min_dscr": 1.2615, "avg_dscr": 1.316, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 11.5446}, "contracted|high|high": {"npv_musd": -30.2007, "after_tax_npv_musd": -35.3005, "irr": 0.0203, "min_dscr": 1.1468, "avg_dscr": 1.1963, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 11.5446}}, "finance_assumptions": {"capacity_mw": 100.0, "solar_capacity_factor": 0.3, "project_life_years": 20.0, "degradation_rate": 0.005, "capex_per_kw": 1150.0, "fixed_opex_per_kw_year": 18.0, "debt_fraction": 0.6, "debt_rate": 0.06, "debt_tenor_years": 15.0, "equity_discount_rate": 0.1, "merchant_basis_discount": 0.92, "contracted_price_adder_usd_mwh": 2.0, "tax_rate": 0.25}}, "CAISO": {"region": "CAISO", "hub": "NP15", "prefix": "caiso", "kpis": {"avg_price": 39.830556, "solar_capture": 17.622893, "wind_capture": 43.230475, "congestion_mean": 18.215734, "negative_share": 0.125, "base_npv": -70.4851, "base_irr": -0.1691}, "series": {"load": [23200.0, 22700.0, 22400.0, 22100.0, 22000.0, 22300.0, 23500.0, 24800.0, 25600.0, 25900.0, 25400.0, 24800.0, 24200.0, 24100.0, 24600.0, 25800.0, 27500.0, 29800.0, 31200.0, 31800.0, 30500.0, 28400.0, 26200.0, 24500.0, 23100.0, 22600.0, 22300.0, 22000.0, 22000.0, 22200.0, 23400.0, 24700.0, 25500.0, 25800.0, 25300.0, 24700.0, 24100.0, 24000.0, 24500.0, 25700.0, 27400.0, 29700.0, 31100.0, 31700.0, 30400.0, 28300.0, 26100.0, 24400.0, 23300.0, 22800.0, 22500.0, 22200.0, 22000.0, 22400.0, 23600.0, 24900.0, 25700.0, 26000.0, 25500.0, 24900.0, 24300.0, 24200.0, 24700.0, 25900.0, 27600.0, 29900.0, 31300.0, 31900.0, 30600.0, 28500.0, 26300.0, 24600.0], "price": [38.5, 36.2, 35.1, 35.0, 35.4, 37.8, 42.6, 50.2, 54.8, 45.3, 8.4, -5.2, -12.8, -15.0, 22.4, 48.6, 65.2, 78.4, 80.0, 75.6, 62.3, 52.1, 44.8, 40.2, 37.9, 35.8, 35.0, 35.0, 35.2, 37.4, 42.1, 49.8, 54.2, 44.7, 7.6, -6.4, -13.5, -14.2, 21.8, 47.9, 64.6, 77.8, 79.4, 75.0, 61.7, 51.5, 44.2, 39.6, 38.8, 36.6, 35.3, 35.0, 35.6, 38.2, 43.0, 50.6, 55.4, 45.9, 9.2, -4.6, -12.1, -14.8, 23.0, 49.3, 65.8, 79.0, 80.6, 76.2, 62.9, 52.7, 45.4, 40.8], "temperature": [56.0, 55.0, 54.5, 54.0, 54.0, 54.5, 55.0, 57.0, 60.0, 63.0, 65.5, 67.0, 68.0, 68.0, 67.5, 66.0, 63.5, 61.0, 59.0, 57.5, 56.5, 56.0, 55.5, 55.0, 55.5, 54.5, 54.0, 54.0, 54.0, 54.5, 55.5, 57.5, 60.5, 63.5, 66.0, 67.5, 68.5, 68.5, 68.0, 66.5, 64.0, 61.5, 59.5, 58.0, 57.0, 56.5, 56.0, 55.5, 56.0, 55.0, 54.5, 54.0, 54.0, 54.5, 55.5, 57.5, 60.5, 63.5, 66.0, 67.5, 68.5, 68.5, 68.0, 66.5, 64.0, 61.5, 59.5, 58.0, 57.0, 56.5, 56.0, 55.5], "years": ["2024", "2026", "2027", "2028", "2029", "2030", "2031"], "queue_p50": [240.0, 340.0, 279.0, 60.0, 91.0, 180.0, 240.0], "queue_p90": [240.0, 260.0, 155.0, 20.0, 0.0, 60.0, 80.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -73.3336, "after_tax_npv_musd": -64.9002, "irr": -0.2623, "min_dscr": 0.2261, "avg_dscr": 0.2442, "lcoe_usd_mwh": 56.1223, "year1_revenue_musd": 3.3067}, "merchant|low|base": {"npv_musd": -82.9023, "after_tax_npv_musd": -73.1768, "irr": -0.2777, "min_dscr": 0.2035, "avg_dscr": 0.2198, "lcoe_usd_mwh": 61.5627, "year1_revenue_musd": 3.3067}, "merchant|low|high": {"npv_musd": -92.4711, "after_tax_npv_musd": -81.4533, "irr": -0.2914, "min_dscr": 0.185, "avg_dscr": 0.1998, "lcoe_usd_mwh": 67.0032, "year1_revenue_musd": 3.3067}, "merchant|base|low": {"npv_musd": -68.5233, "after_tax_npv_musd": -61.2925, "irr": -0.2114, "min_dscr": 0.315, "avg_dscr": 0.3363, "lcoe_usd_mwh": 56.1223, "year1_revenue_musd": 3.8903}, "merchant|base|base": {"npv_musd": -78.0921, "after_tax_npv_musd": -69.5691, "irr": -0.2277, "min_dscr": 0.2835, "avg_dscr": 0.3027, "lcoe_usd_mwh": 61.5627, "year1_revenue_musd": 3.8903}, "merchant|base|high": {"npv_musd": -87.6608, "after_tax_npv_musd": -77.8456, "irr": -0.2422, "min_dscr": 0.2577, "avg_dscr": 0.2752, "lcoe_usd_mwh": 67.0032, "year1_revenue_musd": 3.8903}, "merchant|high|low": {"npv_musd": -63.7131, "after_tax_npv_musd": -57.6848, "irr": -0.1716, "min_dscr": 0.404, "avg_dscr": 0.4285, "lcoe_usd_mwh": 56.1223, "year1_revenue_musd": 4.4738}, "merchant|high|base": {"npv_musd": -73.2818, "after_tax_npv_musd": -65.9614, "irr": -0.1886, "min_dscr": 0.3636, "avg_dscr": 0.3856, "lcoe_usd_mwh": 61.5627, "year1_revenue_musd": 4.4738}, "merchant|high|high": {"npv_musd": -82.8506, "after_tax_npv_musd": -74.2379, "irr": -0.2037, "min_dscr": 0.3305, "avg_dscr": 0.3506, "lcoe_usd_mwh": 67.0032, "year1_revenue_musd": 4.4738}, "contracted|low|low": {"npv_musd": -66.2611, "after_tax_npv_musd": -59.5959, "irr": -0.1916, "min_dscr": 0.3568, "avg_dscr": 0.3797, "lcoe_usd_mwh": 56.1223, "year1_revenue_musd": 4.1647}, "contracted|low|base": {"npv_musd": -75.8299, "after_tax_npv_musd": -67.8724, "irr": -0.2083, "min_dscr": 0.3212, "avg_dscr": 0.3417, "lcoe_usd_mwh": 61.5627, "year1_revenue_musd": 4.1647}, "contracted|low|high": {"npv_musd": -85.3986, "after_tax_npv_musd": -76.149, "irr": -0.2231, "min_dscr": 0.292, "avg_dscr": 0.3106, "lcoe_usd_mwh": 67.0032, "year1_revenue_musd": 4.1647}, "contracted|base|low": {"npv_musd": -60.9164, "after_tax_npv_musd": -55.5873, "irr": -0.1518, "min_dscr": 0.4557, "avg_dscr": 0.4821, "lcoe_usd_mwh": 56.1223, "year1_revenue_musd": 4.8131}, "contracted|base|base": {"npv_musd": -70.4851, "after_tax_npv_musd": -63.8639, "irr": -0.1691, "min_dscr": 0.4101, "avg_dscr": 0.4338, "lcoe_usd_mwh": 61.5627, "year1_revenue_musd": 4.8131}, "contracted|base|high": {"npv_musd": -80.0539, "after_tax_npv_musd": -72.1404, "irr": -0.1845, "min_dscr": 0.3728, "avg_dscr": 0.3944, "lcoe_usd_mwh": 67.0032, "year1_revenue_musd": 4.8131}, "contracted|high|low": {"npv_musd": -55.5717, "after_tax_npv_musd": -51.5788, "irr": -0.1187, "min_dscr": 0.5545, "avg_dscr": 0.5844, "lcoe_usd_mwh": 56.1223, "year1_revenue_musd": 5.4615}, "contracted|high|base": {"npv_musd": -65.1404, "after_tax_npv_musd": -59.8553, "irr": -0.1367, "min_dscr": 0.4991, "avg_dscr": 0.526, "lcoe_usd_mwh": 61.5627, "year1_revenue_musd": 5.4615}, "contracted|high|high": {"npv_musd": -74.7092, "after_tax_npv_musd": -68.1319, "irr": -0.1526, "min_dscr": 0.4537, "avg_dscr": 0.4782, "lcoe_usd_mwh": 67.0032, "year1_revenue_musd": 5.4615}}, "finance_assumptions": {"capacity_mw": 100.0, "solar_capacity_factor": 0.28, "project_life_years": 20.0, "degradation_rate": 0.005, "capex_per_kw": 1100.0, "fixed_opex_per_kw_year": 17.0, "debt_fraction": 0.6, "debt_rate": 0.06, "debt_tenor_years": 15.0, "equity_discount_rate": 0.1, "merchant_basis_discount": 0.9, "contracted_price_adder_usd_mwh": 2.0, "tax_rate": 0.25}}, "PJM": {"region": "PJM", "hub": "WESTERN_HUB", "prefix": "pjm", "kpis": {"avg_price": 46.906944, "solar_capture": 57.861494, "wind_capture": 45.167815, "congestion_mean": 10.980851, "negative_share": 0.0, "base_npv": -23.7617, "base_irr": 0.0346}, "series": {"load": [63500.0, 61800.0, 60500.0, 60000.0, 60200.0, 61500.0, 65200.0, 70400.0, 75800.0, 79200.0, 81500.0, 82800.0, 83600.0, 83200.0, 82400.0, 81600.0, 80900.0, 81800.0, 82500.0, 81200.0, 78400.0, 74200.0, 70100.0, 66300.0, 63200.0, 61500.0, 60200.0, 60000.0, 60000.0, 61200.0, 64900.0, 70100.0, 75500.0, 78900.0, 81200.0, 82500.0, 83300.0, 82900.0, 82100.0, 81300.0, 80600.0, 81500.0, 82200.0, 80900.0, 78100.0, 73900.0, 69800.0, 66000.0, 63800.0, 62100.0, 60800.0, 60000.0, 60400.0, 61800.0, 65500.0, 70700.0, 76100.0, 79500.0, 81800.0, 83100.0, 83900.0, 83500.0, 82700.0, 81900.0, 81200.0, 82100.0, 82800.0, 81500.0, 78700.0, 74500.0, 70400.0, 66600.0], "price": [32.4, 30.8, 30.0, 30.0, 30.2, 31.6, 36.8, 42.5, 50.2, 55.8, 58.4, 60.1, 61.5, 60.8, 59.2, 57.6, 56.4, 58.9, 61.2, 58.4, 50.8, 42.6, 36.4, 33.1, 32.0, 30.5, 30.0, 30.0, 30.0, 31.2, 36.4, 42.0, 49.8, 55.4, 58.0, 59.7, 61.1, 60.4, 58.8, 57.2, 56.0, 58.5, 60.8, 58.0, 50.4, 42.2, 36.0, 32.7, 32.8, 31.1, 30.2, 30.0, 30.4, 32.0, 37.2, 43.0, 50.6, 56.2, 58.8, 60.5, 61.9, 61.2, 59.6, 58.0, 56.8, 59.3, 61.6, 58.8, 51.2, 43.0, 36.8, 33.5], "temperature": [32.0, 31.5, 31.0, 30.5, 30.0, 29.5, 29.0, 28.5, 29.0, 31.0, 33.5, 36.0, 38.0, 39.5, 40.0, 40.5, 39.5, 38.0, 36.5, 35.0, 34.0, 33.0, 32.5, 32.0, 31.5, 31.0, 30.5, 30.0, 29.5, 29.0, 28.5, 28.0, 28.5, 30.5, 33.0, 35.5, 37.5, 39.0, 39.5, 40.0, 39.0, 37.5, 36.0, 34.5, 33.5, 32.5, 32.0, 31.5, 31.0, 30.5, 30.0, 29.5, 29.0, 28.5, 28.0, 28.0, 29.0, 31.5, 34.0, 36.5, 38.5, 40.0, 40.5, 41.0, 40.0, 38.5, 37.0, 35.5, 34.5, 33.5, 33.0, 32.5], "years": ["2024", "2025", "2026", "2027", "2028", "2030", "2031"], "queue_p50": [195.0, 0.0, 187.0, 261.0, 142.5, 322.0, 360.0], "queue_p90": [195.0, 0.0, 143.0, 145.0, 48.5, 90.0, 120.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -38.1016, "after_tax_npv_musd": -39.3762, "irr": -0.0222, "min_dscr": 0.9371, "avg_dscr": 0.98, "lcoe_usd_mwh": 77.0936, "year1_revenue_musd": 8.5306}, "merchant|low|base": {"npv_musd": -48.5402, "after_tax_npv_musd": -48.4052, "irr": -0.043, "min_dscr": 0.8434, "avg_dscr": 0.882, "lcoe_usd_mwh": 84.6473, "year1_revenue_musd": 8.5306}, "merchant|low|high": {"npv_musd": -58.9789, "after_tax_npv_musd": -57.4341, "irr": -0.0611, "min_dscr": 0.7667, "avg_dscr": 0.8018, "lcoe_usd_mwh": 92.201, "year1_revenue_musd": 8.5306}, "merchant|base|low": {"npv_musd": -25.6923, "after_tax_npv_musd": -30.0693, "irr": 0.0206, "min_dscr": 1.1475, "avg_dscr": 1.1979, "lcoe_usd_mwh": 77.0936, "year1_revenue_musd": 10.036}, "merchant|base|base": {"npv_musd": -36.131, "after_tax_npv_musd": -39.0982, "irr": -0.0023, "min_dscr": 1.0327, "avg_dscr": 1.0781, "lcoe_usd_mwh": 84.6473, "year1_revenue_musd": 10.036}, "merchant|base|high": {"npv_musd": -46.5696, "after_tax_npv_musd": -48.1272, "irr": -0.022, "min_dscr": 0.9388, "avg_dscr": 0.9801, "lcoe_usd_mwh": 92.201, "year1_revenue_musd": 10.036}, "merchant|high|low": {"npv_musd": -13.2831, "after_tax_npv_musd": -20.7623, "irr": 0.0599, "min_dscr": 1.3578, "avg_dscr": 1.4158, "lcoe_usd_mwh": 77.0936, "year1_revenue_musd": 11.5414}, "merchant|high|base": {"npv_musd": -23.7217, "after_tax_npv_musd": -29.7913, "irr": 0.0347, "min_dscr": 1.222, "avg_dscr": 1.2742, "lcoe_usd_mwh": 84.6473, "year1_revenue_musd": 11.5414}, "merchant|high|high": {"npv_musd": -34.1604, "after_tax_npv_musd": -38.8203, "irr": 0.0132, "min_dscr": 1.1109, "avg_dscr": 1.1584, "lcoe_usd_mwh": 92.201, "year1_revenue_musd": 11.5414}, "contracted|low|low": {"npv_musd": -27.1111, "after_tax_npv_musd": -31.1333, "irr": 0.0159, "min_dscr": 1.1234, "avg_dscr": 1.173, "lcoe_usd_mwh": 77.0936, "year1_revenue_musd": 9.8638}, "contracted|low|base": {"npv_musd": -37.5497, "after_tax_npv_musd": -40.1623, "irr": -0.0067, "min_dscr": 1.0111, "avg_dscr": 1.0557, "lcoe_usd_mwh": 84.6473, "year1_revenue_musd": 9.8638}, "contracted|low|high": {"npv_musd": -47.9884, "after_tax_npv_musd": -49.1913, "irr": -0.0262, "min_dscr": 0.9192, "avg_dscr": 0.9597, "lcoe_usd_mwh": 92.201, "year1_revenue_musd": 9.8638}, "contracted|base|low": {"npv_musd": -13.3231, "after_tax_npv_musd": -20.7923, "irr": 0.0598, "min_dscr": 1.3571, "avg_dscr": 1.4151, "lcoe_usd_mwh": 77.0936, "year1_revenue_musd": 11.5365}, "contracted|base|base": {"npv_musd": -23.7617, "after_tax_npv_musd": -29.8213, "irr": 0.0346, "min_dscr": 1.2214, "avg_dscr": 1.2736, "lcoe_usd_mwh": 84.6473, "year1_revenue_musd": 11.5365}, "contracted|base|high": {"npv_musd": -34.2003, "after_tax_npv_musd": -38.8502, "irr": 0.0131, "min_dscr": 1.1104, "avg_dscr": 1.1578, "lcoe_usd_mwh": 92.201, "year1_revenue_musd": 11.5365}, "contracted|high|low": {"npv_musd": 0.465, "after_tax_npv_musd": -10.4512, "irr": 0.1014, "min_dscr": 1.5908, "avg_dscr": 1.6572, "lcoe_usd_mwh": 77.0936, "year1_revenue_musd": 13.2092}, "contracted|high|base": {"npv_musd": -9.9736, "after_tax_npv_musd": -19.4802, "irr": 0.0731, "min_dscr": 1.4317, "avg_dscr": 1.4915, "lcoe_usd_mwh": 84.6473, "year1_revenue_musd": 13.2092}, "contracted|high|high": {"npv_musd": -20.4122, "after_tax_npv_musd": -28.5092, "irr": 0.0494, "min_dscr": 1.3016, "avg_dscr": 1.3559, "lcoe_usd_mwh": 92.201, "year1_revenue_musd": 13.2092}}, "finance_assumptions": {"capacity_mw": 100.0, "solar_capacity_factor": 0.22, "project_life_years": 20.0, "degradation_rate": 0.005, "capex_per_kw": 1200.0, "fixed_opex_per_kw_year": 17.0, "debt_fraction": 0.6, "debt_rate": 0.06, "debt_tenor_years": 15.0, "equity_discount_rate": 0.1, "merchant_basis_discount": 0.9, "contracted_price_adder_usd_mwh": 2.0, "tax_rate": 0.25}}, "MISO": {"region": "MISO", "hub": "MISO.ILLINOIS.HUB", "prefix": "miso", "kpis": {"avg_price": 31.883333, "solar_capture": 39.865517, "wind_capture": 30.601148, "congestion_mean": 8.054596, "negative_share": 0.0, "base_npv": -45.3486, "base_irr": -0.0548}, "series": {"load": [59200.0, 57400.0, 55800.0, 55000.0, 55200.0, 57000.0, 62500.0, 68400.0, 73600.0, 76800.0, 78500.0, 79200.0, 79800.0, 79400.0, 78600.0, 77800.0, 77200.0, 78500.0, 79600.0, 78200.0, 74800.0, 70600.0, 66200.0, 62400.0, 59000.0, 57200.0, 55600.0, 55000.0, 55000.0, 56800.0, 62300.0, 68100.0, 73300.0, 76500.0, 78200.0, 78900.0, 79500.0, 79100.0, 78300.0, 77500.0, 76900.0, 78200.0, 79300.0, 77900.0, 74500.0, 70300.0, 65900.0, 62100.0, 59400.0, 57600.0, 56000.0, 55000.0, 55400.0, 57200.0, 62700.0, 68700.0, 73900.0, 77100.0, 78800.0, 79500.0, 80100.0, 79700.0, 78900.0, 78100.0, 77500.0, 78800.0, 79900.0, 78500.0, 75100.0, 70900.0, 66500.0, 62700.0], "price": [22.4, 20.8, 19.6, 18.5, 18.2, 19.4, 24.6, 30.2, 35.8, 38.4, 40.2, 41.5, 42.8, 42.1, 40.6, 38.9, 37.4, 39.8, 43.2, 40.8, 34.6, 28.4, 24.2, 22.8, 22.0, 20.4, 19.2, 18.2, 18.0, 19.1, 24.3, 29.8, 35.5, 38.0, 39.8, 41.1, 42.4, 41.7, 40.2, 38.5, 37.0, 39.4, 42.8, 40.4, 34.2, 28.0, 23.8, 22.4, 22.8, 21.2, 20.0, 18.8, 18.4, 19.7, 24.9, 30.6, 36.1, 38.8, 40.6, 41.9, 43.2, 42.5, 41.0, 39.3, 37.8, 40.2, 43.6, 41.2, 35.0, 28.8, 24.6, 23.2], "temperature": [24.0, 23.5, 23.0, 22.5, 22.0, 21.5, 21.0, 20.5, 21.0, 23.5, 26.5, 29.5, 32.0, 33.5, 34.5, 35.0, 33.5, 31.5, 29.5, 27.5, 26.0, 25.0, 24.5, 24.0, 23.5, 23.0, 22.5, 22.0, 21.5, 21.0, 20.5, 20.0, 20.5, 23.0, 26.0, 29.0, 31.5, 33.0, 34.0, 34.5, 33.0, 31.0, 29.0, 27.0, 25.5, 24.5, 24.0, 23.5, 23.0, 22.5, 22.0, 21.5, 21.0, 20.5, 20.0, 19.5, 20.0, 22.5, 25.5, 28.5, 31.0, 32.5, 33.5, 34.0, 32.5, 30.5, 28.5, 26.5, 25.0, 24.0, 23.5, 23.0], "years": ["2024", "2025", "2026", "2027", "2028", "2029", "2030"], "queue_p50": [280.0, 0.0, 255.0, 382.5, 303.0, 44.0, 38.0], "queue_p90": [280.0, 0.0, 195.0, 212.5, 133.0, 0.0, 0.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -52.6331, "after_tax_npv_musd": -48.9248, "irr": -0.1164, "min_dscr": 0.562, "avg_dscr": 0.5927, "lcoe_usd_mwh": 75.4553, "year1_revenue_musd": 5.3431}, "merchant|low|base": {"npv_musd": -61.7669, "after_tax_npv_musd": -56.8252, "irr": -0.1344, "min_dscr": 0.5058, "avg_dscr": 0.5334, "lcoe_usd_mwh": 82.7257, "year1_revenue_musd": 5.3431}, "merchant|low|high": {"npv_musd": -70.9007, "after_tax_npv_musd": -64.7255, "irr": -0.1503, "min_dscr": 0.4598, "avg_dscr": 0.4849, "lcoe_usd_mwh": 89.9961, "year1_revenue_musd": 5.3431}, "merchant|base|low": {"npv_musd": -44.8606, "after_tax_npv_musd": -43.0954, "irr": -0.0743, "min_dscr": 0.7126, "avg_dscr": 0.7487, "lcoe_usd_mwh": 75.4553, "year1_revenue_musd": 6.286}, "merchant|base|base": {"npv_musd": -53.9944, "after_tax_npv_musd": -50.9958, "irr": -0.0934, "min_dscr": 0.6413, "avg_dscr": 0.6738, "lcoe_usd_mwh": 82.7257, "year1_revenue_musd": 6.286}, "merchant|base|high": {"npv_musd": -63.1282, "after_tax_npv_musd": -58.8961, "irr": -0.1101, "min_dscr": 0.583, "avg_dscr": 0.6125, "lcoe_usd_mwh": 89.9961, "year1_revenue_musd": 6.286}, "merchant|high|low": {"npv_musd": -37.0881, "after_tax_npv_musd": -37.2661, "irr": -0.0383, "min_dscr": 0.8631, "avg_dscr": 0.9046, "lcoe_usd_mwh": 75.4553, "year1_revenue_musd": 7.2289}, "merchant|high|base": {"npv_musd": -46.2219, "after_tax_npv_musd": -45.1664, "irr": -0.0585, "min_dscr": 0.7768, "avg_dscr": 0.8142, "lcoe_usd_mwh": 82.7257, "year1_revenue_musd": 7.2289}, "merchant|high|high": {"npv_musd": -55.3557, "after_tax_npv_musd": -53.0668, "irr": -0.0761, "min_dscr": 0.7062, "avg_dscr": 0.7402, "lcoe_usd_mwh": 89.9961, "year1_revenue_musd": 7.2289}, "contracted|low|low": {"npv_musd": -44.8509, "after_tax_npv_musd": -43.0882, "irr": -0.0743, "min_dscr": 0.7128, "avg_dscr": 0.7489, "lcoe_usd_mwh": 75.4553, "year1_revenue_musd": 6.2872}, "contracted|low|base": {"npv_musd": -53.9847, "after_tax_npv_musd": -50.9885, "irr": -0.0933, "min_dscr": 0.6415, "avg_dscr": 0.674, "lcoe_usd_mwh": 82.7257, "year1_revenue_musd": 6.2872}, "contracted|low|high": {"npv_musd": -63.1185, "after_tax_npv_musd": -58.8889, "irr": -0.1101, "min_dscr": 0.5832, "avg_dscr": 0.6127, "lcoe_usd_mwh": 89.9961, "year1_revenue_musd": 6.2872}, "contracted|base|low": {"npv_musd": -36.2148, "after_tax_npv_musd": -36.6111, "irr": -0.0345, "min_dscr": 0.8801, "avg_dscr": 0.9222, "lcoe_usd_mwh": 75.4553, "year1_revenue_musd": 7.3348}, "contracted|base|base": {"npv_musd": -45.3486, "after_tax_npv_musd": -44.5114, "irr": -0.0548, "min_dscr": 0.7921, "avg_dscr": 0.83, "lcoe_usd_mwh": 82.7257, "year1_revenue_musd": 7.3348}, "contracted|base|high": {"npv_musd": -54.4824, "after_tax_npv_musd": -52.4118, "irr": -0.0726, "min_dscr": 0.72, "avg_dscr": 0.7545, "lcoe_usd_mwh": 89.9961, "year1_revenue_musd": 7.3348}, "contracted|high|low": {"npv_musd": -27.5787, "after_tax_npv_musd": -30.134, "irr": 0.0009, "min_dscr": 1.0474, "avg_dscr": 1.0955, "lcoe_usd_mwh": 75.4553, "year1_revenue_musd": 8.3825}, "contracted|high|base": {"npv_musd": -36.7125, "after_tax_npv_musd": -38.0343, "irr": -0.021, "min_dscr": 0.9426, "avg_dscr": 0.9859, "lcoe_usd_mwh": 82.7257, "year1_revenue_musd": 8.3825}, "contracted|high|high": {"npv_musd": -45.8463, "after_tax_npv_musd": -45.9347, "irr": -0.0399, "min_dscr": 0.8569, "avg_dscr": 0.8963, "lcoe_usd_mwh": 89.9961, "year1_revenue_musd": 8.3825}}, "finance_assumptions": {"capacity_mw": 100.0, "solar_capacity_factor": 0.2, "project_life_years": 20.0, "degradation_rate": 0.005, "capex_per_kw": 1050.0, "fixed_opex_per_kw_year": 17.0, "debt_fraction": 0.6, "debt_rate": 0.06, "debt_tenor_years": 15.0, "equity_discount_rate": 0.1, "merchant_basis_discount": 0.9, "contracted_price_adder_usd_mwh": 2.0, "tax_rate": 0.25}}, "SPP": {"region": "SPP", "hub": "SPP.NORTH", "prefix": "spp", "kpis": {"avg_price": 22.991667, "solar_capture": 29.154598, "wind_capture": 22.063065, "congestion_mean": 6.242537, "negative_share": 0.0, "base_npv": -45.2195, "base_irr": -0.0639}, "series": {"load": [30400.0, 29200.0, 28500.0, 28000.0, 28100.0, 28800.0, 31200.0, 34500.0, 37800.0, 40200.0, 41600.0, 42400.0, 43000.0, 42800.0, 42200.0, 41500.0, 40800.0, 41600.0, 42500.0, 41200.0, 38800.0, 36200.0, 33600.0, 31600.0, 30200.0, 29000.0, 28300.0, 28000.0, 28000.0, 28600.0, 31000.0, 34300.0, 37600.0, 40000.0, 41400.0, 42200.0, 42800.0, 42600.0, 42000.0, 41300.0, 40600.0, 41400.0, 42300.0, 41000.0, 38600.0, 36000.0, 33400.0, 31400.0, 30600.0, 29400.0, 28700.0, 28000.0, 28200.0, 29000.0, 31400.0, 34700.0, 38000.0, 40400.0, 41800.0, 42600.0, 43200.0, 43000.0, 42400.0, 41700.0, 41000.0, 41800.0, 42700.0, 41400.0, 39000.0, 36400.0, 33800.0, 31800.0], "price": [16.8, 15.4, 14.2, 13.6, 12.8, 12.2, 14.6, 19.4, 24.8, 27.6, 29.4, 30.8, 32.0, 31.4, 30.0, 28.4, 26.8, 28.6, 32.4, 30.2, 25.6, 20.8, 17.6, 16.4, 16.4, 15.0, 13.8, 13.2, 12.4, 12.0, 14.2, 19.0, 24.4, 27.2, 29.0, 30.4, 31.6, 31.0, 29.6, 28.0, 26.4, 28.2, 32.0, 29.8, 25.2, 20.4, 17.2, 16.0, 17.2, 15.8, 14.6, 14.0, 13.2, 12.4, 15.0, 19.8, 25.2, 28.0, 29.8, 31.2, 32.4, 31.8, 30.4, 28.8, 27.2, 29.0, 32.8, 30.6, 26.0, 21.2, 18.0, 16.8], "temperature": [36.0, 35.0, 34.5, 34.0, 33.5, 33.0, 32.5, 32.0, 33.0, 36.0, 40.0, 44.0, 47.0, 49.0, 50.0, 50.5, 49.0, 46.5, 44.0, 41.5, 39.5, 38.0, 37.0, 36.5, 35.5, 34.5, 34.0, 33.5, 33.0, 32.5, 32.0, 31.5, 32.5, 35.5, 39.5, 43.5, 46.5, 48.5, 49.5, 50.0, 48.5, 46.0, 43.5, 41.0, 39.0, 37.5, 36.5, 36.0, 35.0, 34.0, 33.5, 33.0, 32.5, 32.0, 31.5, 31.0, 32.0, 35.0, 39.0, 43.0, 46.0, 48.0, 49.0, 49.5, 48.0, 45.5, 43.0, 40.5, 38.5, 37.0, 36.0, 35.5], "years": ["2024", "2025", "2026", "2027", "2028", "2029", "2030"], "queue_p50": [460.0, 0.0, 323.0, 382.5, 316.5, 40.0, 58.0], "queue_p90": [460.0, 0.0, 247.0, 212.5, 138.5, 0.0, 0.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -52.4996, "after_tax_npv_musd": -48.3747, "irr": -0.1319, "min_dscr": 0.5132, "avg_dscr": 0.5426, "lcoe_usd_mwh": 57.8715, "year1_revenue_musd": 4.8844}, "merchant|low|base": {"npv_musd": -61.1984, "after_tax_npv_musd": -55.8988, "irr": -0.1496, "min_dscr": 0.4619, "avg_dscr": 0.4884, "lcoe_usd_mwh": 63.4109, "year1_revenue_musd": 4.8844}, "merchant|low|high": {"npv_musd": -69.8973, "after_tax_npv_musd": -63.423, "irr": -0.1653, "min_dscr": 0.4199, "avg_dscr": 0.444, "lcoe_usd_mwh": 68.9502, "year1_revenue_musd": 4.8844}, "merchant|base|low": {"npv_musd": -45.3943, "after_tax_npv_musd": -43.0457, "irr": -0.0888, "min_dscr": 0.6577, "avg_dscr": 0.6924, "lcoe_usd_mwh": 57.8715, "year1_revenue_musd": 5.7464}, "merchant|base|base": {"npv_musd": -54.0932, "after_tax_npv_musd": -50.5699, "irr": -0.1074, "min_dscr": 0.592, "avg_dscr": 0.6231, "lcoe_usd_mwh": 63.4109, "year1_revenue_musd": 5.7464}, "merchant|base|high": {"npv_musd": -62.792, "after_tax_npv_musd": -58.094, "irr": -0.1239, "min_dscr": 0.5381, "avg_dscr": 0.5665, "lcoe_usd_mwh": 68.9502, "year1_revenue_musd": 5.7464}, "merchant|high|low": {"npv_musd": -38.2891, "after_tax_npv_musd": -37.7168, "irr": -0.0523, "min_dscr": 0.8022, "avg_dscr": 0.8421, "lcoe_usd_mwh": 57.8715, "year1_revenue_musd": 6.6083}, "merchant|high|base": {"npv_musd": -46.9879, "after_tax_npv_musd": -45.2409, "irr": -0.072, "min_dscr": 0.722, "avg_dscr": 0.7579, "lcoe_usd_mwh": 63.4109, "year1_revenue_musd": 6.6083}, "merchant|high|high": {"npv_musd": -55.6868, "after_tax_npv_musd": -52.7651, "irr": -0.0893, "min_dscr": 0.6564, "avg_dscr": 0.689, "lcoe_usd_mwh": 68.9502, "year1_revenue_musd": 6.6083}, "contracted|low|low": {"npv_musd": -44.4154, "after_tax_npv_musd": -42.3115, "irr": -0.0834, "min_dscr": 0.6776, "avg_dscr": 0.713, "lcoe_usd_mwh": 57.8715, "year1_revenue_musd": 5.8651}, "contracted|low|base": {"npv_musd": -53.1142, "after_tax_npv_musd": -49.8357, "irr": -0.1022, "min_dscr": 0.6099, "avg_dscr": 0.6417, "lcoe_usd_mwh": 63.4109, "year1_revenue_musd": 5.8651}, "contracted|low|high": {"npv_musd": -61.8131, "after_tax_npv_musd": -57.3598, "irr": -0.1188, "min_dscr": 0.5544, "avg_dscr": 0.5834, "lcoe_usd_mwh": 68.9502, "year1_revenue_musd": 5.8651}, "contracted|base|low": {"npv_musd": -36.5206, "after_tax_npv_musd": -36.3905, "irr": -0.0439, "min_dscr": 0.8382, "avg_dscr": 0.8793, "lcoe_usd_mwh": 57.8715, "year1_revenue_musd": 6.8229}, "contracted|base|base": {"npv_musd": -45.2195, "after_tax_npv_musd": -43.9146, "irr": -0.0639, "min_dscr": 0.7544, "avg_dscr": 0.7914, "lcoe_usd_mwh": 63.4109, "year1_revenue_musd": 6.8229}, "contracted|base|high": {"npv_musd": -53.9184, "after_tax_npv_musd": -51.4388, "irr": -0.0814, "min_dscr": 0.6858, "avg_dscr": 0.7195, "lcoe_usd_mwh": 68.9502, "year1_revenue_musd": 6.8229}, "contracted|high|low": {"npv_musd": -28.6259, "after_tax_npv_musd": -30.4694, "irr": -0.0089, "min_dscr": 0.9988, "avg_dscr": 1.0457, "lcoe_usd_mwh": 57.8715, "year1_revenue_musd": 7.7806}, "contracted|high|base": {"npv_musd": -37.3248, "after_tax_npv_musd": -37.9936, "irr": -0.0304, "min_dscr": 0.8989, "avg_dscr": 0.9411, "lcoe_usd_mwh": 63.4109, "year1_revenue_musd": 7.7806}, "contracted|high|high": {"npv_musd": -46.0236, "after_tax_npv_musd": -45.5177, "irr": -0.0489, "min_dscr": 0.8172, "avg_dscr": 0.8556, "lcoe_usd_mwh": 68.9502, "year1_revenue_musd": 7.7806}}, "finance_assumptions": {"capacity_mw": 100.0, "solar_capacity_factor": 0.25, "project_life_years": 20.0, "degradation_rate": 0.005, "capex_per_kw": 1000.0, "fixed_opex_per_kw_year": 17.0, "debt_fraction": 0.6, "debt_rate": 0.06, "debt_tenor_years": 15.0, "equity_discount_rate": 0.1, "merchant_basis_discount": 0.9, "contracted_price_adder_usd_mwh": 2.0, "tax_rate": 0.25}}, "NYISO": {"region": "NYISO", "hub": "NYC", "prefix": "nyiso", "kpis": {"avg_price": 63.641667, "solar_capture": 75.97931, "wind_capture": 61.765429, "congestion_mean": 13.24076, "negative_share": 0.0, "base_npv": -34.9006, "base_irr": 0.0166}, "series": {"load": [16800.0, 16100.0, 15600.0, 15200.0, 15000.0, 15300.0, 16400.0, 18200.0, 19800.0, 21200.0, 22100.0, 22800.0, 23200.0, 23000.0, 22600.0, 22200.0, 22000.0, 22800.0, 23600.0, 23000.0, 21400.0, 19600.0, 18400.0, 17400.0, 16600.0, 15900.0, 15400.0, 15000.0, 15000.0, 15100.0, 16200.0, 18000.0, 19600.0, 21000.0, 21900.0, 22600.0, 23000.0, 22800.0, 22400.0, 22000.0, 21800.0, 22600.0, 23400.0, 22800.0, 21200.0, 19400.0, 18200.0, 17200.0, 17000.0, 16300.0, 15800.0, 15400.0, 15000.0, 15500.0, 16600.0, 18400.0, 20000.0, 21400.0, 22300.0, 23000.0, 23400.0, 23200.0, 22800.0, 22400.0, 22200.0, 23000.0, 23800.0, 23200.0, 21600.0, 19800.0, 18600.0, 17600.0], "price": [48.6, 45.2, 43.0, 41.8, 40.4, 41.6, 48.8, 58.4, 66.2, 72.8, 76.4, 79.2, 81.0, 79.6, 77.4, 75.2, 74.0, 77.8, 83.6, 80.4, 70.2, 60.8, 54.4, 50.6, 47.8, 44.4, 42.2, 41.0, 40.0, 41.2, 48.4, 58.0, 65.8, 72.4, 76.0, 78.8, 80.6, 79.2, 77.0, 74.8, 73.6, 77.4, 83.2, 80.0, 69.8, 60.4, 54.0, 50.2, 49.4, 46.0, 43.8, 42.6, 40.8, 42.0, 49.2, 58.8, 66.6, 73.2, 76.8, 79.6, 81.4, 80.0, 77.8, 75.6, 74.4, 78.2, 84.0, 80.8, 70.6, 61.2, 54.8, 51.0], "temperature": [32.0, 31.5, 31.0, 30.5, 30.0, 30.0, 30.5, 31.0, 32.0, 33.5, 35.0, 36.5, 38.0, 39.0, 40.0, 40.5, 40.0, 39.0, 38.0, 37.0, 36.0, 35.0, 34.0, 33.0, 32.5, 32.0, 31.5, 31.0, 30.5, 30.0, 30.5, 31.5, 33.0, 34.5, 36.0, 37.5, 39.0, 40.0, 41.0, 41.5, 41.0, 40.0, 39.0, 38.0, 37.0, 36.0, 35.0, 34.0, 33.0, 32.5, 32.0, 31.5, 31.0, 30.5, 31.0, 32.0, 33.5, 35.0, 36.5, 38.0, 39.5, 41.0, 42.0, 42.0, 41.5, 40.5, 39.5, 38.5, 37.5, 36.5, 35.5, 34.5], "years": ["2026", "2027", "2028", "2029"], "queue_p50": [802.5, 693.0, 490.4, 18.0], "queue_p90": [610.1, 382.0, 224.0, 0.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -48.5296, "after_tax_npv_musd": -48.9972, "irr": -0.0349, "min_dscr": 0.8792, "avg_dscr": 0.9187, "lcoe_usd_mwh": 108.0739, "year1_revenue_musd": 9.165}, "merchant|low|base": {"npv_musd": -60.708, "after_tax_npv_musd": -59.531, "irr": -0.0552, "min_dscr": 0.7913, "avg_dscr": 0.8268, "lcoe_usd_mwh": 118.8449, "year1_revenue_musd": 9.165}, "merchant|low|high": {"npv_musd": -72.8864, "after_tax_npv_musd": -70.0648, "irr": -0.0729, "min_dscr": 0.7194, "avg_dscr": 0.7517, "lcoe_usd_mwh": 129.6159, "year1_revenue_musd": 9.165}, "merchant|base|low": {"npv_musd": -35.1974, "after_tax_npv_musd": -38.9981, "irr": 0.0057, "min_dscr": 1.0729, "avg_dscr": 1.1194, "lcoe_usd_mwh": 108.0739, "year1_revenue_musd": 10.7824}, "merchant|base|base": {"npv_musd": -47.3758, "after_tax_npv_musd": -49.5319, "irr": -0.0163, "min_dscr": 0.9656, "avg_dscr": 1.0074, "lcoe_usd_mwh": 118.8449, "year1_revenue_musd": 10.7824}, "merchant|base|high": {"npv_musd": -59.5542, "after_tax_npv_musd": -60.0657, "irr": -0.0354, "min_dscr": 0.8779, "avg_dscr": 0.9158, "lcoe_usd_mwh": 129.6159, "year1_revenue_musd": 10.7824}, "merchant|high|low": {"npv_musd": -21.8653, "after_tax_npv_musd": -28.9989, "irr": 0.043, "min_dscr": 1.2666, "avg_dscr": 1.32, "lcoe_usd_mwh": 108.0739, "year1_revenue_musd": 12.3997}, "merchant|high|base": {"npv_musd": -34.0437, "after_tax_npv_musd": -39.5327, "irr": 0.0188, "min_dscr": 1.14, "avg_dscr": 1.188, "lcoe_usd_mwh": 118.8449, "year1_revenue_musd": 12.3997}, "merchant|high|high": {"npv_musd": -46.2221, "after_tax_npv_musd": -50.0665, "irr": -0.0018, "min_dscr": 1.0363, "avg_dscr": 1.08, "lcoe_usd_mwh": 129.6159, "year1_revenue_musd": 12.3997}, "contracted|low|low": {"npv_musd": -37.5357, "after_tax_npv_musd": -40.7518, "irr": -0.0011, "min_dscr": 1.039, "avg_dscr": 1.0842, "lcoe_usd_mwh": 108.0739, "year1_revenue_musd": 10.4987}, "contracted|low|base": {"npv_musd": -49.7141, "after_tax_npv_musd": -51.2856, "irr": -0.0228, "min_dscr": 0.9351, "avg_dscr": 0.9757, "lcoe_usd_mwh": 118.8449, "year1_revenue_musd": 10.4987}, "contracted|low|high": {"npv_musd": -61.8925, "after_tax_npv_musd": -61.8194, "irr": -0.0416, "min_dscr": 0.8501, "avg_dscr": 0.887, "lcoe_usd_mwh": 129.6159, "year1_revenue_musd": 10.4987}, "contracted|base|low": {"npv_musd": -22.7222, "after_tax_npv_musd": -29.6416, "irr": 0.0407, "min_dscr": 1.2542, "avg_dscr": 1.3071, "lcoe_usd_mwh": 108.0739, "year1_revenue_musd": 12.2958}, "contracted|base|base": {"npv_musd": -34.9006, "after_tax_npv_musd": -40.1754, "irr": 0.0166, "min_dscr": 1.1288, "avg_dscr": 1.1764, "lcoe_usd_mwh": 118.8449, "year1_revenue_musd": 12.2958}, "contracted|base|high": {"npv_musd": -47.079, "after_tax_npv_musd": -50.7092, "irr": -0.0039, "min_dscr": 1.0261, "avg_dscr": 1.0695, "lcoe_usd_mwh": 129.6159, "year1_revenue_musd": 12.2958}, "contracted|high|low": {"npv_musd": -7.9086, "after_tax_npv_musd": -18.5315, "irr": 0.0798, "min_dscr": 1.4694, "avg_dscr": 1.5301, "lcoe_usd_mwh": 108.0739, "year1_revenue_musd": 14.0928}, "contracted|high|base": {"npv_musd": -20.087, "after_tax_npv_musd": -29.0653, "irr": 0.0532, "min_dscr": 1.3225, "avg_dscr": 1.3771, "lcoe_usd_mwh": 118.8449, "year1_revenue_musd": 14.0928}, "contracted|high|high": {"npv_musd": -32.2654, "after_tax_npv_musd": -39.5991, "irr": 0.0307, "min_dscr": 1.2022, "avg_dscr": 1.2519, "lcoe_usd_mwh": 129.6159, "year1_revenue_musd": 14.0928}}, "finance_assumptions": {"capacity_mw": 100.0, "solar_capacity_factor": 0.18, "project_life_years": 20.0, "degradation_rate": 0.005, "capex_per_kw": 1400.0, "fixed_opex_per_kw_year": 17.0, "debt_fraction": 0.6, "debt_rate": 0.06, "debt_tenor_years": 15.0, "equity_discount_rate": 0.1, "merchant_basis_discount": 0.9, "contracted_price_adder_usd_mwh": 2.0, "tax_rate": 0.25}}, "ISO-NE": {"region": "ISO-NE", "hub": ".H.INTERNAL_HUB", "prefix": "isone", "kpis": {"avg_price": 49.25, "solar_capture": 53.086207, "wind_capture": 48.876097, "congestion_mean": 8.640914, "negative_share": 0.0, "base_npv": -68.2629, "base_irr": -0.0886}, "series": {"load": [10500.0, 10200.0, 10000.0, 9800.0, 9700.0, 9700.0, 9900.0, 10400.0, 11200.0, 11800.0, 12200.0, 12400.0, 12300.0, 12100.0, 11900.0, 11800.0, 11900.0, 12800.0, 13500.0, 13800.0, 13600.0, 13000.0, 12200.0, 11500.0, 10700.0, 10400.0, 10200.0, 10000.0, 9900.0, 9900.0, 10100.0, 10600.0, 11400.0, 12000.0, 12400.0, 12600.0, 12500.0, 12300.0, 12100.0, 12000.0, 12100.0, 13000.0, 13700.0, 14000.0, 13800.0, 13200.0, 12400.0, 11700.0, 10900.0, 10600.0, 10400.0, 10200.0, 10100.0, 10100.0, 10300.0, 10800.0, 11600.0, 12200.0, 12600.0, 12800.0, 12700.0, 12500.0, 12300.0, 12200.0, 12300.0, 13200.0, 13900.0, 14200.0, 14000.0, 13400.0, 12600.0, 11900.0], "price": [38.0, 36.0, 34.0, 33.0, 32.0, 32.0, 34.0, 40.0, 52.0, 58.0, 56.0, 54.0, 52.0, 50.0, 48.0, 47.0, 50.0, 62.0, 68.0, 65.0, 60.0, 55.0, 48.0, 42.0, 39.5, 37.5, 35.5, 34.5, 33.5, 33.5, 35.5, 41.5, 53.5, 59.5, 57.5, 55.5, 53.5, 51.5, 49.5, 48.5, 51.5, 63.5, 69.5, 66.5, 61.5, 56.5, 49.5, 43.5, 41.0, 39.0, 37.0, 36.0, 35.0, 35.0, 37.0, 43.0, 55.0, 61.0, 59.0, 57.0, 55.0, 53.0, 51.0, 50.0, 53.0, 65.0, 71.0, 68.0, 63.0, 58.0, 51.0, 45.0], "temperature": [26.0, 25.0, 24.0, 24.0, 23.0, 23.0, 24.0, 25.0, 27.0, 29.0, 31.0, 33.0, 35.0, 36.0, 37.0, 37.0, 36.0, 34.0, 32.0, 30.0, 29.0, 28.0, 27.0, 26.0, 27.5, 26.5, 25.5, 25.5, 24.5, 24.5, 25.5, 26.5, 28.5, 30.5, 32.5, 34.5, 36.5, 37.5, 38.5, 38.5, 37.5, 35.5, 33.5, 31.5, 30.5, 29.5, 28.5, 27.5, 29.0, 28.0, 27.0, 27.0, 26.0, 26.0, 27.0, 28.0, 30.0, 32.0, 34.0, 36.0, 38.0, 39.0, 40.0, 40.0, 39.0, 37.0, 35.0, 33.0, 32.0, 31.0, 30.0, 29.0], "years": ["2026", "2027", "2028", "2029"], "queue_p50": [1041.6, 367.0, 225.0, 20.0], "queue_p90": [792.0, 200.0, 115.0, 0.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -73.2437, "after_tax_npv_musd": -67.0827, "irr": -0.143, "min_dscr": 0.4805, "avg_dscr": 0.5059, "lcoe_usd_mwh": 117.6883, "year1_revenue_musd": 5.692}, "merchant|low|base": {"npv_musd": -84.9871, "after_tax_npv_musd": -77.2403, "irr": -0.1605, "min_dscr": 0.4324, "avg_dscr": 0.4553, "lcoe_usd_mwh": 129.3729, "year1_revenue_musd": 5.692}, "merchant|low|high": {"npv_musd": -96.7306, "after_tax_npv_musd": -87.3979, "irr": -0.1759, "min_dscr": 0.3931, "avg_dscr": 0.4139, "lcoe_usd_mwh": 141.0575, "year1_revenue_musd": 5.692}, "merchant|base|low": {"npv_musd": -64.9636, "after_tax_npv_musd": -60.8727, "irr": -0.1036, "min_dscr": 0.6052, "avg_dscr": 0.6351, "lcoe_usd_mwh": 117.6883, "year1_revenue_musd": 6.6965}, "merchant|base|base": {"npv_musd": -76.707, "after_tax_npv_musd": -71.0303, "irr": -0.1219, "min_dscr": 0.5447, "avg_dscr": 0.5716, "lcoe_usd_mwh": 129.3729, "year1_revenue_musd": 6.6965}, "merchant|base|high": {"npv_musd": -88.4505, "after_tax_npv_musd": -81.1879, "irr": -0.138, "min_dscr": 0.4952, "avg_dscr": 0.5196, "lcoe_usd_mwh": 141.0575, "year1_revenue_musd": 6.6965}, "merchant|high|low": {"npv_musd": -56.6835, "after_tax_npv_musd": -54.6626, "irr": -0.0701, "min_dscr": 0.73, "avg_dscr": 0.7644, "lcoe_usd_mwh": 117.6883, "year1_revenue_musd": 7.701}, "merchant|high|base": {"npv_musd": -68.4269, "after_tax_npv_musd": -64.8202, "irr": -0.0892, "min_dscr": 0.657, "avg_dscr": 0.6879, "lcoe_usd_mwh": 129.3729, "year1_revenue_musd": 7.701}, "merchant|high|high": {"npv_musd": -80.1704, "after_tax_npv_musd": -74.9778, "irr": -0.106, "min_dscr": 0.5972, "avg_dscr": 0.6254, "lcoe_usd_mwh": 141.0575, "year1_revenue_musd": 7.701}, "contracted|low|low": {"npv_musd": -65.7195, "after_tax_npv_musd": -61.4397, "irr": -0.1069, "min_dscr": 0.5938, "avg_dscr": 0.6233, "lcoe_usd_mwh": 117.6883, "year1_revenue_musd": 6.6048}, "contracted|low|base": {"npv_musd": -77.463, "after_tax_npv_musd": -71.5973, "irr": -0.1251, "min_dscr": 0.5344, "avg_dscr": 0.561, "lcoe_usd_mwh": 129.3729, "year1_revenue_musd": 6.6048}, "contracted|low|high": {"npv_musd": -89.2065, "after_tax_npv_musd": -81.7548, "irr": -0.1412, "min_dscr": 0.4859, "avg_dscr": 0.51, "lcoe_usd_mwh": 141.0575, "year1_revenue_musd": 6.6048}, "contracted|base|low": {"npv_musd": -56.5194, "after_tax_npv_musd": -54.5396, "irr": -0.0695, "min_dscr": 0.7324, "avg_dscr": 0.7669, "lcoe_usd_mwh": 117.6883, "year1_revenue_musd": 7.7209}, "contracted|base|base": {"npv_musd": -68.2629, "after_tax_npv_musd": -64.6972, "irr": -0.0886, "min_dscr": 0.6592, "avg_dscr": 0.6902, "lcoe_usd_mwh": 129.3729, "year1_revenue_musd": 7.7209}, "contracted|base|high": {"npv_musd": -80.0064, "after_tax_npv_musd": -74.8548, "irr": -0.1054, "min_dscr": 0.5993, "avg_dscr": 0.6275, "lcoe_usd_mwh": 141.0575, "year1_revenue_musd": 7.7209}, "contracted|high|low": {"npv_musd": -47.3193, "after_tax_npv_musd": -47.6395, "irr": -0.0367, "min_dscr": 0.871, "avg_dscr": 0.9105, "lcoe_usd_mwh": 117.6883, "year1_revenue_musd": 8.837}, "contracted|high|base": {"npv_musd": -59.0628, "after_tax_npv_musd": -57.7971, "irr": -0.057, "min_dscr": 0.7839, "avg_dscr": 0.8195, "lcoe_usd_mwh": 129.3729, "year1_revenue_musd": 8.837}, "contracted|high|high": {"npv_musd": -70.8063, "after_tax_npv_musd": -67.9547, "irr": -0.0746, "min_dscr": 0.7127, "avg_dscr": 0.745, "lcoe_usd_mwh": 141.0575, "year1_revenue_musd": 8.837}}, "finance_assumptions": {"capacity_mw": 100.0, "solar_capacity_factor": 0.16, "project_life_years": 20.0, "degradation_rate": 0.005, "capex_per_kw": 1350.0, "fixed_opex_per_kw_year": 17.0, "debt_fraction": 0.6, "debt_rate": 0.06, "debt_tenor_years": 15.0, "equity_discount_rate": 0.1, "merchant_basis_discount": 0.9, "contracted_price_adder_usd_mwh": 2.0, "tax_rate": 0.25}}};
+const ISO_NAMES = Object.keys(ALL_DATA);
+let currentISO = ISO_NAMES[0];
+
 // ── View switcher ──
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -542,29 +435,93 @@ function showView(name) {
   document.getElementById('view-' + name).classList.add('active');
   document.getElementById('nav-' + name).classList.add('active');
   window.scrollTo(0, 0);
-  if (name === 'dashboard') refresh();
+  if (name === 'dashboard') refreshDashboard();
+  if (name === 'summary') renderSummaryTable();
+  if (name === 'home') renderHomeKPIs();
 }
 
-// ── Dashboard tab switching ──
-for (const btn of document.querySelectorAll('.tab-btn')) {
-  btn.addEventListener('click', () => {
-    const panel = btn.closest('.dash-main') || btn.closest('main');
-    btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(s => s.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
+// ── ISO switcher ──
+function switchISO(region) {
+  currentISO = region;
+  // Update all ISO tab buttons
+  document.querySelectorAll('.iso-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.iso === region);
   });
+  document.getElementById('region').value = region;
+  updateCharts();
+  refreshDashboard();
+  updateDownloads();
 }
 
-// ── Dashboard data & KPI refresh ──
-const DATA = {"region": "ERCOT", "hub": "HB_NORTH", "kpis": {"avg_price": 36.552778, "solar_capture": 36.460153, "wind_capture": 36.729282, "congestion_mean": 5.856129, "negative_share": 0.0, "base_npv": -32.0446, "base_irr": 0.0059}, "series": {"load": [44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0, 44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0, 44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0], "price": [29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 36.4, 37.2, 38.0, 38.8, 34.0, 34.8, 49.6, 50.4, 51.2, 52.0, 52.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 38.8, 34.0, 34.8, 35.6, 36.4, 37.2, 52.0, 52.8, 48.0, 48.8, 49.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 35.6, 36.4, 37.2, 38.0, 38.8, 34.0, 48.8, 49.6, 50.4, 51.2, 52.0, 33.8, 29.0, 29.8], "temperature": [53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 60.0, 60.0, 60.0, 60.0, 69.0, 69.0, 69.0, 69.0, 69.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 61.5, 61.5, 61.5, 61.5, 70.5, 70.5, 70.5, 70.5, 70.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 63.0, 63.0, 63.0, 63.0, 72.0, 72.0, 72.0, 72.0, 72.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0], "years": ["2024", "2025", "2026", "2027", "2028", "2029", "2030"], "queue_p50": [260.0, 160.0, 326.55, 54.8, 37.5, 49.5, 35.0], "queue_p90": [260.0, 160.0, 230.55, 0.0, 12.5, 27.5, 0.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -43.5921, "after_tax_npv_musd": -43.0441, "irr": -0.0503, "min_dscr": 0.8109, "avg_dscr": 0.8502, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 7.4929}, "merchant|low|base": {"npv_musd": -53.5958, "after_tax_npv_musd": -51.6968, "irr": -0.0701, "min_dscr": 0.7298, "avg_dscr": 0.7652, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 7.4929}, "merchant|low|high": {"npv_musd": -63.5994, "after_tax_npv_musd": -60.3496, "irr": -0.0874, "min_dscr": 0.6635, "avg_dscr": 0.6956, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 7.4929}, "merchant|base|low": {"npv_musd": -32.6923, "after_tax_npv_musd": -34.8692, "irr": -0.008, "min_dscr": 1.0037, "avg_dscr": 1.0499, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 8.8152}, "merchant|base|base": {"npv_musd": -42.696, "after_tax_npv_musd": -43.522, "irr": -0.0295, "min_dscr": 0.9033, "avg_dscr": 0.9449, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 8.8152}, "merchant|base|high": {"npv_musd": -52.6996, "after_tax_npv_musd": -52.1747, "irr": -0.0481, "min_dscr": 0.8212, "avg_dscr": 0.859, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 8.8152}, "merchant|high|low": {"npv_musd": -21.7925, "after_tax_npv_musd": -26.6944, "irr": 0.0301, "min_dscr": 1.1965, "avg_dscr": 1.2496, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 10.1375}, "merchant|high|base": {"npv_musd": -31.7962, "after_tax_npv_musd": -35.3471, "irr": 0.0067, "min_dscr": 1.0769, "avg_dscr": 1.1247, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 10.1375}, "merchant|high|high": {"npv_musd": -41.7998, "after_tax_npv_musd": -43.9999, "irr": -0.0134, "min_dscr": 0.979, "avg_dscr": 1.0224, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 10.1375}, "contracted|low|low": {"npv_musd": -33.8885, "after_tax_npv_musd": -35.7664, "irr": -0.0124, "min_dscr": 0.9826, "avg_dscr": 1.028, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 8.6701}, "contracted|low|base": {"npv_musd": -43.8922, "after_tax_npv_musd": -44.4192, "irr": -0.0337, "min_dscr": 0.8843, "avg_dscr": 0.9252, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 8.6701}, "contracted|low|high": {"npv_musd": -53.8959, "after_tax_npv_musd": -53.0719, "irr": -0.0521, "min_dscr": 0.8039, "avg_dscr": 0.8411, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 8.6701}, "contracted|base|low": {"npv_musd": -22.0409, "after_tax_npv_musd": -26.8807, "irr": 0.0293, "min_dscr": 1.1921, "avg_dscr": 1.2451, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 10.1073}, "contracted|base|base": {"npv_musd": -32.0446, "after_tax_npv_musd": -35.5335, "irr": 0.0059, "min_dscr": 1.0729, "avg_dscr": 1.1206, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 10.1073}, "contracted|base|high": {"npv_musd": -42.0483, "after_tax_npv_musd": -44.1862, "irr": -0.0142, "min_dscr": 0.9754, "avg_dscr": 1.0187, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 10.1073}, "contracted|high|low": {"npv_musd": -10.1933, "after_tax_npv_musd": -17.995, "irr": 0.068, "min_dscr": 1.4017, "avg_dscr": 1.4622, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 11.5446}, "contracted|high|base": {"npv_musd": -20.197, "after_tax_npv_musd": -26.6478, "irr": 0.0422, "min_dscr": 1.2615, "avg_dscr": 1.316, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 11.5446}, "contracted|high|high": {"npv_musd": -30.2007, "after_tax_npv_musd": -35.3005, "irr": 0.0203, "min_dscr": 1.1468, "avg_dscr": 1.1963, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 11.5446}}};
+function buildISOTabs(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  for (const iso of ISO_NAMES) {
+    const btn = document.createElement('button');
+    btn.className = 'iso-tab' + (iso === currentISO ? ' active' : '');
+    btn.dataset.iso = iso;
+    btn.textContent = iso;
+    btn.onclick = () => switchISO(iso);
+    container.appendChild(btn);
+  }
+}
 
+// ── Chart path helper ──
+function chartPrefix(region) {
+  return 'reports/charts/' + region.toLowerCase().replace(/-/g,'').replace(/\./g,'');
+}
+
+function updateCharts() {
+  const p = chartPrefix(currentISO);
+  const setImg = (id, suffix) => {
+    const el = document.getElementById(id);
+    if (el) el.src = p + suffix + '.svg';
+  };
+  // Dashboard charts
+  setImg('dash-chart-load', '_load');
+  setImg('dash-chart-temp', '_temperature');
+  setImg('dash-chart-forecast', '_load_forecast_scenarios');
+  setImg('dash-chart-queue', '_queue_expected_online_mw');
+  setImg('dash-chart-price', '_price');
+  setImg('dash-chart-finsen', '_finance_sensitivity');
+  // Home charts
+  setImg('home-chart-load', '_load');
+  setImg('home-chart-price', '_price');
+  setImg('home-chart-temp', '_temperature');
+  setImg('home-chart-forecast', '_load_forecast_scenarios');
+  setImg('home-chart-queue', '_queue_expected_online_mw');
+  setImg('home-chart-finance', '_finance_sensitivity');
+}
+
+// ── Downloads ──
+function updateDownloads() {
+  const iso = currentISO.toLowerCase().replace(/-/g,'').replace(/\./g,'');
+  const el = document.getElementById('downloads-list');
+  if (!el) return;
+  const files = [
+    ['market metrics CSV', `data/marts/${iso}_market_metrics.csv`],
+    ['load backtest CSV', `data/marts/${iso}_load_backtest.csv`],
+    ['load scenarios CSV', `data/marts/${iso}_load_forecast_scenarios.csv`],
+    ['finance scenarios CSV', `data/marts/${iso}_finance_scenarios.csv`],
+    ['finance sensitivity CSV', `data/marts/${iso}_finance_sensitivity.csv`],
+    ['queue calibration CSV', `data/marts/${iso}_queue_calibration.csv`],
+    ['queue outlook CSV', `data/curated/${iso}_queue_expected_online_mw.csv`],
+  ];
+  el.innerHTML = files.map(([label, path]) =>
+    `<a href="${path}" download>Download ${label}</a>`
+  ).join('') + `<a href="#" onclick="showView('summary');return false;">Open summary report</a>`;
+}
+
+// ── Dashboard KPI refresh ──
 function fmt(n, d=2) { return Number(n).toFixed(d); }
+
 function scenarioKeyFromControls() {
   const price = document.getElementById('tight_scn').value;
   const contractType = document.getElementById('contract_type').value;
   const capex = Number(document.getElementById('capex').value);
-  const baseCapex = 1150;
+  const data = ALL_DATA[currentISO];
+  const baseCapex = data.finance_assumptions.capex_per_kw || 1150;
   let priceCase = 'base';
   if (Number(price) < 1) priceCase = 'low';
   if (Number(price) > 1) priceCase = 'high';
@@ -574,39 +531,141 @@ function scenarioKeyFromControls() {
   return contractType + '|' + priceCase + '|' + capexCase;
 }
 
-function refresh() {
+function refreshDashboard() {
+  const data = ALL_DATA[currentISO];
+  if (!data) return;
   const loadMult = Number(document.getElementById('load_scn').value);
   const tightMult = Number(document.getElementById('tight_scn').value);
   const queueMode = document.getElementById('queue_scn').value;
-  const avgPrice = DATA.kpis.avg_price * tightMult;
-  const solar = DATA.kpis.solar_capture * tightMult;
-  const wind = DATA.kpis.wind_capture * tightMult;
-  const cong = DATA.kpis.congestion_mean * tightMult;
-  const neg = Math.min(DATA.kpis.negative_share * tightMult, 1);
+
+  const avgPrice = data.kpis.avg_price * tightMult;
+  const solar = data.kpis.solar_capture * tightMult;
+  const wind = data.kpis.wind_capture * tightMult;
+  const cong = data.kpis.congestion_mean * tightMult;
+  const neg = Math.min(data.kpis.negative_share * tightMult, 1);
+
   document.getElementById('k_avg_price').textContent = fmt(avgPrice);
   document.getElementById('k_solar').textContent = fmt(solar);
   document.getElementById('k_wind').textContent = fmt(wind);
   document.getElementById('k_cong').textContent = fmt(cong);
   document.getElementById('k_neg').textContent = fmt(neg * 100, 1);
-  const qArr = queueMode === 'p50' ? DATA.series.queue_p50 : DATA.series.queue_p90;
+
+  const qArr = queueMode === 'p50' ? data.series.queue_p50 : data.series.queue_p90;
   const qTotal = qArr.reduce((a,b)=>a+b,0) * loadMult;
   document.getElementById('k_queue_total').textContent = fmt(qTotal, 1);
+
   const key = scenarioKeyFromControls();
-  const s = DATA.finance_scenarios[key] || DATA.finance_scenarios['contracted|base|base'];
-  document.getElementById('k_npv').textContent = fmt(s.npv_musd, 2);
-  document.getElementById('k_irr').textContent = fmt(s.irr, 3);
-  document.getElementById('k_dscr').textContent = fmt(s.min_dscr, 2);
-  document.getElementById('k_lcoe').textContent = fmt(s.lcoe_usd_mwh, 2);
+  const s = data.finance_scenarios[key] || data.finance_scenarios['contracted|base|base'];
+  if (s) {
+    document.getElementById('k_npv').textContent = fmt(s.npv_musd, 2);
+    document.getElementById('k_irr').textContent = fmt(s.irr, 3);
+    document.getElementById('k_dscr').textContent = fmt(s.min_dscr, 2);
+    document.getElementById('k_lcoe').textContent = fmt(s.lcoe_usd_mwh, 2);
+  }
 }
 
+// ── Home KPIs ──
+function renderHomeKPIs() {
+  const strip = document.getElementById('home-kpi-strip');
+  if (!strip) return;
+  const data = ALL_DATA[currentISO];
+  if (!data) return;
+  const k = data.kpis;
+  const b = data.finance_scenarios['contracted|base|base'] || {};
+  strip.innerHTML = `
+    <div class="kpi"><div class="label">Avg Hub Price</div><div class="value">${k.avg_price.toFixed(2)}</div><div class="unit">USD / MWh</div></div>
+    <div class="kpi"><div class="label">Solar Capture</div><div class="value">${k.solar_capture.toFixed(2)}</div><div class="unit">USD / MWh</div></div>
+    <div class="kpi"><div class="label">Wind Capture</div><div class="value">${k.wind_capture.toFixed(2)}</div><div class="unit">USD / MWh</div></div>
+    <div class="kpi"><div class="label">Congestion (mean)</div><div class="value">${k.congestion_mean.toFixed(2)}</div><div class="unit">USD / MWh</div></div>
+    <div class="kpi"><div class="label">Base IRR</div><div class="value">${(k.base_irr*100).toFixed(1)}%</div><div class="unit">Contracted · 100 MW solar</div></div>
+    <div class="kpi"><div class="label">Base LCOE</div><div class="value">${(b.lcoe_usd_mwh||0).toFixed(2)}</div><div class="unit">USD / MWh</div></div>
+  `;
+  // Home finance table
+  const tbl = document.getElementById('home-finance-table');
+  if (tbl) {
+    let rows = '';
+    for (const [iso, d] of Object.entries(ALL_DATA)) {
+      const bf = d.finance_scenarios['contracted|base|base'] || {};
+      rows += `<tr>
+        <td><b>${iso}</b> <span style="color:#5b727c;font-size:12px">${d.hub}</span></td>
+        <td>${d.kpis.avg_price.toFixed(2)}</td>
+        <td>${(bf.npv_musd||0).toFixed(2)}</td>
+        <td>${((bf.irr||0)*100).toFixed(2)}%</td>
+        <td>${(bf.min_dscr||0).toFixed(2)}×</td>
+        <td>${(bf.lcoe_usd_mwh||0).toFixed(2)}</td>
+        <td>${(bf.year1_revenue_musd||0).toFixed(2)}</td>
+      </tr>`;
+    }
+    tbl.innerHTML = `<table>
+      <thead><tr><th>ISO/RTO</th><th>Avg Price ($/MWh)</th><th>NPV (MUSD)</th><th>IRR</th><th>Min DSCR</th><th>LCOE ($/MWh)</th><th>Yr1 Revenue (MUSD)</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+}
+
+// ── Summary table ──
+function renderSummaryTable() {
+  const container = document.getElementById('summary-table-container');
+  if (!container) return;
+  let rows = '';
+  for (const [iso, data] of Object.entries(ALL_DATA)) {
+    const k = data.kpis;
+    const b = data.finance_scenarios['contracted|base|base'] || {};
+    rows += `<tr>
+      <td><b>${iso}</b><br><span style="color:#5b727c;font-size:12px">${data.hub}</span></td>
+      <td>${k.avg_price.toFixed(2)}</td>
+      <td>${k.solar_capture.toFixed(2)}</td>
+      <td>${k.wind_capture.toFixed(2)}</td>
+      <td>${k.congestion_mean.toFixed(2)}</td>
+      <td>${(k.negative_share*100).toFixed(1)}%</td>
+      <td>${(b.npv_musd||0).toFixed(2)}</td>
+      <td>${((b.irr||0)*100).toFixed(2)}%</td>
+      <td>${(b.lcoe_usd_mwh||0).toFixed(2)}</td>
+    </tr>`;
+  }
+  container.innerHTML = `<table class="summary-table">
+    <thead><tr>
+      <th>ISO / RTO</th><th>Avg Price ($/MWh)</th><th>Solar Capture</th><th>Wind Capture</th>
+      <th>Congestion Mean</th><th>Neg Price %</th><th>Base NPV (MUSD)</th><th>Base IRR</th><th>LCOE ($/MWh)</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+// ── Dashboard tab switching ──
+for (const btn of document.querySelectorAll('.tab-btn')) {
+  btn.addEventListener('click', () => {
+    btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+}
+
+// ── Controls ──
 for (const id of ['load_scn','queue_scn','tight_scn','contract_type','capex','opex','wacc','debt','ppa','degrade']) {
-  document.getElementById(id).addEventListener('input', refresh);
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', refreshDashboard);
 }
 
-// Handle hash-based routing on page load
+// ── Init ──
+buildISOTabs('dash-iso-tabs');
+buildISOTabs('home-iso-tabs');
+updateCharts();
+updateDownloads();
+renderHomeKPIs();
+refreshDashboard();
+
+// populate readonly region selector
+const regionSel = document.getElementById('region');
+if (regionSel) {
+  regionSel.innerHTML = ISO_NAMES.map(r => `<option value="${r}">${r}</option>`).join('');
+  regionSel.value = currentISO;
+}
+
+// Hash-based routing
 const hashMap = { '#dashboard': 'dashboard', '#summary': 'summary', '#home': 'home' };
 if (hashMap[location.hash]) showView(hashMap[location.hash]);
-else refresh();
 </script>
 </body>
 </html>

@@ -1,9 +1,28 @@
 PYTHON ?= python3
 
-.PHONY: all ingest ingest-real ingest-hybrid transform forecast queue markets finance charts dashboard qa clean test
+ISO_CONFIGS = config/data_sources.yml config/caiso.yml config/pjm.yml config/miso.yml config/spp.yml config/nyiso.yml config/isone.yml
 
+.PHONY: all all-regions ingest ingest-real ingest-hybrid transform forecast queue markets finance charts dashboard qa clean test
+
+# Default: run ERCOT only then build combined dashboard
 all: ingest transform forecast queue markets finance charts dashboard qa
 
+# Run full pipeline for all ISOs + build combined dashboard
+all-regions:
+	@for cfg in $(ISO_CONFIGS); do \
+		echo "\n=== Pipeline: $$cfg ==="; \
+		$(PYTHON) -m energy_analytics ingest --config $$cfg; \
+		$(PYTHON) -m energy_analytics transform --config $$cfg; \
+		$(PYTHON) -m energy_analytics forecast --config $$cfg; \
+		$(PYTHON) -m energy_analytics queue --config $$cfg; \
+		$(PYTHON) -m energy_analytics markets --config $$cfg; \
+		$(PYTHON) -m energy_analytics finance --config $$cfg; \
+		$(PYTHON) -m energy_analytics charts --config $$cfg; \
+		$(PYTHON) -m energy_analytics qa --config $$cfg; \
+	done
+	$(PYTHON) -m energy_analytics dashboard
+
+# Per-ISO pipeline targets (ERCOT default)
 ingest:
 	$(PYTHON) -m energy_analytics ingest
 
@@ -44,5 +63,5 @@ clean:
 	rm -f data/raw/*.csv data/staged/*.csv data/curated/*.csv data/curated/*.parquet
 	rm -f data/marts/*.csv
 	rm -f reports/charts/*.svg reports/qa_report.md reports/ingestion_metadata.log
-	rm -f reports/market_findings.md
-	rm -f reports/dashboard/*.html
+	rm -f reports/market_findings.md reports/*_market_findings.md reports/*_qa_report.md reports/*_ingestion_metadata.log
+	rm -f reports/dashboard/*.html reports/*.json

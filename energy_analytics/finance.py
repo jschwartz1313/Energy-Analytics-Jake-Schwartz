@@ -173,8 +173,8 @@ def _write_sensitivity_chart(rows: list[dict[str, str]], out_path: Path) -> None
         f.write("</svg>\n")
 
 
-def run_finance() -> None:
-    cfg = load_config()
+def run_finance(config_path: str = "config/data_sources.yml") -> None:
+    cfg = load_config(config_path)
     metrics_path = Path(cfg["markets_output"]["metrics_csv"])
     scenarios_path = Path(cfg["finance_output"]["scenarios_csv"])
     summary_path = Path(cfg["finance_output"]["summary_csv"])
