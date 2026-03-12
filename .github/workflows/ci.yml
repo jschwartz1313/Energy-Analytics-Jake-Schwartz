@@ -18,6 +18,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
       - name: Run pipeline smoke build
-        run: make all
+        run: make all-regions
       - name: Run unit tests
         run: make test
