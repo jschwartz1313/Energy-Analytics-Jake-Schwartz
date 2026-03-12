@@ -131,13 +131,95 @@
     }
     footer a { color: rgba(255,255,255,.85); }
 
+    /* ── Navbar ── */
+    .navbar {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--hero-bg);
+      text-decoration: none;
+      letter-spacing: -.01em;
+    }
+    .navbar-links { display: flex; gap: 4px; align-items: center; }
+    .navbar-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background .15s, color .15s;
+    }
+    .navbar-links a:hover { background: var(--bg); color: var(--ink); }
+    .navbar-links a.active { color: var(--accent); font-weight: 600; background: #e8f2f8; }
+
+    /* ── Page-section jump strip ── */
+    .page-nav {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .page-nav a {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 10px 18px;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+    .page-nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
     @media (max-width: 600px) {
       .hero { padding: 40px 16px 36px; }
       section { padding: 30px 0; }
+      .navbar-links a { padding: 6px 8px; font-size: 12px; }
     }
   </style>
 </head>
 <body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="navbar-brand" href="#">Energy Analytics</a>
+    <div class="navbar-links">
+      <a href="#" class="active">Home</a>
+      <a href="reports/dashboard/index.html">Dashboard</a>
+      <a href="reports/dashboard/summary_report.html">Summary Report</a>
+      <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Section jump strip ── -->
+<div class="page-nav">
+  <a href="#metrics">Key Metrics</a>
+  <a href="#charts">Charts</a>
+  <a href="#modules">Modules</a>
+  <a href="#finance">Finance</a>
+  <a href="#pipeline">Pipeline</a>
+  <a href="#docs">Documentation</a>
+</div>
 
 <!-- ── Hero ── -->
 <div class="hero">
@@ -154,7 +236,7 @@
 
 <!-- ── Key metrics ── -->
 <div class="container">
-  <section>
+  <section id="metrics">
     <h2>Key Metrics — ERCOT (HB_NORTH)</h2>
     <p class="section-sub">Base scenario outputs from the processed analytics pipeline.</p>
     <div class="kpi-strip">
@@ -192,7 +274,7 @@
   </section>
 
   <!-- ── Charts ── -->
-  <section>
+  <section id="charts">
     <h2>Pipeline Outputs</h2>
     <p class="section-sub">Charts generated from the reproducible pipeline — open the dashboard for interactive controls.</p>
     <div class="charts-grid">
@@ -224,7 +306,7 @@
   </section>
 
   <!-- ── Analytics Modules ── -->
-  <section>
+  <section id="modules">
     <h2>Analytics Modules</h2>
     <p class="section-sub">Four modules built in sequence, each producing validated analytical outputs.</p>
     <div class="modules-grid">
@@ -252,7 +334,7 @@
   </section>
 
   <!-- ── Finance table ── -->
-  <section>
+  <section id="finance">
     <h2>Base Solar Finance Case — Contracted, 100 MW</h2>
     <p class="section-sub">Stylized pro-forma under base price and base capex assumptions. Not an investment recommendation.</p>
     <table>
@@ -271,7 +353,7 @@
   </section>
 
   <!-- ── Data pipeline ── -->
-  <section>
+  <section id="pipeline">
     <h2>Pipeline Architecture</h2>
     <p class="section-sub">Layered, reproducible data flow — one command rebuilds all outputs.</p>
     <div class="pipeline">
@@ -306,7 +388,7 @@
   </section>
 
   <!-- ── Documentation ── -->
-  <section>
+  <section id="docs">
     <h2>Documentation</h2>
     <p class="section-sub">Method notes, assumptions, and data dictionary for full transparency.</p>
     <div class="docs-grid">

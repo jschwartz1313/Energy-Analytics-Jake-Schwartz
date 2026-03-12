@@ -16,9 +16,14 @@
     }
     * { box-sizing:border-box; }
     body { margin:0; background:linear-gradient(130deg,#eef4f7,#f8fbfc); color:var(--ink); font-family:'IBM Plex Sans','Segoe UI',sans-serif; }
-    header { padding:16px 20px; border-bottom:1px solid var(--line); background:rgba(255,255,255,.9); position:sticky; top:0; z-index:10; backdrop-filter: blur(4px); }
-    h1 { margin:0; font-size:20px; }
-    .sub { color:var(--muted); font-size:13px; margin-top:4px; }
+    header { padding:12px 20px; border-bottom:1px solid var(--line); background:rgba(255,255,255,.9); position:sticky; top:0; z-index:10; backdrop-filter: blur(4px); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+    .header-left h1 { margin:0; font-size:20px; }
+    .sub { color:var(--muted); font-size:13px; margin-top:2px; }
+    .header-nav { display:flex; gap:4px; align-items:center; }
+    .header-nav a { font-size:12px; font-weight:500; color:var(--muted); text-decoration:none; padding:6px 10px; border-radius:6px; transition:background .15s, color .15s; white-space:nowrap; }
+    .header-nav a:hover { background:var(--bg); color:var(--ink); }
+    .header-nav a.active { color:var(--accent); font-weight:600; background:#e8f2f8; }
+    @media (max-width:600px) { .header-nav { display:none; } }
     .layout { display:grid; grid-template-columns:280px 1fr; min-height:calc(100vh - 74px); }
     .side { border-right:1px solid var(--line); padding:14px; background:#fbfdfe; }
     .main { padding:18px; }
@@ -43,8 +48,16 @@
 </head>
 <body>
 <header>
-  <h1>Energy Analytics Dashboard</h1>
-  <div class='sub'>Processed-data dashboard for ERCOT (HB_NORTH) covering milestones 1-5.</div>
+  <div class='header-left'>
+    <h1>Energy Analytics Dashboard</h1>
+    <div class='sub'>Processed-data dashboard for ERCOT (HB_NORTH) covering milestones 1-5.</div>
+  </div>
+  <nav class='header-nav'>
+    <a href='../../index.html'>Home</a>
+    <a href='#' class='active'>Dashboard</a>
+    <a href='summary_report.html'>Summary Report</a>
+    <a href='https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz' target='_blank' rel='noopener'>GitHub</a>
+  </nav>
 </header>
 <div class='layout'>
   <aside class='side'>
