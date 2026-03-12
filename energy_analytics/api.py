@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import math
 import subprocess
 import sys
 import threading
@@ -10,7 +11,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Body, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -79,6 +80,17 @@ ISO_CONFIGS: dict[str, str] = {
     "SPP":   "config/spp.yml",
     "NYISO": "config/nyiso.yml",
     "ISO-NE":"config/isone.yml",
+}
+
+# Base carbon intensities in lbs CO2/MWh by ISO
+ISO_BASE_INTENSITY: dict[str, float] = {
+    "ERCOT":  880.0,
+    "CAISO":  490.0,
+    "PJM":    840.0,
+    "MISO":  1020.0,
+    "SPP":    890.0,
+    "NYISO":  390.0,
+    "ISO-NE": 540.0,
 }
 
 
@@ -450,3 +462,216 @@ def run_all_pipelines():
     if errors:
         raise HTTPException(status_code=500, detail="\n".join(errors))
     return {"status": "ok", "isos_run": list(ISO_CONFIGS)}
+
+
+# ── Cross-ISO price correlation matrix ───────────────────────────────────────
+@app.get("/api/correlation")
+def get_correlation():
+    """Compute Pearson correlation matrix of hourly prices across all ISOs."""
+    iso_prices: dict[str, list[float]] = {}
+
+    for iso, cfg_path in ISO_CONFIGS.items():
+        try:
+            cfg = load_config(cfg_path)
+            panel_path = Path(cfg["curated_output"]["panel_csv"])
+            if not panel_path.exists():
+                continue
+            with panel_path.open("r", encoding="utf-8", newline="") as f:
+                rows = list(csv.DictReader(f))
+            prices = [float(r["price_usd_mwh"]) for r in rows]
+            if prices:
+                iso_prices[iso] = prices
+        except Exception:
+            continue
+
+    isos = sorted(iso_prices)
+    if not isos:
+        return {"isos": [], "matrix": []}
+
+    # Trim all series to minimum shared length
+    min_len = min(len(iso_prices[iso]) for iso in isos)
+    trimmed = {iso: iso_prices[iso][:min_len] for iso in isos}
+
+    def _pearson(x: list[float], y: list[float]) -> float:
+        n = len(x)
+        if n == 0:
+            return 0.0
+        mean_x = sum(x) / n
+        mean_y = sum(y) / n
+        num = sum((x[i] - mean_x) * (y[i] - mean_y) for i in range(n))
+        den_x = math.sqrt(sum((v - mean_x) ** 2 for v in x))
+        den_y = math.sqrt(sum((v - mean_y) ** 2 for v in y))
+        if den_x == 0 or den_y == 0:
+            return 0.0
+        return round(num / (den_x * den_y), 6)
+
+    matrix = [
+        [_pearson(trimmed[row_iso], trimmed[col_iso]) for col_iso in isos]
+        for row_iso in isos
+    ]
+
+    return {"isos": isos, "matrix": matrix}
+
+
+# ── Grid carbon intensity ─────────────────────────────────────────────────────
+@app.get("/api/{iso}/emissions")
+def get_emissions(iso: str):
+    """Estimate hourly grid carbon intensity scaled by price relative to average."""
+    key = iso.upper()
+    if key not in ISO_BASE_INTENSITY:
+        raise HTTPException(status_code=404, detail=f"Unknown ISO: {iso}. Valid: {list(ISO_BASE_INTENSITY)}")
+    cfg = _cfg(iso)
+    rows = _read_csv(Path(cfg["curated_output"]["panel_csv"]))
+
+    base_intensity = ISO_BASE_INTENSITY[key]
+    prices = [float(r["price_usd_mwh"]) for r in rows]
+    timestamps = [r["timestamp_utc"] for r in rows]
+
+    n = len(prices)
+    avg_price = sum(prices) / n if n > 0 else 1.0
+
+    co2_intensity_list: list[float] = []
+    co2_tons_per_hour_list: list[float] = []
+
+    for price in prices:
+        if price < 0:
+            scale = 0.3
+        else:
+            raw_scale = 0.8 + 0.4 * (price / avg_price) if avg_price != 0 else 0.8
+            scale = max(0.7, min(1.4, raw_scale))
+        intensity = round(base_intensity * scale, 4)
+        # lbs to tons: divide by 2000; MWh generated assumed 1 MWh per hour per MW
+        # intensity is lbs/MWh; co2_tons = intensity * 1 MWh / 2000
+        co2_tons = round(intensity / 2000.0, 6)
+        co2_intensity_list.append(intensity)
+        co2_tons_per_hour_list.append(co2_tons)
+
+    avg_intensity = round(sum(co2_intensity_list) / len(co2_intensity_list), 4) if co2_intensity_list else 0.0
+    total_co2_tons = round(sum(co2_tons_per_hour_list), 4)
+
+    return {
+        "timestamps": timestamps,
+        "co2_intensity_lbs_mwh": co2_intensity_list,
+        "co2_tons_per_hour": co2_tons_per_hour_list,
+        "avg_intensity": avg_intensity,
+        "total_co2_tons": total_co2_tons,
+        "base_intensity_lbs_mwh": base_intensity,
+    }
+
+
+# ── Battery storage arbitrage ─────────────────────────────────────────────────
+@app.get("/api/{iso}/storage")
+def get_storage(iso: str):
+    """100MW / 4hr battery storage daily arbitrage analysis."""
+    cfg = _cfg(iso)
+    rows = _read_csv(Path(cfg["curated_output"]["panel_csv"]))
+
+    capacity_mw = 100.0
+    duration_hrs = 4
+    rte = 0.85
+
+    # Group by day
+    by_day: dict[str, list[float]] = defaultdict(list)
+    for r in rows:
+        day = r["timestamp_utc"][:10]
+        by_day[day].append(float(r["price_usd_mwh"]))
+
+    days_sorted = sorted(by_day)
+    daily_revenues: list[float] = []
+    daily_spreads: list[float] = []
+
+    for day in days_sorted:
+        day_prices = by_day[day]
+        if len(day_prices) < duration_hrs * 2:
+            daily_revenues.append(0.0)
+            daily_spreads.append(0.0)
+            continue
+        sorted_asc = sorted(day_prices)
+        sorted_desc = sorted(day_prices, reverse=True)
+        charge_prices = sorted_asc[:duration_hrs]
+        discharge_prices = sorted_desc[:duration_hrs]
+        sum_charge = sum(charge_prices)
+        sum_discharge = sum(discharge_prices)
+        # Revenue = (discharge energy * rte - charge cost) * capacity_mw
+        # Each hour: 1 MWh per MW, so total MWh = capacity_mw * duration_hrs
+        # Revenue ($) = (sum_discharge * rte - sum_charge) * capacity_mw
+        revenue_usd = (sum_discharge * rte - sum_charge) * capacity_mw
+        revenue_k = revenue_usd / 1000.0
+        daily_revenues.append(round(revenue_k, 4))
+        daily_spreads.append(round(sum_discharge / duration_hrs - sum_charge / duration_hrs, 4))
+
+    n_days = len(daily_revenues)
+    avg_daily_revenue_k = sum(daily_revenues) / n_days if n_days > 0 else 0.0
+    # Annualize: scale by 365 / actual days in dataset
+    annual_revenue_usd = avg_daily_revenue_k * 365.0 * 1000.0
+    annual_revenue_musd = round(annual_revenue_usd / 1_000_000, 4)
+
+    total_capex_musd = round(capacity_mw * 1000.0 * duration_hrs * 300.0 / 1_000_000, 4)  # $300/kWh
+
+    avg_daily_spread = round(sum(daily_spreads) / n_days, 4) if n_days > 0 else 0.0
+    simple_payback_yrs = round(total_capex_musd / annual_revenue_musd, 2) if annual_revenue_musd > 0 else None
+
+    return {
+        "days": days_sorted,
+        "daily_revenue_k": daily_revenues,
+        "annual_revenue_musd": annual_revenue_musd,
+        "total_capex_musd": total_capex_musd,
+        "capacity_mw": capacity_mw,
+        "duration_hrs": duration_hrs,
+        "rte": rte,
+        "avg_daily_spread": avg_daily_spread,
+        "simple_payback_yrs": simple_payback_yrs,
+    }
+
+
+# ── Custom finance assumptions ────────────────────────────────────────────────
+@app.post("/api/finance/custom")
+def custom_finance(
+    iso: str = "ERCOT",
+    overrides: dict[str, Any] = Body(default={}),
+):
+    """Run finance model with custom assumption overrides."""
+    cfg = _cfg(iso)
+    assumptions = dict(cfg["finance_assumptions"])
+
+    metrics_path = Path(cfg["markets_output"]["metrics_csv"])
+    metrics = {r["metric"]: float(r["value"]) for r in _read_csv(metrics_path)}
+    base_capture = metrics.get("solar_capture_price_usd_mwh", 40.0)
+
+    # Fields that can be overridden
+    override_fields = {
+        "capex_per_kw", "solar_capacity_factor", "debt_fraction",
+        "debt_rate", "equity_discount_rate", "project_life_years",
+    }
+    for field in override_fields:
+        if field in overrides:
+            assumptions[field] = overrides[field]
+
+    result = _build_case(base_capture, assumptions, 1.0, 1.0, "contracted")
+
+    return {
+        "npv_musd": round(result["npv"] / 1_000_000, 4),
+        "after_tax_npv_musd": round(result["after_tax_npv"] / 1_000_000, 4),
+        "irr": round(result["irr"], 4),
+        "min_dscr": round(result["min_dscr"], 4),
+        "avg_dscr": round(result["avg_dscr"], 4),
+        "lcoe_usd_mwh": round(result["lcoe"], 4),
+    }
+
+
+# ── Cron refresh trigger ──────────────────────────────────────────────────────
+@app.post("/api/cron/refresh")
+def cron_refresh():
+    """Trigger full all-regions pipeline refresh (for external cron services)."""
+    errors = []
+    for iso, cfg_path in ISO_CONFIGS.items():
+        for stage in ["ingest", "transform", "forecast", "queue", "markets", "finance", "charts"]:
+            result = subprocess.run(
+                [sys.executable, "-m", "energy_analytics", stage, "--config", cfg_path],
+                capture_output=True, text=True
+            )
+            if result.returncode != 0:
+                errors.append(f"{iso}/{stage}: {result.stderr.strip()}")
+    if errors:
+        raise HTTPException(status_code=500, detail="\n".join(errors))
+    return {"status": "ok", "message": "Pipeline refresh complete"}

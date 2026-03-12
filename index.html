@@ -6,109 +6,91 @@
   <title>Energy Analytics — US ISO/RTO Dashboard</title>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
   <style>
-    :root {
-      --bg:#0d1117; --surface:#161b22; --surface2:#21262d; --surface3:#2d333b;
-      --border:#30363d; --text:#e6edf3; --muted:#8b949e; --muted2:#6e7681;
-      --accent:#2f81f7; --green:#3fb950; --orange:#f0883e; --purple:#a371f7;
-      --red:#f85149; --yellow:#d29922; --teal:#39c5cf;
+    :root{
+      --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--surface3:#2d333b;
+      --border:#30363d;--text:#e6edf3;--muted:#8b949e;--muted2:#6e7681;
+      --accent:#2f81f7;--green:#3fb950;--orange:#f0883e;--purple:#a371f7;
+      --red:#f85149;--yellow:#d29922;--teal:#39c5cf;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
     a{color:var(--accent);text-decoration:none}
+    code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px;font-family:monospace}
 
-    /* Nav */
+    /* ── Nav ── */
     .nav{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200}
-    .nav-inner{max-width:1400px;margin:0 auto;padding:0 24px;display:flex;align-items:center;height:56px;gap:6px}
-    .brand{font-size:15px;font-weight:700;color:var(--text);margin-right:16px;white-space:nowrap}
+    .nav-inner{max-width:1400px;margin:0 auto;padding:0 16px;display:flex;align-items:center;height:52px;gap:3px;overflow-x:auto}
+    .brand{font-size:14px;font-weight:700;color:var(--text);margin-right:12px;white-space:nowrap;flex-shrink:0}
     .brand em{color:var(--accent);font-style:normal}
-    .nav-btn{background:none;border:none;color:var(--muted);font-size:13px;font-weight:500;padding:6px 13px;border-radius:6px;cursor:pointer;transition:.15s;white-space:nowrap}
+    .nav-btn{background:none;border:none;color:var(--muted);font-size:12px;font-weight:500;padding:5px 11px;border-radius:6px;cursor:pointer;transition:.15s;white-space:nowrap;flex-shrink:0}
     .nav-btn:hover{background:var(--surface2);color:var(--text)}
     .nav-btn.active{background:var(--accent);color:#fff}
-    .nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-    .last-updated{font-size:11px;color:var(--muted2)}
+    .nav-right{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .upd{font-size:10px;color:var(--muted2);white-space:nowrap}
 
-    /* Tooltip info icons */
-    .info{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--surface3);color:var(--muted2);font-size:9px;font-weight:700;cursor:default;position:relative;margin-left:5px;flex-shrink:0;vertical-align:middle}
-    .info:hover{background:var(--accent);color:#fff}
-    .info:hover .tip{display:block}
-    .tip{display:none;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#1c2128;border:1px solid var(--border);border-radius:8px;padding:10px 13px;font-size:11px;color:var(--muted);width:260px;line-height:1.55;z-index:500;font-weight:400;text-align:left;white-space:normal;pointer-events:none}
-    .tip::after{content:'';position:absolute;left:50%;transform:translateX(-50%);top:100%;border:6px solid transparent;border-top-color:#1c2128}
-
-    /* Docs view */
-    .doc-section{margin-bottom:40px}
-    .doc-section h2{font-size:17px;font-weight:700;margin-bottom:4px;color:var(--text)}
-    .doc-section .sub{font-size:12px;color:var(--muted);margin-bottom:16px}
-    .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
-    .doc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
-    .doc-card h3{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-    .doc-card h3 .icon{font-size:16px}
-    .doc-card p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px}
-    .doc-card p:last-child{margin-bottom:0}
-    .doc-card ul{padding-left:16px;margin-top:4px}
-    .doc-card ul li{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:3px}
-    .doc-card .term{font-weight:700;color:var(--text)}
-    .pipeline-flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:16px 0}
-    .pipeline-step{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--text)}
-    .pipeline-arrow{color:var(--muted2);font-size:14px}
-    .doc-hero{background:linear-gradient(135deg,var(--surface) 0%,#0d1f3c 100%);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:28px}
-    .doc-hero h2{font-size:20px;font-weight:800;margin-bottom:8px}
-    .doc-hero p{font-size:13px;color:var(--muted);max-width:700px;line-height:1.65}
-
-    /* ISO Bar */
+    /* ── ISO Bar ── */
     .iso-bar{background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto}
-    .iso-bar-inner{max-width:1400px;margin:0 auto;display:flex;gap:6px;padding:8px 24px}
-    .iso-tab{background:none;border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:700;padding:5px 16px;border-radius:20px;cursor:pointer;transition:.15s;white-space:nowrap;letter-spacing:.04em}
+    .iso-bar-inner{max-width:1400px;margin:0 auto;display:flex;gap:5px;padding:7px 16px}
+    .iso-tab{background:none;border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;cursor:pointer;transition:.15s;white-space:nowrap;letter-spacing:.04em}
     .iso-tab:hover{border-color:var(--accent);color:var(--text)}
     .iso-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
     .iso-tab.not-ready{opacity:.4}
 
-    /* Hero */
-    .hero{background:linear-gradient(160deg,#070d14 0%,#0a1a30 60%,#0d1117 100%);border-bottom:1px solid var(--border);padding:36px 24px 28px}
-    .hero-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px}
-    .hero h1{font-size:clamp(20px,3.5vw,32px);font-weight:800;letter-spacing:-.02em}
+    /* ── Hero ── */
+    .hero{background:linear-gradient(160deg,#070d14 0%,#0a1a30 60%,#0d1117 100%);border-bottom:1px solid var(--border);padding:28px 16px 22px}
+    .hero-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
+    .hero h1{font-size:clamp(18px,3vw,28px);font-weight:800;letter-spacing:-.02em}
     .hero h1 em{color:var(--accent);font-style:normal}
-    .hero p{color:var(--muted);font-size:13px;margin-top:6px;max-width:560px}
-    .hero-stats{display:flex;gap:24px;flex-wrap:wrap}
-    .hero-stat{text-align:right}
-    .hero-stat .val{font-size:22px;font-weight:700;color:var(--green)}
-    .hero-stat .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    .hero p{color:var(--muted);font-size:12px;margin-top:4px;max-width:540px}
+    .hero-stats{display:flex;gap:20px;flex-wrap:wrap}
+    .hero-stat .val{font-size:20px;font-weight:700;color:var(--green);text-align:right}
+    .hero-stat .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:right}
 
-    /* Layout */
-    .view{display:none}
-    .view.active{display:block}
-    .content{max-width:1400px;margin:0 auto;padding:24px 24px 64px}
+    /* ── Layout ── */
+    .view{display:none}.view.active{display:block}
+    .content{max-width:1400px;margin:0 auto;padding:20px 16px 60px}
+    .sec{display:flex;align-items:baseline;justify-content:space-between;margin:24px 0 10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+    .sec h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+    .sec-note{font-size:10px;color:var(--muted2)}
 
-    /* Section header */
-    .sec{display:flex;align-items:baseline;justify-content:space-between;margin:28px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-    .sec h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-    .sec-note{font-size:11px;color:var(--muted2)}
-
-    /* KPIs */
-    .kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:6px}
-    .kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+    /* ── KPIs ── */
+    .kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin-bottom:6px}
+    .kpi{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:12px 14px;position:relative;overflow:hidden}
     .kpi::before{content:'';position:absolute;inset:0;opacity:.06;background:var(--kpi-color,var(--accent))}
-    .kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px}
-    .kpi-val{font-size:22px;font-weight:800;color:var(--kpi-color,var(--accent));line-height:1}
-    .kpi-unit{font-size:12px;color:var(--muted);margin-left:2px}
-    .kpi-sub{font-size:11px;color:var(--muted2);margin-top:3px}
+    .kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}
+    .kpi-val{font-size:20px;font-weight:800;color:var(--kpi-color,var(--accent));line-height:1}
+    .kpi-unit{font-size:11px;color:var(--muted);margin-left:2px}
+    .kpi-sub{font-size:10px;color:var(--muted2);margin-top:2px}
 
-    /* Charts */
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
-    .grid1{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px}
-    @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
-    .card-title{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
-    .card-title span{font-size:11px;color:var(--muted2);font-weight:400}
+    /* ── Charts ── */
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+    .g1{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px}
+    @media(max-width:800px){.g2,.g3{grid-template-columns:1fr}}
+    @media(max-width:520px){.kpi-row{grid-template-columns:1fr 1fr}}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px}
+    .ct{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+    .ct-note{font-size:10px;color:var(--muted2);font-weight:400;margin-left:auto}
 
-    /* Tables */
-    .tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);margin-bottom:16px}
+    /* ── Tooltip ── */
+    .info{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--surface3);color:var(--muted2);font-size:8px;font-weight:700;cursor:default;position:relative;flex-shrink:0}
+    .info:hover{background:var(--accent);color:#fff}
+    .info:hover .tip{display:block}
+    .tip{display:none;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 7px);background:#1c2128;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:11px;color:var(--muted);width:240px;line-height:1.5;z-index:500;font-weight:400;text-align:left;white-space:normal;pointer-events:none}
+    .tip::after{content:'';position:absolute;left:50%;transform:translateX(-50%);top:100%;border:5px solid transparent;border-top-color:#1c2128}
+
+    /* ── Export btn ── */
+    .export-btn{background:none;border:1px solid var(--border);color:var(--muted2);font-size:10px;padding:2px 7px;border-radius:4px;cursor:pointer;transition:.15s;margin-left:auto}
+    .export-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+    /* ── Tables ── */
+    .tbl-wrap{overflow-x:auto;border-radius:9px;border:1px solid var(--border);margin-bottom:14px}
     table{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface)}
-    th{background:var(--surface2);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:9px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--border);position:sticky;top:0}
-    td{padding:8px 12px;border-bottom:1px solid var(--border)}
+    th{background:var(--surface2);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.05em;padding:8px 11px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--border)}
+    td{padding:7px 11px;border-bottom:1px solid var(--border)}
     tr:last-child td{border-bottom:none}
     tr:hover td{background:var(--surface2)}
-    .badge{display:inline-block;padding:1px 7px;border-radius:8px;font-size:10px;font-weight:700}
+    .badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:700}
     .b-merchant{background:rgba(47,129,247,.18);color:var(--accent)}
     .b-contracted{background:rgba(63,185,80,.18);color:var(--green)}
     .b-low{background:rgba(110,118,129,.15);color:var(--muted)}
@@ -123,55 +105,83 @@
     .b-in_study{background:rgba(163,113,247,.15);color:var(--purple)}
     .b-operational{background:rgba(57,197,207,.15);color:var(--teal)}
     .b-cancelled,.b-withdrawn{background:rgba(248,81,73,.1);color:var(--red)}
-    .pos{color:var(--green);font-weight:600} .neg{color:var(--red);font-weight:600}
+    .pos{color:var(--green);font-weight:600}.neg{color:var(--red);font-weight:600}
     .num{font-variant-numeric:tabular-nums}
 
-    /* Filters */
-    .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
-    .filters label{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
-    .filters select,.filters input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:4px 9px;border-radius:5px;font-size:11px}
-    .filter-count{font-size:11px;color:var(--muted2);margin-left:auto}
+    /* ── Filters / controls ── */
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+    .filters label{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+    .filters select,.filters input[type=text],.filters input[type=number],.filters input[type=date]{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:5px;font-size:11px}
+    .fc{font-size:10px;color:var(--muted2);margin-left:auto}
+    .csv-btn{background:none;border:1px solid var(--border);color:var(--muted2);font-size:10px;padding:3px 9px;border-radius:4px;cursor:pointer;transition:.15s}
+    .csv-btn:hover{border-color:var(--green);color:var(--green)}
 
-    /* Findings */
-    .findings-box{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;font-size:13px;color:var(--muted);white-space:pre-wrap;margin-bottom:16px}
+    /* ── Sliders (finance) ── */
+    .sliders-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:16px}
+    .slider-item{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px}
+    .slider-item label{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:6px}
+    .slider-item label span{color:var(--text);font-weight:700}
+    .slider-item input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+    .slider-result{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:14px;margin-bottom:16px}
+    .slider-result h3{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+    .sr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+    .sr-item{text-align:center}
+    .sr-val{font-size:18px;font-weight:800}
+    .sr-lbl{font-size:10px;color:var(--muted)}
 
-    /* Summary cards */
-    .sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px}
-    .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
-    .sum-card h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:12px}
-    .sum-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+    /* ── Summary cards ── */
+    .sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:18px}
+    .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:16px}
+    .sum-card h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px}
+    .sum-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px}
     .sum-row:last-child{border-bottom:none}
-    .sum-row .lbl{color:var(--muted)}
-    .sum-row .v{font-weight:700}
+    .sum-row .lbl{color:var(--muted)}.sum-row .v{font-weight:700}
 
-    /* Run panel */
-    .run-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px}
-    .run-box h2{font-size:14px;font-weight:700;margin-bottom:5px}
-    .run-box p{font-size:12px;color:var(--muted);margin-bottom:14px}
-    .btns{display:flex;gap:8px;flex-wrap:wrap}
-    .btn{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:.15s}
+    /* ── Run box ── */
+    .run-box{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:18px;margin-bottom:18px}
+    .run-box h2{font-size:13px;font-weight:700;margin-bottom:4px}
+    .run-box p{font-size:12px;color:var(--muted);margin-bottom:12px}
+    .btns{display:flex;gap:7px;flex-wrap:wrap}
+    .btn{padding:6px 14px;border-radius:5px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:.15s}
     .btn:hover{opacity:.82}
     .btn-blue{background:var(--accent);color:#fff}
     .btn-yellow{background:var(--yellow);color:#000}
-    .btn-green{background:var(--green);color:#000}
-    .run-log{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:monospace;font-size:11px;margin-top:12px;min-height:44px;white-space:pre-wrap;display:none}
-    .run-log.on{display:block;color:var(--green)}
-    .run-log.err{display:block;color:var(--red)}
+    .run-log{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:10px;font-family:monospace;font-size:11px;margin-top:10px;min-height:40px;white-space:pre-wrap;display:none}
+    .run-log.on{display:block;color:var(--green)}.run-log.err{display:block;color:var(--red)}
 
-    /* Loading */
-    .overlay{display:none;position:fixed;inset:0;background:rgba(13,17,23,.75);z-index:400;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+    /* ── Findings ── */
+    .findings-box{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 7px 7px 0;padding:12px 16px;font-size:12px;color:var(--muted);white-space:pre-wrap;margin-bottom:14px;line-height:1.65}
+
+    /* ── Docs ── */
+    .doc-hero{background:linear-gradient(135deg,var(--surface),#0d1f3c);border:1px solid var(--border);border-radius:10px;padding:22px 26px;margin-bottom:24px}
+    .doc-hero h2{font-size:18px;font-weight:800;margin-bottom:7px}
+    .doc-hero p{font-size:12px;color:var(--muted);max-width:680px;line-height:1.65}
+    .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+    .doc-card{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:16px}
+    .doc-card h3{font-size:12px;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+    .doc-card p{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:6px}
+    .doc-card p:last-child{margin-bottom:0}
+    .doc-card ul{padding-left:14px}.doc-card ul li{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:2px}
+    .term{font-weight:700;color:var(--text)}
+    .pipe-flow{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:14px 0}
+    .pipe-step{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:5px 10px;font-size:11px;font-weight:600}
+    .pipe-arr{color:var(--muted2);font-size:13px}
+    .doc-sec{margin-bottom:34px}.doc-sec h2{font-size:15px;font-weight:700;margin-bottom:3px}
+    .doc-sec .sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+
+    /* ── Loading ── */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(13,17,23,.75);z-index:400;align-items:center;justify-content:center;flex-direction:column;gap:12px}
     .overlay.on{display:flex}
-    .spin{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .65s linear infinite}
+    .spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .65s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .spin-msg{color:var(--muted);font-size:13px}
+    .spin-msg{color:var(--muted);font-size:12px}
 
-    /* Error */
-    .err-bar{background:rgba(248,81,73,.08);border:1px solid var(--red);border-radius:8px;padding:10px 14px;color:var(--red);font-size:12px;margin-bottom:14px;display:none}
+    /* ── Error ── */
+    .err-bar{background:rgba(248,81,73,.08);border:1px solid var(--red);border-radius:7px;padding:9px 13px;color:var(--red);font-size:12px;margin-bottom:12px;display:none}
     .err-bar.on{display:block}
   </style>
 </head>
 <body>
-
 <div class="overlay" id="overlay"><div class="spin"></div><div class="spin-msg" id="spinMsg">Loading…</div></div>
 
 <nav class="nav">
@@ -185,8 +195,8 @@
     <button class="nav-btn" onclick="showView('admin')">Pipeline</button>
     <button class="nav-btn" onclick="showView('docs')">Docs</button>
     <div class="nav-right">
-      <span class="last-updated" id="lastUpdated"></span>
-      <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener" style="font-size:12px;color:var(--muted)">GitHub &#8599;</a>
+      <span class="upd" id="lastUpd"></span>
+      <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener" style="font-size:11px;color:var(--muted)">GitHub &#8599;</a>
     </div>
   </div>
 </nav>
@@ -195,46 +205,61 @@
   <div class="hero-inner">
     <div>
       <h1>US Energy Markets <em>Analytics</em></h1>
-      <p>Interactive pipeline covering all 7 US ISOs/RTOs — load, price, renewable integration, supply queue, load forecast, and project finance.</p>
+      <p>Interactive analytics covering all 7 US ISOs/RTOs — load, price, renewable integration, supply queue, load forecast, project finance, and grid emissions.</p>
     </div>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="val" id="heroIsos">7</div><div class="lbl">ISOs / RTOs</div></div>
-      <div class="hero-stat"><div class="val" id="heroMetrics">10+</div><div class="lbl">KPI Metrics</div></div>
-      <div class="hero-stat"><div class="val" id="heroScenarios">18</div><div class="lbl">Finance Scenarios</div></div>
+      <div class="hero-stat"><div class="val">7</div><div class="lbl">ISOs / RTOs</div></div>
+      <div class="hero-stat"><div class="val">15+</div><div class="lbl">Analytics Views</div></div>
+      <div class="hero-stat"><div class="val">18</div><div class="lbl">Finance Scenarios</div></div>
     </div>
   </div>
 </div>
 
 <div class="iso-bar"><div class="iso-bar-inner" id="isoTabs"></div></div>
 
-<!-- ── MARKET VIEW ─────────────────────────────────────────────────────────── -->
+<!-- ═══ MARKET ═══════════════════════════════════════════════════════════════ -->
 <div class="view active" id="view-market">
   <div class="content">
     <div class="err-bar" id="mktErr"></div>
-    <div class="sec"><h2>Market KPIs</h2><span class="sec-note" id="mktRegionNote"></span></div>
+
+    <div class="sec"><h2>Market KPIs</h2><span class="sec-note" id="mktNote"></span></div>
     <div class="kpi-row" id="kpiRow"></div>
 
-    <div class="sec"><h2>Load &amp; Price Time Series</h2></div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Hourly Load (MW)<span class="info">i<span class="tip">Total electricity demand across the ISO in megawatts (MW) for each hour. Higher load typically correlates with higher prices. Peaks in summer (AC) and winter (heating) are normal.</span></span></div><div id="cLoad" style="height:260px"></div></div>
-      <div class="card"><div class="card-title">Hub Price ($/MWh)<span class="info">i<span class="tip">The wholesale electricity price at the ISO's primary hub in dollars per megawatt-hour. This is the real-time or day-ahead locational marginal price (LMP) — what generators are paid and large buyers pay.</span></span> <span id="hubLabel"></span></div><div id="cPrice" style="height:260px"></div></div>
+    <div class="sec"><h2>Date Filter</h2><span class="sec-note">Filter all Market charts to a date range</span></div>
+    <div class="filters">
+      <label>From: <input type="date" id="dateFrom"></label>
+      <label>To: <input type="date" id="dateTo"></label>
+      <button class="btn btn-blue" style="padding:4px 12px;font-size:11px" onclick="applyDateFilter()">Apply</button>
+      <button class="btn" style="padding:4px 12px;font-size:11px;background:var(--surface2);color:var(--muted)" onclick="clearDateFilter()">Clear</button>
     </div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Temperature (°F)<span class="info">i<span class="tip">Ambient air temperature at a representative weather station in the ISO region. Temperature is the single strongest driver of electricity demand — heat drives cooling load, cold drives heating load.</span></span></div><div id="cTemp" style="height:220px"></div></div>
-      <div class="card"><div class="card-title">Load vs Price Scatter<span class="info">i<span class="tip">Each dot is one hour. X-axis = load (MW), Y-axis = price ($/MWh). A positive slope means higher demand → higher prices. Price spikes (dots high on Y) during moderate load indicate scarcity events or transmission congestion.</span></span></div><div id="cScatter" style="height:220px"></div></div>
+
+    <div class="sec"><h2>Load &amp; Price</h2></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Hourly Load (MW)<span class="info">i<span class="tip">Total electricity demand across the ISO each hour. Peaks in summer (AC) and winter (heating) are typical. Use the date filter above to zoom in.</span></span><button class="export-btn" onclick="exportPng('cLoad','load')">&#128190; PNG</button></div><div id="cLoad" style="height:250px"></div></div>
+      <div class="card"><div class="ct">Hub Price ($/MWh)<span class="info">i<span class="tip">Wholesale electricity price at the ISO's primary hub. This is the Locational Marginal Price (LMP) — what generators are paid and large buyers pay in the spot market.</span></span><button class="export-btn" onclick="exportPng('cPrice','price')">&#128190; PNG</button></div><div id="cPrice" style="height:250px"></div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Temperature (°F)<span class="info">i<span class="tip">Ambient temperature at a representative station. Temperature is the strongest driver of electricity demand.</span></span><button class="export-btn" onclick="exportPng('cTemp','temperature')">&#128190; PNG</button></div><div id="cTemp" style="height:210px"></div></div>
+      <div class="card"><div class="ct">Load vs Price Scatter<span class="info">i<span class="tip">Each dot = one hour. A positive slope means higher demand → higher prices. High-price outliers during moderate load indicate scarcity or congestion events.</span></span><button class="export-btn" onclick="exportPng('cScatter','scatter')">&#128190; PNG</button></div><div id="cScatter" style="height:210px"></div></div>
     </div>
 
     <div class="sec"><h2>Price Analytics</h2></div>
-    <div class="grid3">
-      <div class="card"><div class="card-title">Price Duration Curve<span class="info">i<span class="tip">All hours sorted from highest to lowest price. The X-axis shows what % of the time prices exceeded a given level. A steep curve = volatile market. A flat curve = stable prices. Negative prices appear at the far right.</span></span></div><div id="cPDC" style="height:240px"></div></div>
-      <div class="card"><div class="card-title">Avg Price by Hour of Day<span class="info">i<span class="tip">Average price for each of the 24 hours. Shows the daily shape — typically a morning ramp (7–9am), midday dip, and evening peak (5–8pm). Solar-heavy ISOs like CAISO show a midday price dip (the "duck curve").</span></span></div><div id="cHourly" style="height:240px"></div></div>
-      <div class="card"><div class="card-title">Monthly Avg Price ($/MWh)<span class="info">i<span class="tip">Monthly min, average, and max prices. The shaded band shows price volatility. Wide bands indicate months with scarcity events or extreme weather. Useful for spotting seasonal price patterns.</span></span></div><div id="cMonthly" style="height:240px"></div></div>
+    <div class="g3">
+      <div class="card"><div class="ct">Price Duration Curve<span class="info">i<span class="tip">All hours sorted highest to lowest. X-axis = % of time prices exceeded that level. Steep curve = volatile market. The far-right tail shows negative price frequency.</span></span><button class="export-btn" onclick="exportPng('cPDC','pdc')">&#128190; PNG</button></div><div id="cPDC" style="height:230px"></div></div>
+      <div class="card"><div class="ct">Avg Price by Hour of Day<span class="info">i<span class="tip">Typical daily price shape. Morning ramp, midday dip (solar), evening peak. CAISO shows the "duck curve" — deep midday dip from solar oversupply.</span></span><button class="export-btn" onclick="exportPng('cHourly','hourly-avg')">&#128190; PNG</button></div><div id="cHourly" style="height:230px"></div></div>
+      <div class="card"><div class="ct">Monthly Price Range<span class="info">i<span class="tip">Monthly min, avg, and max prices. Wide band = volatile month. Useful for spotting seasonal price patterns and scarcity events.</span></span><button class="export-btn" onclick="exportPng('cMonthly','monthly')">&#128190; PNG</button></div><div id="cMonthly" style="height:230px"></div></div>
     </div>
 
     <div class="sec"><h2>Renewable Integration</h2></div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Solar &amp; Wind Profile vs Price<span class="info">i<span class="tip">Solar capacity factor (0–1) and wind capacity factor overlaid on the spot price. When renewable generation is high and prices drop, that's "price cannibalization" — the effect renewables have on their own revenue. The capture ratio KPI quantifies this.</span></span></div><div id="cRenew" style="height:280px"></div></div>
-      <div class="card"><div class="card-title">Price Heatmap — Hour × Day<span class="info">i<span class="tip">Each cell is one hour of one day. Color intensity shows price — red = expensive, green = cheap. Patterns reveal: morning/evening price peaks (vertical bands), high-price days (horizontal bands), and overnight negative prices.</span></span></div><div id="cHeatmap" style="height:280px"></div></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Solar &amp; Wind Profile vs Price<span class="info">i<span class="tip">When generation (CF) is high and prices drop, that is price cannibalization — the effect renewables have on their own revenue. The capture ratio KPI quantifies this effect.</span></span><button class="export-btn" onclick="exportPng('cRenew','renewables')">&#128190; PNG</button></div><div id="cRenew" style="height:270px"></div></div>
+      <div class="card"><div class="ct">Price Heatmap (Hour × Day)<span class="info">i<span class="tip">Each cell = one hour of one day. Red = expensive, green = cheap. Morning/evening vertical bands show daily price shape. Horizontal bands show high-price days.</span></span><button class="export-btn" onclick="exportPng('cHeatmap','heatmap')">&#128190; PNG</button></div><div id="cHeatmap" style="height:270px"></div></div>
+    </div>
+
+    <div class="sec"><h2>Grid Emissions</h2></div>
+    <div class="g2">
+      <div class="card"><div class="ct">CO₂ Intensity (lbs/MWh)<span class="info">i<span class="tip">Estimated grid carbon intensity each hour. Scales with price — higher prices indicate dirty peaker plants running. Negative price hours reflect excess clean energy and get 0.3× the base intensity.</span></span><button class="export-btn" onclick="exportPng('cEmissInt','emissions-intensity')">&#128190; PNG</button></div><div id="cEmissInt" style="height:240px"></div></div>
+      <div class="card"><div class="ct">CO₂ Tons per Hour<span class="info">i<span class="tip">Total estimated CO₂ output each hour = intensity × load. Shows when the grid is dirtiest in absolute terms — typically during evening peaks when both demand and intensity are high.</span></span><button class="export-btn" onclick="exportPng('cEmissTons','emissions-tons')">&#128190; PNG</button></div><div id="cEmissTons" style="height:240px"></div></div>
     </div>
 
     <div class="sec"><h2>Market Findings</h2></div>
@@ -242,76 +267,94 @@
   </div>
 </div>
 
-<!-- ── SUPPLY QUEUE ────────────────────────────────────────────────────────── -->
+<!-- ═══ SUPPLY QUEUE ══════════════════════════════════════════════════════════ -->
 <div class="view" id="view-supply">
   <div class="content">
     <div class="err-bar" id="supErr"></div>
     <div class="kpi-row" id="queueKpis"></div>
 
     <div class="sec"><h2>Queue Outlook</h2></div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Expected Online MW by COD Year (P50 vs P90)<span class="info">i<span class="tip">MW of new capacity expected to come online each year based on Commercial Operation Date (COD) targets. P50 = 50th percentile probability scenario (base case). P90 = 90th percentile (more conservative — fewer projects complete). The gap between them shows completion uncertainty.</span></span></div><div id="cQueue" style="height:280px"></div></div>
-      <div class="card"><div class="card-title">Cumulative P50 MW Coming Online<span class="info">i<span class="tip">Running total of P50 MW added to the grid over time. Steep slope = rapid capacity additions. Flattening = pipeline thinning out. This shows how much new supply the ISO is expected to absorb cumulatively.</span></span></div><div id="cQueueCum" style="height:280px"></div></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Expected Online MW by COD Year<span class="info">i<span class="tip">P50 = base case (50% probability). P90 = conservative (90% probability, fewer projects complete). The gap shows completion uncertainty. Historically 60–80% of queued MW never gets built.</span></span><button class="export-btn" onclick="exportPng('cQueue','queue')">&#128190; PNG</button></div><div id="cQueue" style="height:260px"></div></div>
+      <div class="card"><div class="ct">Cumulative P50 MW Coming Online<span class="info">i<span class="tip">Running total of new capacity expected to connect. Steep slope = rapid buildout. Flattening = pipeline thinning. Shows how much total supply the ISO must absorb.</span></span><button class="export-btn" onclick="exportPng('cQueueCum','queue-cumulative')">&#128190; PNG</button></div><div id="cQueueCum" style="height:260px"></div></div>
     </div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Queue by Technology (P50 stacked)<span class="info">i<span class="tip">Breakdown of expected online MW by technology type each year. Shows the mix of solar, wind, storage, gas, etc. entering the grid. Dominated by solar and wind in most ISOs, reflecting the current renewables buildout.</span></span></div><div id="cQueueTech" style="height:280px"></div></div>
-      <div class="card"><div class="card-title">Queue MW by Status<span class="info">i<span class="tip">Total MW in the interconnection queue broken down by project status. Active/In Study = progressing through interconnection. Submitted = just entered. Withdrawn/Cancelled = attrition (historically 60–80% of queue MW never gets built). Operational = already online.</span></span></div><div id="cQueueStatus" style="height:280px"></div></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Queue by Technology<span class="info">i<span class="tip">Expected MW stacked by technology type each year. Reflects the current clean energy buildout — solar and storage dominate most ISOs, with offshore wind growing in NYISO and ISO-NE.</span></span><button class="export-btn" onclick="exportPng('cQueueTech','queue-tech')">&#128190; PNG</button></div><div id="cQueueTech" style="height:260px"></div></div>
+      <div class="card"><div class="ct">Queue MW by Status<span class="info">i<span class="tip">Total MW by project status. Active/In Study = progressing through interconnection studies. Most MW in "Submitted" or "Withdrawn" never gets built — normal queue attrition.</span></span><button class="export-btn" onclick="exportPng('cQueueStatus','queue-status')">&#128190; PNG</button></div><div id="cQueueStatus" style="height:260px"></div></div>
+    </div>
+
+    <div class="sec"><h2>Battery Storage Arbitrage<span class="info">i<span class="tip">100 MW / 4-hour battery ($120M capex, 85% RTE). Each day: charge during the 4 cheapest hours, discharge during the 4 most expensive. Revenue = (discharge × RTE − charge) × capacity.</span></span></h2></div>
+    <div class="kpi-row" id="storageKpis"></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Daily Arbitrage Revenue ($k)<span class="info">i<span class="tip">Revenue the battery earns each day from price spread arbitrage. Higher on volatile days. Shows the range of outcomes and which days storage is most/least valuable.</span></span><button class="export-btn" onclick="exportPng('cStorageRev','storage-revenue')">&#128190; PNG</button></div><div id="cStorageRev" style="height:240px"></div></div>
+      <div class="card"><div class="ct">Daily Price Spread (Peak − Off-Peak $/MWh)<span class="info">i<span class="tip">Average price of the top 4 hours minus the bottom 4 hours each day. The bigger the spread, the more profitable battery arbitrage is. Markets with flat spreads make storage economics difficult.</span></span><button class="export-btn" onclick="exportPng('cStorageSpread','storage-spread')">&#128190; PNG</button></div><div id="cStorageSpread" style="height:240px"></div></div>
     </div>
 
     <div class="sec"><h2>Project List</h2></div>
     <div class="filters">
-      <label>Technology: <select id="qTech" onchange="filterQueue()"><option value="">All</option></select></label>
+      <label>Tech: <select id="qTech" onchange="filterQueue()"><option value="">All</option></select></label>
       <label>Status: <select id="qStatus" onchange="filterQueue()"><option value="">All</option></select></label>
-      <label>Min MW: <input type="number" id="qMinMw" value="0" style="width:70px" onchange="filterQueue()"></label>
-      <span class="filter-count" id="qCount"></span>
+      <label>Min MW: <input type="number" id="qMinMw" value="0" style="width:65px" onchange="filterQueue()"></label>
+      <span class="fc" id="qCount"></span>
+      <button class="csv-btn" onclick="exportTableCsv('queueTbody',['ID','Project','Tech','MW','Status','COD Year','P50','P90'],'queue')">&#8659; CSV</button>
     </div>
     <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>ID</th><th>Project</th><th>Technology</th><th>MW</th><th>Status</th><th>COD Year</th><th>P50</th><th>P90</th></tr></thead>
-        <tbody id="queueTbody"></tbody>
-      </table>
+      <table><thead><tr><th>ID</th><th>Project</th><th>Technology</th><th>MW</th><th>Status</th><th>COD Year</th><th>P50</th><th>P90</th></tr></thead>
+      <tbody id="queueTbody"></tbody></table>
     </div>
   </div>
 </div>
 
-<!-- ── FORECAST ────────────────────────────────────────────────────────────── -->
+<!-- ═══ FORECAST ══════════════════════════════════════════════════════════════ -->
 <div class="view" id="view-forecast">
   <div class="content">
     <div class="err-bar" id="fcErr"></div>
     <div class="sec"><h2>Load Forecast Scenarios</h2></div>
-    <div class="grid1">
-      <div class="card"><div class="card-title">Annual Avg Load — Low / Base / High (MW)<span class="info">i<span class="tip">Long-range load forecast showing three scenarios. Base = expected growth trajectory. High = accelerated electrification (EVs, data centers, industrial load). Low = slower growth or efficiency gains. The shaded band between Low and High is the uncertainty range.</span></span></div><div id="cForecast" style="height:340px"></div></div>
+    <div class="g1">
+      <div class="card"><div class="ct">Annual Avg Load — Low / Base / High (MW)<span class="info">i<span class="tip">Long-range load forecast. Base = trend continuation. High = accelerated electrification (EVs, data centers). Low = efficiency gains or slower growth. Shaded band = uncertainty range.</span></span><button class="export-btn" onclick="exportPng('cForecast','forecast')">&#128190; PNG</button></div><div id="cForecast" style="height:320px"></div></div>
     </div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Forecast Range Band (High − Low MW)<span class="info">i<span class="tip">The gap between the High and Low scenarios each year. A widening band means growing uncertainty further into the future — small differences in growth assumptions compound over time. Useful for risk planning.</span></span></div><div id="cFcRange" style="height:260px"></div></div>
-      <div class="card"><div class="card-title">YoY Growth Rate — Base Case<span class="info">i<span class="tip">Year-over-year percentage change in average load under the base scenario. Positive = growing demand. The US average is ~1–2%/yr but many ISOs project acceleration due to EV adoption, data center growth, and industrial electrification.</span></span></div><div id="cFcGrowth" style="height:260px"></div></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Forecast Uncertainty Band (High − Low)<span class="info">i<span class="tip">Gap between High and Low scenarios. Widens over time as small growth differences compound. Wide bands signal high planning uncertainty.</span></span><button class="export-btn" onclick="exportPng('cFcRange','forecast-range')">&#128190; PNG</button></div><div id="cFcRange" style="height:240px"></div></div>
+      <div class="card"><div class="ct">YoY Growth Rate — Base Case<span class="info">i<span class="tip">Year-over-year % change in avg load under the base scenario. US average is ~1–2%/yr. Many ISOs project acceleration due to EV adoption and industrial electrification.</span></span><button class="export-btn" onclick="exportPng('cFcGrowth','forecast-growth')">&#128190; PNG</button></div><div id="cFcGrowth" style="height:240px"></div></div>
     </div>
-
     <div class="sec"><h2>Model Backtest</h2></div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Actual vs Predicted Load<span class="info">i<span class="tip">How well the forecast model predicts historical load. The closer the orange (predicted) line tracks the blue (actual) line, the better the model. Divergence during extreme weather shows model limitations.</span></span></div><div id="cBacktest" style="height:260px"></div></div>
-      <div class="card"><div class="card-title">Backtest Metrics<span class="info">i<span class="tip">RMSE (Root Mean Square Error) = average prediction error in MW — lower is better. MAPE (Mean Absolute Percentage Error) = average % error. Best model shows which approach performed better: naive 24-hour lag or weather-adjusted regression.</span></span></div><div id="backtestMetrics" style="padding:8px"></div></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Actual vs Predicted Load<span class="info">i<span class="tip">How well the model predicts historical load. Tight tracking = good fit. Divergence during extreme weather shows model limits.</span></span><button class="export-btn" onclick="exportPng('cBacktest','backtest')">&#128190; PNG</button></div><div id="cBacktest" style="height:240px"></div></div>
+      <div class="card"><div class="ct">Backtest Metrics<span class="info">i<span class="tip">RMSE = avg error in MW (lower = better). MAPE = avg % error. Best model = winner between naive 24h lag and weather regression.</span></span></div><div id="backtestMet" style="padding:6px"></div></div>
     </div>
   </div>
 </div>
 
-<!-- ── FINANCE ─────────────────────────────────────────────────────────────── -->
+<!-- ═══ FINANCE ═══════════════════════════════════════════════════════════════ -->
 <div class="view" id="view-finance">
   <div class="content">
     <div class="err-bar" id="finErr"></div>
     <div class="sec"><h2>Base Case — Contracted Solar</h2></div>
     <div class="sum-grid" id="finSummary"></div>
 
-    <div class="sec"><h2>Annual Cash Flow Projection</h2></div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Revenue, Opex &amp; Debt Service (MUSD/yr)<span class="info">i<span class="tip">Annual project cash flows in millions of USD. Green bars = energy revenue (declines slightly each year due to panel degradation). Yellow = operating expenses (fixed $/kW/yr). Red = debt service (principal + interest, zeroes out after the loan tenor). The net of these is cash available for equity.</span></span></div><div id="cCashflow" style="height:300px"></div></div>
-      <div class="card"><div class="card-title">Equity Free Cash Flow &amp; DSCR<span class="info">i<span class="tip">Blue bars = cash left for equity holders after paying opex and debt. Orange line = Debt Service Coverage Ratio (DSCR = EBITDA ÷ Debt Service). Lenders typically require DSCR ≥ 1.25x. A DSCR below 1.0 means the project cannot cover its debt from operations.</span></span></div><div id="cDscr" style="height:300px"></div></div>
+    <div class="sec"><h2>Cash Flow Projection</h2></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Revenue, Opex &amp; Debt Service (MUSD/yr)<span class="info">i<span class="tip">Green = revenue (declines slightly from panel degradation). Yellow = fixed opex. Red = debt service (zeroes out after loan tenor). Net of these = equity cash flow.</span></span><button class="export-btn" onclick="exportPng('cCashflow','cashflow')">&#128190; PNG</button></div><div id="cCashflow" style="height:280px"></div></div>
+      <div class="card"><div class="ct">Equity FCF &amp; DSCR<span class="info">i<span class="tip">Blue bars = cash for equity holders after opex and debt. Orange line = DSCR (EBITDA ÷ Debt Service). Lenders require DSCR ≥ 1.25×. Below 1.0× = project cannot service its debt.</span></span><button class="export-btn" onclick="exportPng('cDscr','dscr')">&#128190; PNG</button></div><div id="cDscr" style="height:280px"></div></div>
     </div>
 
     <div class="sec"><h2>Sensitivity</h2></div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Delta NPV vs Base (MUSD)<span class="info">i<span class="tip">How much the project NPV changes from the base case when each driver is stressed. Green bars = scenarios that improve NPV (e.g. lower capex). Red bars = scenarios that reduce NPV (e.g. lower prices). The longest bars identify the biggest risks and opportunities.</span></span></div><div id="cSens" style="height:280px"></div></div>
-      <div class="card"><div class="card-title">NPV by Price × Capex Case<span class="info">i<span class="tip">A 3×3 matrix of NPV outcomes across all combinations of price scenario (columns) and capex scenario (rows) for contracted projects. Green = positive NPV (project creates value). Red = negative NPV (destroys value). Read across a row to see price risk; read down a column to see capex risk.</span></span></div><div id="cNpvMatrix" style="height:280px"></div></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Delta NPV vs Base (MUSD)<span class="info">i<span class="tip">How much NPV changes from the base case when each driver is stressed. Green = improves NPV. Red = reduces it. Longest bars = biggest risks.</span></span><button class="export-btn" onclick="exportPng('cSens','sensitivity')">&#128190; PNG</button></div><div id="cSens" style="height:260px"></div></div>
+      <div class="card"><div class="ct">NPV Matrix (Price × Capex, Contracted)<span class="info">i<span class="tip">3×3 matrix of NPV across all price × capex case combinations. Green = creates value. Red = destroys value. Read across to see price risk; read down for capex risk.</span></span><button class="export-btn" onclick="exportPng('cNpvMatrix','npv-matrix')">&#128190; PNG</button></div><div id="cNpvMatrix" style="height:260px"></div></div>
+    </div>
+
+    <div class="sec"><h2>Custom Assumptions — Live Model</h2><span class="sec-note">Adjust sliders to recalculate finance metrics instantly</span></div>
+    <div class="sliders-grid" id="slidersGrid"></div>
+    <div class="slider-result">
+      <h3>Recalculated Results (Contracted, Base Price &amp; Capex)</h3>
+      <div class="sr-grid" id="sliderResults"><div style="color:var(--muted);font-size:12px">Move a slider to see results.</div></div>
+    </div>
+
+    <div class="sec"><h2>Portfolio — Base Case Across All ISOs</h2><span class="sec-note">Contracted, base price, base capex</span></div>
+    <div class="tbl-wrap">
+      <table><thead><tr><th>ISO</th><th>Capture ($/MWh)</th><th>NPV (MUSD)</th><th>After-Tax NPV</th><th>IRR</th><th>Min DSCR</th><th>LCOE ($/MWh)</th><th>Yr1 Rev (MUSD)</th></tr></thead>
+      <tbody id="portfolioTbody"></tbody></table>
     </div>
 
     <div class="sec"><h2>Full Scenario Matrix</h2></div>
@@ -319,58 +362,66 @@
       <label>Contract: <select id="fCtract" onchange="filterFin()"><option value="">All</option><option>merchant</option><option>contracted</option></select></label>
       <label>Price: <select id="fPrice" onchange="filterFin()"><option value="">All</option><option>low</option><option>base</option><option>high</option></select></label>
       <label>Capex: <select id="fCapex" onchange="filterFin()"><option value="">All</option><option>low</option><option>base</option><option>high</option></select></label>
-      <span class="filter-count" id="finCount"></span>
+      <span class="fc" id="finCount"></span>
+      <button class="csv-btn" onclick="exportTableCsv('finTbody',['#','Contract','Price','Capex','NPV','AT-NPV','IRR','MinDSCR','AvgDSCR','LCOE','Yr1Rev'],'finance-scenarios')">&#8659; CSV</button>
     </div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr>
-          <th>#</th><th>Contract</th><th>Price</th><th>Capex</th>
-          <th>NPV (MUSD)</th><th>After-Tax NPV</th><th>IRR</th>
-          <th>Min DSCR</th><th>Avg DSCR</th><th>LCOE ($/MWh)</th><th>Yr1 Rev</th>
-        </tr></thead>
-        <tbody id="finTbody"></tbody>
-      </table>
-    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>#</th><th>Contract</th><th>Price</th><th>Capex</th><th>NPV (MUSD)</th><th>After-Tax NPV</th><th>IRR</th><th>Min DSCR</th><th>Avg DSCR</th><th>LCOE</th><th>Yr1 Rev</th></tr></thead>
+      <tbody id="finTbody"></tbody>
+    </table></div>
   </div>
 </div>
 
-<!-- ── ISO COMPARE ─────────────────────────────────────────────────────────── -->
+<!-- ═══ ISO COMPARE ════════════════════════════════════════════════════════════ -->
 <div class="view" id="view-compare">
   <div class="content">
-    <div class="sec"><h2>ISO / RTO Comparison</h2><span class="sec-note">All markets — base contracted solar scenario</span></div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr>
-          <th>ISO</th><th>Avg Price</th><th>Solar Capture</th><th>Wind Capture</th>
-          <th>Neg Price %</th><th>Cong. Mean</th><th>Base NPV</th><th>IRR</th><th>LCOE</th>
-        </tr></thead>
-        <tbody id="cmpBody"></tbody>
-      </table>
+    <div class="sec"><h2>ISO / RTO Comparison</h2><span class="sec-note">All markets — base contracted solar</span></div>
+    <div class="filters">
+      <button class="csv-btn" onclick="exportTableCsv('cmpBody',['ISO','Avg Price','Solar Capture','Wind Capture','Neg %','Cong','NPV','IRR','LCOE'],'iso-comparison')">&#8659; CSV</button>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>ISO</th><th>Avg Price ($/MWh)</th><th>Solar Capture</th><th>Wind Capture</th><th>Neg Price %</th><th>Cong. Mean</th><th>Base NPV (MUSD)</th><th>IRR</th><th>LCOE</th></tr></thead>
+      <tbody id="cmpBody"></tbody>
+    </table></div>
+
+    <div class="sec"><h2>Cross-ISO Charts</h2></div>
+    <div class="g2">
+      <div class="card"><div class="ct">Avg Load by ISO (MW)<button class="export-btn" onclick="exportPng('cCmpLoad','iso-load')">&#128190; PNG</button></div><div id="cCmpLoad" style="height:280px"></div></div>
+      <div class="card"><div class="ct">Solar vs Wind Capture Price ($/MWh)<button class="export-btn" onclick="exportPng('cCmpCapture','iso-capture')">&#128190; PNG</button></div><div id="cCmpCapture" style="height:280px"></div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Base IRR by ISO<button class="export-btn" onclick="exportPng('cCmpIrr','iso-irr')">&#128190; PNG</button></div><div id="cCmpIrr" style="height:260px"></div></div>
+      <div class="card"><div class="ct">LCOE vs Avg Price ($/MWh)<span class="info">i<span class="tip">If LCOE > Avg Price the project cannot cover costs on merchant basis. The gap shows how dependent a project is on contracted pricing or policy support.</span></span><button class="export-btn" onclick="exportPng('cCmpLcoe','iso-lcoe')">&#128190; PNG</button></div><div id="cCmpLcoe" style="height:260px"></div></div>
     </div>
 
-    <div class="grid2">
-      <div class="card"><div class="card-title">Avg Load by ISO (MW)</div><div id="cCmpLoad" style="height:300px"></div></div>
-      <div class="card"><div class="card-title">Solar vs Wind Capture Price ($/MWh)</div><div id="cCmpCapture" style="height:300px"></div></div>
+    <div class="sec"><h2>NPV vs IRR Bubble Chart</h2><span class="sec-note">Bubble size = avg load (MW)</span></div>
+    <div class="g1">
+      <div class="card"><div class="ct">All ISOs — Base Contracted Solar<span class="info">i<span class="tip">Each bubble is one ISO. X = IRR, Y = NPV. Top-right = best returns. Bubble size = how large the market is (avg load). Useful for comparing risk-adjusted attractiveness across markets.</span></span><button class="export-btn" onclick="exportPng('cCmpBubble','iso-bubble')">&#128190; PNG</button></div><div id="cCmpBubble" style="height:340px"></div></div>
     </div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Base IRR by ISO</div><div id="cCmpIrr" style="height:280px"></div></div>
-      <div class="card"><div class="card-title">LCOE vs Avg Price — Value Gap ($/MWh)</div><div id="cCmpLcoe" style="height:280px"></div></div>
+
+    <div class="sec"><h2>Price Correlation Matrix</h2><span class="sec-note">Pearson correlation of hourly prices across ISOs</span></div>
+    <div class="g1">
+      <div class="card"><div class="ct">Cross-ISO Price Correlation<span class="info">i<span class="tip">1.0 = perfectly correlated (prices move together). 0.0 = no relationship. Negative = inversely correlated. High correlation = limited diversification benefit. Low correlation = ISOs are partially isolated.</span></span><button class="export-btn" onclick="exportPng('cCorr','correlation')">&#128190; PNG</button></div><div id="cCorr" style="height:380px"></div></div>
     </div>
-    <div class="grid1">
-      <div class="card"><div class="card-title">NPV vs IRR Bubble — bubble size = Avg Load</div><div id="cCmpBubble" style="height:360px"></div></div>
+
+    <div class="sec"><h2>US ISO Map</h2><span class="sec-note">Bubble size = avg load · color = base IRR</span></div>
+    <div class="g1">
+      <div class="card"><div class="ct">Geographic Overview<span class="info">i<span class="tip">ISO service territory center points. Bubble size = avg load (market scale). Color intensity = base IRR (green = higher returns). Hover for details.</span></span><button class="export-btn" onclick="exportPng('cMap','iso-map')">&#128190; PNG</button></div><div id="cMap" style="height:420px"></div></div>
     </div>
-    <div class="grid1">
-      <div class="card"><div class="card-title">Negative Price Exposure by ISO</div><div id="cCmpNeg" style="height:260px"></div></div>
+
+    <div class="sec"><h2>Negative Price Exposure</h2></div>
+    <div class="g1">
+      <div class="card"><div class="ct">Negative Price Hours &amp; Share by ISO<button class="export-btn" onclick="exportPng('cCmpNeg','iso-neg-price')">&#128190; PNG</button></div><div id="cCmpNeg" style="height:260px"></div></div>
     </div>
   </div>
 </div>
 
-<!-- ── PIPELINE ADMIN ──────────────────────────────────────────────────────── -->
+<!-- ═══ PIPELINE ═══════════════════════════════════════════════════════════════ -->
 <div class="view" id="view-admin">
   <div class="content">
     <div class="run-box">
       <h2>Pipeline Control</h2>
-      <p>Trigger the full analytics pipeline for one ISO or all ISOs. Runs: ingest → transform → forecast → queue → markets → finance → charts. Dashboard data refreshes automatically.</p>
+      <p>Trigger the full 7-stage analytics pipeline (ingest → transform → forecast → queue → markets → finance → charts) for one ISO or all at once. Dashboard data refreshes automatically when complete.</p>
       <div class="btns">
         <button class="btn btn-blue" onclick="runPipeline(currentISO)">&#9654; Run <span id="runLabel">ERCOT</span></button>
         <button class="btn btn-yellow" onclick="runAll()">&#9654; Run All ISOs</button>
@@ -378,169 +429,126 @@
       <div class="run-log" id="runLog"></div>
     </div>
     <div class="run-box">
+      <h2>Scheduled Auto-Refresh</h2>
+      <p>Set up a free cron job at <a href="https://cron-job.org" target="_blank" rel="noopener">cron-job.org</a> to keep data current automatically:</p>
+      <div class="run-log on" style="color:var(--muted)">URL:    POST https://your-app.up.railway.app/api/cron/refresh
+Schedule: 0 6 * * *  (daily at 6am UTC)
+Method:   POST
+No auth required</div>
+    </div>
+    <div class="run-box">
       <h2>REST API Reference</h2>
-      <p>Access all data programmatically via the JSON API:</p>
+      <p>Access all data programmatically via JSON endpoints:</p>
       <div class="run-log on" style="color:var(--muted)">GET  /api/isos
 GET  /api/{iso}/panel            → timestamps, load_mw, price_usd_mwh, temperature_f
-GET  /api/{iso}/market           → KPI metrics dict
-GET  /api/{iso}/hourly           → enriched hourly: solar/wind profile, congestion
-GET  /api/{iso}/price-duration   → price duration curve (percentile → price)
-GET  /api/{iso}/monthly          → monthly aggregations: avg price, load, neg hours
-GET  /api/{iso}/heatmap          → hour-of-day × day price/load matrix
+GET  /api/{iso}/market           → KPI metrics
+GET  /api/{iso}/hourly           → enriched hourly with solar/wind profiles
+GET  /api/{iso}/price-duration   → price duration curve
+GET  /api/{iso}/monthly          → monthly aggregated price/load/neg-hours
+GET  /api/{iso}/heatmap          → hour-of-day × day matrix
 GET  /api/{iso}/queue            → queue outlook by year and technology
-GET  /api/{iso}/queue-detail     → individual project list with status breakdown
-GET  /api/{iso}/forecast         → load scenarios (low/base/high) by year
+GET  /api/{iso}/queue-detail     → individual project list
+GET  /api/{iso}/forecast         → load scenarios low/base/high
 GET  /api/{iso}/backtest         → forecast backtest actual vs predicted
-GET  /api/{iso}/finance          → scenario matrix, base summary, sensitivity
+GET  /api/{iso}/finance          → scenario matrix, summary, sensitivity
 GET  /api/{iso}/cashflows        → year-by-year projected cash flows
+GET  /api/{iso}/emissions        → hourly CO₂ intensity and totals
+GET  /api/{iso}/storage          → battery storage arbitrage analysis
+GET  /api/correlation            → cross-ISO price correlation matrix
 GET  /api/{iso}/findings         → market findings text
-POST /api/run/{iso}              → trigger full pipeline for one ISO
-POST /api/run-all                → trigger all ISOs</div>
+POST /api/finance/custom?iso=X   → custom assumptions finance run
+POST /api/run/{iso}              → trigger pipeline for one ISO
+POST /api/run-all                → trigger all ISOs
+POST /api/cron/refresh           → scheduled refresh trigger</div>
     </div>
   </div>
 </div>
 
-<!-- ── DOCS VIEW ──────────────────────────────────────────────────────────── -->
+<!-- ═══ DOCS ═══════════════════════════════════════════════════════════════════ -->
 <div class="view" id="view-docs">
   <div class="content">
-
     <div class="doc-hero">
       <h2>&#9889; How This Dashboard Works</h2>
-      <p>This tool runs a 7-stage analytics pipeline across all 7 US electricity markets (ISOs/RTOs). Each stage transforms raw data into structured outputs that power every chart, KPI, and table you see. Select any ISO tab at the top to switch markets. Use the nav to explore each analytical layer.</p>
+      <p>This tool runs a 7-stage analytics pipeline across all 7 US electricity markets (ISOs/RTOs). Each stage transforms raw data into structured outputs powering every chart, KPI, and table. Select any ISO tab to switch markets. Use the nav to explore each analytical layer.</p>
     </div>
 
-    <!-- Pipeline -->
-    <div class="doc-section">
-      <h2>The Analytics Pipeline</h2>
-      <div class="sub">Each stage runs in sequence — outputs of one feed into the next</div>
-      <div class="pipeline-flow">
-        <div class="pipeline-step">1. Ingest</div><div class="pipeline-arrow">&#8594;</div>
-        <div class="pipeline-step">2. Transform</div><div class="pipeline-arrow">&#8594;</div>
-        <div class="pipeline-step">3. Forecast</div><div class="pipeline-arrow">&#8594;</div>
-        <div class="pipeline-step">4. Queue</div><div class="pipeline-arrow">&#8594;</div>
-        <div class="pipeline-step">5. Markets</div><div class="pipeline-arrow">&#8594;</div>
-        <div class="pipeline-step">6. Finance</div><div class="pipeline-arrow">&#8594;</div>
-        <div class="pipeline-step">7. Charts</div>
+    <div class="doc-sec">
+      <h2>The Analytics Pipeline</h2><div class="sub">Each stage runs in sequence — outputs of one feed into the next</div>
+      <div class="pipe-flow">
+        <div class="pipe-step">1. Ingest</div><div class="pipe-arr">&#8594;</div>
+        <div class="pipe-step">2. Transform</div><div class="pipe-arr">&#8594;</div>
+        <div class="pipe-step">3. Forecast</div><div class="pipe-arr">&#8594;</div>
+        <div class="pipe-step">4. Queue</div><div class="pipe-arr">&#8594;</div>
+        <div class="pipe-step">5. Markets</div><div class="pipe-arr">&#8594;</div>
+        <div class="pipe-step">6. Finance</div><div class="pipe-arr">&#8594;</div>
+        <div class="pipe-step">7. Charts</div>
       </div>
       <div class="doc-grid">
-        <div class="doc-card">
-          <h3><span class="icon">&#128229;</span> Stage 1 — Ingest</h3>
-          <p>Pulls raw electricity load, hub price, weather, and interconnection queue data for each ISO. Supports live API sources (ERCOT, Open-Meteo weather) or sample CSV files. Validates data against schema contracts and logs a signed manifest with SHA-256 checksums for data lineage.</p>
-          <ul><li>Load: hourly MW demand from ISO feeds</li><li>Price: hourly LMP at the primary trading hub</li><li>Weather: hourly temperature at a representative station</li><li>Queue: interconnection project list from ISO filings</li></ul>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#128260;</span> Stage 2 — Transform</h3>
-          <p>Cleans and joins the four raw datasets into a single hourly panel with consistent timestamps, units, and column names. Normalizes the queue data into a standardized project table with completion probabilities.</p>
-          <ul><li>Joins load, price, and weather on timestamp</li><li>Fills minor gaps via forward-fill</li><li>Outputs: staged hourly panel CSV + normalized queue CSV</li></ul>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#128202;</span> Stage 3 — Forecast</h3>
-          <p>Builds a long-range load forecast using two models: a naive 24-hour lag baseline and a weather-adjusted regression. Backtests both models on held-out data, selects the best, then projects load 10 years forward under Low, Base, and High growth scenarios.</p>
-          <ul><li>Low: conservative growth (efficiency gains)</li><li>Base: trend-line continuation</li><li>High: accelerated electrification (EVs, data centers)</li></ul>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#128204;</span> Stage 4 — Queue Model</h3>
-          <p>Applies completion probability weights to each project in the interconnection queue. Uses P50 (base) and P90 (conservative) probability scenarios to estimate how much new capacity will actually come online each year by technology type.</p>
-          <ul><li>Historically 60–80% of queued MW never completes</li><li>P90 is always ≤ P50 (fewer projects complete)</li><li>Output: expected online MW by year and technology</li></ul>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#9889;</span> Stage 5 — Markets</h3>
-          <p>Computes wholesale market analytics from the hourly panel. Calculates capture prices for solar and wind (what a perfectly correlated generator would earn), identifies negative price hours, measures congestion via a proxy spread, and generates the market findings report.</p>
-          <ul><li>Capture price = generation-weighted average price</li><li>Capture ratio = capture price ÷ avg hub price</li><li>Congestion proxy = price spread between on/off-peak hours</li></ul>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#128181;</span> Stage 6 — Finance</h3>
-          <p>Runs a full project finance model for a representative utility-scale solar project. Computes 18 scenarios across combinations of contract type, price case, and capex case. Outputs NPV, IRR, DSCR, and LCOE for each scenario.</p>
-          <ul><li>Merchant: revenues at spot price × discount</li><li>Contracted: fixed-price PPA with adder above capture price</li><li>Debt: annuity-style senior loan over the tenor</li></ul>
-        </div>
+        <div class="doc-card"><h3>&#128229; Stage 1 — Ingest</h3><p>Pulls raw load, price, weather, and queue data. Supports live API sources or sample CSVs. Validates against schema contracts and logs a signed manifest with SHA-256 checksums for data lineage.</p></div>
+        <div class="doc-card"><h3>&#128260; Stage 2 — Transform</h3><p>Cleans and joins the four raw datasets into a single hourly panel. Normalizes the queue table with standardized project fields and completion probabilities.</p></div>
+        <div class="doc-card"><h3>&#128202; Stage 3 — Forecast</h3><p>Builds a long-range load forecast using a naive 24h lag baseline and weather-adjusted regression. Backtests both, selects the best, then projects 10 years under Low / Base / High growth scenarios.</p></div>
+        <div class="doc-card"><h3>&#128204; Stage 4 — Queue Model</h3><p>Applies completion probability weights to each queue project. P50 (base) and P90 (conservative) scenarios estimate how much capacity will actually come online each year by technology.</p></div>
+        <div class="doc-card"><h3>&#9889; Stage 5 — Markets</h3><p>Computes wholesale market analytics: solar and wind capture prices, negative price hours, congestion proxy spread, and the hourly emissions intensity model.</p></div>
+        <div class="doc-card"><h3>&#128181; Stage 6 — Finance</h3><p>Full project finance model for a representative utility-scale solar plant. Runs 18 scenarios across contract type × price case × capex case. Outputs NPV, IRR, DSCR, and LCOE for each. Also models battery storage arbitrage.</p></div>
       </div>
     </div>
 
-    <!-- Key terms -->
-    <div class="doc-section">
-      <h2>Key Terms Explained</h2>
-      <div class="sub">Definitions for every metric shown in the dashboard</div>
+    <div class="doc-sec">
+      <h2>Key Terms</h2><div class="sub">Plain-English definitions for every metric in the dashboard</div>
       <div class="doc-grid">
-        <div class="doc-card">
-          <h3><span class="icon">&#128200;</span> Market Terms</h3>
-          <ul>
-            <li><span class="term">LMP (Locational Marginal Price)</span> — The wholesale price of electricity at a specific node, in $/MWh. Reflects the cost of the next MW of generation plus congestion and losses.</li>
-            <li><span class="term">Capture Price</span> — What a solar or wind plant actually earns, weighted by when it generates. Solar generates midday when prices are often lower, so its capture price is usually below the average hub price.</li>
-            <li><span class="term">Capture Ratio</span> — Capture price ÷ average hub price. A ratio below 1.0 means the technology earns less than the average — a sign of price cannibalization.</li>
-            <li><span class="term">Price Duration Curve</span> — All hourly prices sorted from highest to lowest. Shows what % of hours prices exceed any given level.</li>
-            <li><span class="term">Negative Price Hours</span> — Hours when the price went below $0. Generators pay to produce. Caused by too much must-run generation (wind, nuclear) relative to demand.</li>
-            <li><span class="term">Congestion</span> — Price differences caused by transmission line limits. High congestion = infrastructure bottlenecks preventing cheap power from reaching load centers.</li>
-          </ul>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#128185;</span> Finance Terms</h3>
-          <ul>
-            <li><span class="term">NPV (Net Present Value)</span> — Total project value in today's dollars after discounting future cash flows. Positive NPV = the project creates value above the required return. In MUSD (millions).</li>
-            <li><span class="term">IRR (Internal Rate of Return)</span> — The discount rate at which NPV = 0. Compare to the equity discount rate in assumptions — if IRR &gt; hurdle rate, the project clears the return threshold.</li>
-            <li><span class="term">DSCR (Debt Service Coverage Ratio)</span> — EBITDA ÷ Annual Debt Service. Must stay above 1.0x (lender breakeven). Banks typically require ≥ 1.20–1.30x minimum.</li>
-            <li><span class="term">LCOE (Levelized Cost of Energy)</span> — All-in cost per MWh over the project life, discounted to present value. The minimum price at which the project breaks even.</li>
-            <li><span class="term">PPA (Power Purchase Agreement)</span> — A long-term contracted price for electricity output. Reduces merchant price risk; the contracted scenario uses a fixed strike price.</li>
-            <li><span class="term">Capex</span> — Capital expenditure to build the project ($/kW installed). A major NPV driver — lower capex directly increases returns.</li>
-          </ul>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#128204;</span> Queue Terms</h3>
-          <ul>
-            <li><span class="term">Interconnection Queue</span> — The list of power plant projects that have applied to connect to the grid. The ISO must study each project's impact on the transmission system before approving interconnection.</li>
-            <li><span class="term">COD (Commercial Operation Date)</span> — The target date a project expects to start generating commercially.</li>
-            <li><span class="term">P50 / P90</span> — Probability scenarios. P50 = 50% chance projects achieve at least this MW online (base case). P90 = 90% chance (conservative). P90 is always ≤ P50.</li>
-            <li><span class="term">Queue Attrition</span> — Most queued projects never get built. Historically 60–80% of MW in interconnection queues withdraw before completion due to cost, permitting, or financing issues.</li>
-            <li><span class="term">Active / In Study / Submitted</span> — Stages of interconnection. Submitted → In Study (ISO impact analysis) → Active (studying detailed costs) → Approved → Built.</li>
-          </ul>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#127758;</span> The 7 US ISOs / RTOs</h3>
-          <ul>
-            <li><span class="term">ERCOT</span> — Texas. Isolated grid, market-only state (no FERC jurisdiction). Known for price volatility and rapid wind/solar growth.</li>
-            <li><span class="term">CAISO</span> — California. High solar penetration, frequent negative midday prices, aggressive clean energy mandates.</li>
-            <li><span class="term">PJM</span> — Mid-Atlantic + Midwest. Largest ISO by load. Competitive capacity market (RPM). Heavy on gas, nuclear, and growing offshore wind.</li>
-            <li><span class="term">MISO</span> — Midwest + South. Wind-dominant generation mix. Low average prices driven by cheap wind.</li>
-            <li><span class="term">SPP</span> — Great Plains. Highest wind penetration in the US. Frequent negative price events. Low average prices.</li>
-            <li><span class="term">NYISO</span> — New York. Urban load centers, premium pricing in NYC zone. Growing offshore wind pipeline.</li>
-            <li><span class="term">ISO-NE</span> — New England. Smallest ISO. Gas-dependent with high prices. Aggressive offshore wind buildout underway.</li>
-          </ul>
-        </div>
+        <div class="doc-card"><h3>&#128200; Market Terms</h3><ul>
+          <li><span class="term">LMP</span> — Locational Marginal Price. Wholesale electricity price at a node, in $/MWh.</li>
+          <li><span class="term">Capture Price</span> — What a solar/wind plant actually earns, weighted by when it generates. Usually below avg hub price due to cannibalization.</li>
+          <li><span class="term">Capture Ratio</span> — Capture price ÷ avg hub price. Below 1.0 = earns less than average.</li>
+          <li><span class="term">Price Duration Curve</span> — All hours sorted high to low. Shows how often prices exceed any given level.</li>
+          <li><span class="term">Negative Prices</span> — When price &lt; $0. Generators pay to produce. Caused by excess must-run generation (wind, nuclear).</li>
+          <li><span class="term">Congestion</span> — Price differences from transmission limits. High congestion = grid bottlenecks.</li>
+        </ul></div>
+        <div class="doc-card"><h3>&#128185; Finance Terms</h3><ul>
+          <li><span class="term">NPV</span> — Net Present Value. Total value in today's dollars. Positive = project creates value above required return.</li>
+          <li><span class="term">IRR</span> — Internal Rate of Return. Discount rate at which NPV = 0. Compare to your hurdle rate.</li>
+          <li><span class="term">DSCR</span> — Debt Service Coverage Ratio. EBITDA ÷ Debt Service. Must stay ≥ 1.0×; lenders require ≥ 1.25×.</li>
+          <li><span class="term">LCOE</span> — Levelized Cost of Energy. All-in cost per MWh over project life. Break-even price.</li>
+          <li><span class="term">PPA</span> — Power Purchase Agreement. Long-term fixed price contract that removes merchant price risk.</li>
+          <li><span class="term">RTE</span> — Round-Trip Efficiency. Energy out ÷ energy in for a battery. 85% = 15% energy lost in storage cycle.</li>
+        </ul></div>
+        <div class="doc-card"><h3>&#128204; Queue Terms</h3><ul>
+          <li><span class="term">Interconnection Queue</span> — List of projects that applied to connect to the grid. ISO must study each project's grid impact before approving.</li>
+          <li><span class="term">COD</span> — Commercial Operation Date. Target date a project starts generating.</li>
+          <li><span class="term">P50 / P90</span> — Probability scenarios. P50 = base case. P90 = conservative (fewer projects complete).</li>
+          <li><span class="term">Queue Attrition</span> — 60–80% of queued MW historically never gets built.</li>
+        </ul></div>
+        <div class="doc-card"><h3>&#127758; The 7 US ISOs / RTOs</h3><ul>
+          <li><span class="term">ERCOT</span> — Texas. Isolated grid, high volatility, rapid wind/solar growth.</li>
+          <li><span class="term">CAISO</span> — California. High solar, duck curve, frequent negative midday prices.</li>
+          <li><span class="term">PJM</span> — Mid-Atlantic + Midwest. Largest ISO by load. Strong capacity market.</li>
+          <li><span class="term">MISO</span> — Midwest + South. Wind-dominant, lowest average prices.</li>
+          <li><span class="term">SPP</span> — Great Plains. Highest wind penetration in the US.</li>
+          <li><span class="term">NYISO</span> — New York. Premium NYC pricing, offshore wind buildout.</li>
+          <li><span class="term">ISO-NE</span> — New England. Smallest ISO, gas-dependent, aggressive offshore wind.</li>
+        </ul></div>
       </div>
     </div>
 
-    <!-- Data disclaimer -->
-    <div class="doc-section">
-      <h2>Data &amp; Methodology Notes</h2>
+    <div class="doc-sec">
+      <h2>Data &amp; Limitations</h2>
       <div class="doc-grid">
-        <div class="doc-card">
-          <h3><span class="icon">&#128203;</span> Data Sources</h3>
-          <p>This dashboard uses <span class="term">stylized sample data</span> based on realistic market parameters for each ISO. Load shapes, price levels, and seasonal patterns reflect real-world market characteristics but are not live feeds.</p>
-          <p>The pipeline is architected to connect to live data sources (ERCOT API, Open-Meteo weather archive, ISO queue filings) when configured with real API endpoints in the config files.</p>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#9888;</span> Model Limitations</h3>
-          <ul>
-            <li>Congestion is a proxy spread — not a full transmission power-flow model</li>
-            <li>Capture prices use stylized generation profiles, not actual plant dispatch</li>
-            <li>Finance model assumes a single utility-scale solar project — not a portfolio</li>
-            <li>Queue completion probabilities are rule-based estimates, not ML-calibrated per project</li>
-            <li>Load forecast uses linear regression — does not capture structural breaks</li>
-          </ul>
-        </div>
-        <div class="doc-card">
-          <h3><span class="icon">&#128295;</span> Running the Pipeline</h3>
-          <p>Click <strong>Pipeline</strong> in the nav to trigger a fresh data run for any ISO or all ISOs at once. The pipeline re-runs all 7 stages and refreshes every chart automatically.</p>
-          <p>To run locally: clone the repo and run <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">uvicorn energy_analytics.api:app --reload</code> then open <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">localhost:8000</code>.</p>
-        </div>
+        <div class="doc-card"><h3>&#128203; Data Sources</h3><p>Uses <span class="term">stylized sample data</span> with realistic market parameters per ISO. The pipeline is architected to connect to live ERCOT APIs, Open-Meteo weather archive, and ISO queue filings when configured with real endpoints in the config YAML files.</p></div>
+        <div class="doc-card"><h3>&#9888; Model Limitations</h3><ul>
+          <li>Congestion is a proxy spread, not a power-flow model</li>
+          <li>Capture prices use stylized generation profiles</li>
+          <li>Finance model = single project, not a portfolio</li>
+          <li>Emissions = proxy model scaled by price signal</li>
+          <li>Queue completion = rule-based, not ML-calibrated</li>
+        </ul></div>
+        <div class="doc-card"><h3>&#128295; Running the Pipeline</h3><p>Click <strong>Pipeline</strong> in the nav to trigger a fresh data run. Use the <strong>Custom Assumptions</strong> sliders in Finance to explore scenarios live. Set up a daily cron job via the Pipeline tab to keep data current automatically.</p></div>
       </div>
     </div>
-
   </div>
 </div>
 
-<footer style="text-align:center;padding:24px;font-size:11px;color:var(--muted2);border-top:1px solid var(--border)">
-  Energy Analytics &mdash; 7 US ISOs/RTOs &mdash;
-  Sample data / stylized analytics &mdash;
+<footer style="text-align:center;padding:20px;font-size:11px;color:var(--muted2);border-top:1px solid var(--border)">
+  Energy Analytics &mdash; 7 US ISOs/RTOs &mdash; Sample data / stylized analytics &mdash;
   <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener">GitHub</a>
 </footer>
 
@@ -548,247 +556,290 @@ POST /api/run-all                → trigger all ISOs</div>
 // ── Constants ─────────────────────────────────────────────────────────────────
 const COLORS = ['#2f81f7','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#39c5cf'];
 const VIEWS  = ['market','supply','forecast','finance','compare','admin','docs'];
-
+const ISO_COORDS = {
+  'ERCOT':  [31.0, -99.0], 'CAISO': [36.5,-119.5], 'PJM':   [40.0, -77.5],
+  'MISO':   [43.5, -89.5], 'SPP':   [38.0, -97.5], 'NYISO': [42.8, -75.5],
+  'ISO-NE': [43.5, -71.5],
+};
 const L = () => ({
-  paper_bgcolor:'transparent', plot_bgcolor:'transparent',
-  font:{color:'#8b949e',size:11},
-  margin:{l:46,r:14,t:6,b:38},
-  xaxis:{gridcolor:'#21262d',linecolor:'#30363d',tickfont:{size:10}},
-  yaxis:{gridcolor:'#21262d',linecolor:'#30363d',tickfont:{size:10}},
-  legend:{bgcolor:'transparent',font:{size:10}},
-  hovermode:'x unified',
+  paper_bgcolor:'transparent',plot_bgcolor:'transparent',
+  font:{color:'#8b949e',size:10},margin:{l:44,r:12,t:6,b:36},
+  xaxis:{gridcolor:'#21262d',linecolor:'#30363d',tickfont:{size:9}},
+  yaxis:{gridcolor:'#21262d',linecolor:'#30363d',tickfont:{size:9}},
+  legend:{bgcolor:'transparent',font:{size:10}},hovermode:'x unified',
 });
 const CFG = {responsive:true,displayModeBar:true,displaylogo:false,
   modeBarButtonsToRemove:['select2d','lasso2d','autoScale2d']};
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let currentISO = 'ERCOT';
-let currentView = 'market';
-let isoList = [];
-let cache = {};
-let cmpData = {};
-let finData = null;
-let queueData = null;
+let currentISO = 'ERCOT', currentView = 'market';
+let isoList = [], cache = {}, cmpData = {}, finData = null, queueData = null, storageData = null;
+let panelFull = null;  // full unfiltered panel for date filter
+
+// URL hash routing
+function parseHash() {
+  const h = location.hash.replace('#','');
+  const [view, iso] = h.split('/');
+  if (view && VIEWS.includes(view)) currentView = view;
+  if (iso && iso.length) currentISO = iso.toUpperCase().replace('-ne','').replace('ne','ISO-NE') || currentISO;
+}
+function updateHash() { history.replaceState(null,'',`#${currentView}/${currentISO}`); }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
-(async () => {
+(async()=>{
+  parseHash();
   try {
     const r = await fetch('/api/isos');
-    if (!r.ok) throw new Error('API unreachable');
-    const d = await r.json();
-    isoList = d.isos;
+    if(!r.ok) throw new Error('API unreachable');
+    isoList = (await r.json()).isos;
     buildTabs();
-    await loadView('market', currentISO);
+    // Set active nav btn
+    document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',VIEWS[i]===currentView));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+currentView).classList.add('active');
+    if(currentView==='compare'){await prefetchCompare();renderCompare();}
+    else if(currentView!=='docs'&&currentView!=='admin') await loadView(currentView,currentISO);
     prefetchCompare();
-  } catch(e) {
-    err('mktErr', 'Cannot reach API server. Run: uvicorn energy_analytics.api:app --reload');
-  }
+  } catch(e){ err('mktErr','Cannot reach API. Run: uvicorn energy_analytics.api:app --reload'); }
 })();
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
-function buildTabs() {
-  document.getElementById('isoTabs').innerHTML = isoList.map(({iso,ready}) =>
+function buildTabs(){
+  document.getElementById('isoTabs').innerHTML = isoList.map(({iso,ready})=>
     `<button class="iso-tab${iso===currentISO?' active':''}${!ready?' not-ready':''}"
       data-iso="${iso}" onclick="switchISO('${iso}')"
-      title="${ready?iso:iso+' — pipeline not run yet'}">${iso}</button>`
+      title="${ready?iso:iso+' — run pipeline first'}">${iso}</button>`
   ).join('');
-  document.getElementById('heroIsos').textContent = isoList.length;
 }
-
-async function switchISO(iso) {
-  currentISO = iso;
-  document.getElementById('runLabel').textContent = iso;
-  document.querySelectorAll('.iso-tab').forEach(b => b.classList.toggle('active', b.dataset.iso===iso));
-  await loadView(currentView, iso);
+async function switchISO(iso){
+  currentISO=iso;
+  document.getElementById('runLabel').textContent=iso;
+  document.querySelectorAll('.iso-tab').forEach(b=>b.classList.toggle('active',b.dataset.iso===iso));
+  updateHash();
+  await loadView(currentView,iso);
 }
 
 // ── View routing ──────────────────────────────────────────────────────────────
-async function showView(name) {
-  currentView = name;
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+async function showView(name){
+  currentView=name;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', VIEWS[i]===name));
-  if (name === 'compare') { await prefetchCompare(); renderCompare(); return; }
-  if (name === 'docs') return;
-  await loadView(name, currentISO);
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',VIEWS[i]===name));
+  updateHash();
+  if(name==='compare'){await prefetchCompare();renderCompare();return;}
+  if(name==='docs'||name==='admin') return;
+  await loadView(name,currentISO);
 }
-
-async function loadView(view, iso) {
+async function loadView(view,iso){
   loading('Loading '+iso+'…');
-  try {
-    if (view==='market')   await loadMarket(iso);
-    if (view==='supply')   await loadSupply(iso);
-    if (view==='forecast') await loadForecast(iso);
-    if (view==='finance')  await loadFinance(iso);
-  } finally { doneLoading(); }
+  try{
+    if(view==='market')   await loadMarket(iso);
+    if(view==='supply')   await loadSupply(iso);
+    if(view==='forecast') await loadForecast(iso);
+    if(view==='finance')  await loadFinance(iso);
+  } finally{ doneLoading(); }
 }
 
-// ── Fetch (cached) ────────────────────────────────────────────────────────────
-async function api(iso, ep) {
-  if (!cache[iso]) cache[iso] = {};
-  if (cache[iso][ep]) return cache[iso][ep];
-  const r = await fetch(`/api/${iso}/${ep}`);
-  if (!r.ok) throw new Error(`${r.status} – ${r.statusText}`);
-  cache[iso][ep] = await r.json();
+// ── Cached fetch ──────────────────────────────────────────────────────────────
+async function api(iso,ep){
+  if(!cache[iso]) cache[iso]={};
+  if(cache[iso][ep]) return cache[iso][ep];
+  const r=await fetch(`/api/${iso}/${ep}`);
+  if(!r.ok) throw new Error(`${r.status} – ${r.statusText}`);
+  cache[iso][ep]=await r.json();
   return cache[iso][ep];
 }
+async function apiRoot(ep){
+  if(cache['_root']?.[ep]) return cache['_root'][ep];
+  if(!cache['_root']) cache['_root']={};
+  const r=await fetch('/api/'+ep);
+  if(!r.ok) throw new Error(r.status);
+  cache['_root'][ep]=await r.json();
+  return cache['_root'][ep];
+}
 
-// ── MARKET VIEW ───────────────────────────────────────────────────────────────
-async function loadMarket(iso) {
+// ── Date filter helpers ───────────────────────────────────────────────────────
+function applyDateFilter(){
+  if(!panelFull) return;
+  const from=document.getElementById('dateFrom').value;
+  const to=document.getElementById('dateTo').value;
+  const p=panelFull;
+  const filtered={timestamps:[],load_mw:[],price_usd_mwh:[],temperature_f:[]};
+  p.timestamps.forEach((ts,i)=>{
+    const d=ts.slice(0,10);
+    if((!from||d>=from)&&(!to||d<=to)){
+      filtered.timestamps.push(ts);
+      filtered.load_mw.push(p.load_mw[i]);
+      filtered.price_usd_mwh.push(p.price_usd_mwh[i]);
+      filtered.temperature_f.push(p.temperature_f[i]);
+    }
+  });
+  renderPanelCharts(filtered);
+}
+function clearDateFilter(){
+  document.getElementById('dateFrom').value='';
+  document.getElementById('dateTo').value='';
+  if(panelFull) renderPanelCharts(panelFull);
+}
+
+// ── MARKET ────────────────────────────────────────────────────────────────────
+async function loadMarket(iso){
   clearErr('mktErr');
-  try {
-    const [panel, mkt, hourly, pdc, monthly, heatmap, findings] = await Promise.all([
-      api(iso,'panel'), api(iso,'market'), api(iso,'hourly'),
-      api(iso,'price-duration'), api(iso,'monthly'), api(iso,'heatmap'),
-      api(iso,'findings'),
+  try{
+    const [panel,mkt,hourly,pdc,monthly,heatmap,findings,emissions]=await Promise.all([
+      api(iso,'panel'),api(iso,'market'),api(iso,'hourly'),
+      api(iso,'price-duration'),api(iso,'monthly'),api(iso,'heatmap'),
+      api(iso,'findings'),api(iso,'emissions'),
     ]);
-    const cfg = isoList.find(x=>x.iso===iso) || {};
-    document.getElementById('mktRegionNote').textContent = iso;
+    panelFull=panel;
+    document.getElementById('mktNote').textContent=iso;
 
     // KPIs
-    const neg = (mkt.negative_price_share||0)*100;
-    const kpis = [
-      ['Avg Hub Price', (mkt.avg_price_usd_mwh||0).toFixed(2), '$/MWh', '#2f81f7'],
-      ['Solar Capture', (mkt.solar_capture_price_usd_mwh||0).toFixed(2), '$/MWh', '#f0883e', `ratio ${((mkt.solar_capture_ratio||0)*100).toFixed(1)}%`],
-      ['Wind Capture', (mkt.wind_capture_price_usd_mwh||0).toFixed(2), '$/MWh', '#3fb950', `ratio ${((mkt.wind_capture_ratio||0)*100).toFixed(1)}%`],
-      ['Neg Price Hrs', Math.round(mkt.negative_price_hours||0), 'hrs', neg>5?'#f85149':neg>2?'#d29922':'#2f81f7', `${neg.toFixed(1)}% of hours`],
-      ['Congestion (proxy)', (mkt.congestion_proxy_mean||0).toFixed(2), '$/MWh', '#a371f7', `p95 ${(mkt.congestion_proxy_p95||0).toFixed(2)}`],
-      ['Total Hours', Math.round(mkt.total_hours||0), 'hrs', '#39c5cf'],
-    ];
-    document.getElementById('kpiRow').innerHTML = kpis.map(([l,v,u,c,sub]) =>
-      `<div class="kpi" style="--kpi-color:${c}">
-        <div class="kpi-lbl">${l}</div>
-        <div class="kpi-val">${v}<span class="kpi-unit">${u}</span></div>
-        ${sub?`<div class="kpi-sub">${sub}</div>`:''}
-      </div>`).join('');
+    const neg=(mkt.negative_price_share||0)*100;
+    document.getElementById('kpiRow').innerHTML=[
+      ['Avg Hub Price',(mkt.avg_price_usd_mwh||0).toFixed(2),'$/MWh','#2f81f7'],
+      ['Solar Capture',(mkt.solar_capture_price_usd_mwh||0).toFixed(2),'$/MWh','#f0883e',`ratio ${((mkt.solar_capture_ratio||0)*100).toFixed(1)}%`],
+      ['Wind Capture',(mkt.wind_capture_price_usd_mwh||0).toFixed(2),'$/MWh','#3fb950',`ratio ${((mkt.wind_capture_ratio||0)*100).toFixed(1)}%`],
+      ['Neg Price Hrs',Math.round(mkt.negative_price_hours||0),'hrs',neg>5?'#f85149':neg>2?'#d29922':'#2f81f7',`${neg.toFixed(1)}% of hours`],
+      ['Congestion',( mkt.congestion_proxy_mean||0).toFixed(2),'$/MWh','#a371f7',`p95 ${(mkt.congestion_proxy_p95||0).toFixed(2)}`],
+      ['CO₂ Intensity',emissions.avg_intensity.toFixed(0),'lbs/MWh','#39c5cf',`base ${emissions.base_intensity_lbs_mwh} lbs/MWh`],
+    ].map(([l,v,u,c,sub])=>`<div class="kpi" style="--kpi-color:${c}"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}<span class="kpi-unit">${u}</span></div>${sub?`<div class="kpi-sub">${sub}</div>`:''}</div>`).join('');
 
-    const hub = panel.timestamps.length>0 ? '' : '';
-    document.getElementById('hubLabel').textContent = iso;
-
-    // Time series
-    const ts = panel.timestamps;
-    plot('cLoad',[{x:ts,y:panel.load_mw,mode:'lines',line:{color:'#2f81f7',width:1.5},fill:'tozeroy',fillcolor:'rgba(47,129,247,.07)',name:'MW'}],
-      {...L(),yaxis:{...L().yaxis,title:'MW'}});
-    plot('cPrice',[{x:ts,y:panel.price_usd_mwh,mode:'lines',line:{color:'#3fb950',width:1.5},fill:'tozeroy',fillcolor:'rgba(63,185,80,.06)',name:'$/MWh'}],
-      {...L(),yaxis:{...L().yaxis,title:'$/MWh'}});
-    plot('cTemp',[{x:ts,y:panel.temperature_f,mode:'lines',line:{color:'#f0883e',width:1.5},fill:'tozeroy',fillcolor:'rgba(240,136,62,.06)',name:'°F'}],
-      {...L(),yaxis:{...L().yaxis,title:'°F'}});
-
-    // Scatter
-    plot('cScatter',[{x:panel.load_mw,y:panel.price_usd_mwh,mode:'markers',
-      marker:{color:'#a371f7',size:5,opacity:.7,
-        colorscale:'Viridis',color:panel.price_usd_mwh,colorbar:{thickness:8,len:.7}},
-      name:'Hour',type:'scatter',text:ts.map((t,i)=>t),hovertemplate:'Load: %{x:.0f} MW<br>Price: %{y:.2f} $/MWh<extra></extra>'}],
-      {...L(),margin:{l:46,r:14,t:6,b:38},xaxis:{...L().xaxis,title:'Load (MW)'},yaxis:{...L().yaxis,title:'Price ($/MWh)'}});
+    renderPanelCharts(panel);
 
     // PDC
     plot('cPDC',[{x:pdc.percentile,y:pdc.price_usd_mwh,mode:'lines',line:{color:'#d29922',width:2},fill:'tozeroy',fillcolor:'rgba(210,153,34,.08)',name:'Price'}],
       {...L(),xaxis:{...L().xaxis,title:'% Hours Exceeded',autorange:'reversed'},yaxis:{...L().yaxis,title:'$/MWh'}});
 
-    // Hour-of-day
-    const hr = heatmap.avg_by_hour;
+    // Hourly avg
+    const hr=heatmap.avg_by_hour;
     plot('cHourly',[{x:heatmap.hours,y:hr,type:'bar',marker:{color:hr.map(v=>v<0?'#f85149':v>50?'#d29922':'#2f81f7')},name:'Avg $/MWh'}],
-      {...L(),margin:{l:46,r:14,t:6,b:38},xaxis:{...L().xaxis,title:'Hour of Day'},yaxis:{...L().yaxis,title:'$/MWh'}});
+      {...L(),xaxis:{...L().xaxis,title:'Hour of Day'},yaxis:{...L().yaxis,title:'$/MWh'}});
 
-    // Monthly price
+    // Monthly
     plot('cMonthly',[
-      {x:monthly.months,y:monthly.max_price_usd_mwh,mode:'lines',line:{color:'rgba(248,81,73,.4)',width:1,dash:'dot'},name:'Max',fill:'tonexty',fillcolor:'rgba(248,81,73,.06)'},
+      {x:monthly.months,y:monthly.max_price_usd_mwh,mode:'lines',line:{color:'rgba(248,81,73,.4)',width:1,dash:'dot'},name:'Max',fill:'tonexty',fillcolor:'rgba(248,81,73,.05)'},
       {x:monthly.months,y:monthly.avg_price_usd_mwh,mode:'lines+markers',line:{color:'#3fb950',width:2},marker:{size:5},name:'Avg'},
       {x:monthly.months,y:monthly.min_price_usd_mwh,mode:'lines',line:{color:'rgba(63,185,80,.3)',width:1,dash:'dot'},name:'Min'},
     ],{...L(),yaxis:{...L().yaxis,title:'$/MWh'}});
 
-    // Renewable chart
-    const hr2 = hourly.rows;
-    const hts = hr2.map(r=>r.timestamp);
+    // Renewables
+    const hw=hourly.rows;
+    const hts=hw.map(r=>r.timestamp);
     plot('cRenew',[
-      {x:hts,y:hr2.map(r=>r.price),mode:'lines',line:{color:'rgba(139,148,158,.5)',width:1},name:'Price $/MWh',yaxis:'y'},
-      {x:hts,y:hr2.map(r=>r.solar_profile),mode:'lines',line:{color:'#f0883e',width:2},name:'Solar CF',yaxis:'y2'},
-      {x:hts,y:hr2.map(r=>r.wind_profile),mode:'lines',line:{color:'#3fb950',width:2},name:'Wind CF',yaxis:'y2'},
+      {x:hts,y:hw.map(r=>r.price),mode:'lines',line:{color:'rgba(139,148,158,.4)',width:1},name:'Price',yaxis:'y'},
+      {x:hts,y:hw.map(r=>r.solar_profile),mode:'lines',line:{color:'#f0883e',width:2},name:'Solar CF',yaxis:'y2'},
+      {x:hts,y:hw.map(r=>r.wind_profile),mode:'lines',line:{color:'#3fb950',width:2},name:'Wind CF',yaxis:'y2'},
     ],{...L(),yaxis:{...L().yaxis,title:'Price ($/MWh)'},
-      yaxis2:{title:'Capacity Factor',overlaying:'y',side:'right',range:[0,1.4],gridcolor:'transparent',tickfont:{size:10}},
-      legend:{orientation:'h',y:1.08},margin:{l:50,r:50,t:20,b:38}});
+      yaxis2:{title:'Capacity Factor',overlaying:'y',side:'right',range:[0,1.4],gridcolor:'transparent',tickfont:{size:9}},
+      legend:{orientation:'h',y:1.08},margin:{l:48,r:48,t:18,b:36}});
 
     // Heatmap
-    const hm = heatmap;
-    if (hm.matrix && hm.days.length) {
-      plot('cHeatmap',[{z:hm.matrix,x:hm.hours.map(h=>h+':00'),y:hm.days,type:'heatmap',
-        colorscale:'RdYlGn',reversescale:true,colorbar:{thickness:12,len:.8,tickfont:{size:9}},name:'$/MWh'}],
-        {...L(),margin:{l:80,r:60,t:6,b:38},xaxis:{...L().xaxis,title:'Hour'},yaxis:{...L().yaxis,title:''}});
+    if(heatmap.matrix&&heatmap.days.length){
+      plot('cHeatmap',[{z:heatmap.matrix,x:heatmap.hours.map(h=>h+':00'),y:heatmap.days,type:'heatmap',
+        colorscale:'RdYlGn',reversescale:true,colorbar:{thickness:10,len:.8,tickfont:{size:8}},name:'$/MWh'}],
+        {...L(),margin:{l:76,r:56,t:6,b:36},xaxis:{...L().xaxis,title:'Hour'},yaxis:{...L().yaxis}});
     }
 
-    // Findings
-    document.getElementById('findingsBox').textContent = findings.text || 'No findings.';
+    // Emissions
+    plot('cEmissInt',[{x:emissions.timestamps,y:emissions.co2_intensity_lbs_mwh,mode:'lines',
+      line:{color:'#d29922',width:1.5},fill:'tozeroy',fillcolor:'rgba(210,153,34,.07)',name:'lbs/MWh'}],
+      {...L(),yaxis:{...L().yaxis,title:'lbs CO₂/MWh'}});
+    plot('cEmissTons',[{x:emissions.timestamps,y:emissions.co2_tons_per_hour,mode:'lines',
+      line:{color:'#f85149',width:1.5},fill:'tozeroy',fillcolor:'rgba(248,81,73,.07)',name:'tons/hr'}],
+      {...L(),yaxis:{...L().yaxis,title:'CO₂ tons/hr'}});
 
-    document.getElementById('lastUpdated').textContent = 'Updated: '+new Date().toLocaleTimeString();
-  } catch(e) {
-    err('mktErr', 'Failed to load '+iso+': '+e.message);
-  }
+    document.getElementById('findingsBox').textContent=findings.text||'No findings.';
+    document.getElementById('lastUpd').textContent='Updated '+new Date().toLocaleTimeString();
+  } catch(e){ err('mktErr','Failed to load '+iso+': '+e.message); }
 }
 
-// ── SUPPLY VIEW ───────────────────────────────────────────────────────────────
-async function loadSupply(iso) {
-  clearErr('supErr');
-  try {
-    const [queue, detail] = await Promise.all([api(iso,'queue'), api(iso,'queue-detail')]);
-    queueData = detail;
+function renderPanelCharts(p){
+  const ts=p.timestamps;
+  plot('cLoad',[{x:ts,y:p.load_mw,mode:'lines',line:{color:'#2f81f7',width:1.5},fill:'tozeroy',fillcolor:'rgba(47,129,247,.07)',name:'MW'}],
+    {...L(),yaxis:{...L().yaxis,title:'MW'}});
+  plot('cPrice',[{x:ts,y:p.price_usd_mwh,mode:'lines',line:{color:'#3fb950',width:1.5},fill:'tozeroy',fillcolor:'rgba(63,185,80,.06)',name:'$/MWh'}],
+    {...L(),yaxis:{...L().yaxis,title:'$/MWh'}});
+  plot('cTemp',[{x:ts,y:p.temperature_f,mode:'lines',line:{color:'#f0883e',width:1.5},fill:'tozeroy',fillcolor:'rgba(240,136,62,.06)',name:'°F'}],
+    {...L(),yaxis:{...L().yaxis,title:'°F'}});
+  plot('cScatter',[{x:p.load_mw,y:p.price_usd_mwh,mode:'markers',
+    marker:{size:5,opacity:.7,color:p.price_usd_mwh,colorscale:'Plasma',colorbar:{thickness:8,len:.7,tickfont:{size:8}}},
+    hovertemplate:'Load: %{x:.0f} MW<br>Price: %{y:.2f} $/MWh<extra></extra>',name:'Hour'}],
+    {...L(),margin:{l:46,r:14,t:6,b:36},xaxis:{...L().xaxis,title:'Load (MW)'},yaxis:{...L().yaxis,title:'Price ($/MWh)'}});
+}
 
-    // KPIs
-    const total = detail.total_mw;
-    const techMw = detail.by_technology_mw;
-    document.getElementById('queueKpis').innerHTML = [
-      ['Total Queue', total.toFixed(0), 'MW', '#2f81f7'],
-      ['Solar', (techMw.solar||0).toFixed(0), 'MW', '#f0883e'],
-      ['Wind', (techMw.wind||0).toFixed(0), 'MW', '#3fb950'],
-      ['Storage', (techMw.storage||0).toFixed(0), 'MW', '#39c5cf'],
-      ['Projects', detail.projects.length, '', '#a371f7'],
+// ── SUPPLY ────────────────────────────────────────────────────────────────────
+async function loadSupply(iso){
+  clearErr('supErr');
+  try{
+    const [queue,detail,storage]=await Promise.all([api(iso,'queue'),api(iso,'queue-detail'),api(iso,'storage')]);
+    queueData=detail; storageData=storage;
+
+    // Queue KPIs
+    const tm=detail.by_technology_mw;
+    document.getElementById('queueKpis').innerHTML=[
+      ['Total Queue',detail.total_mw.toFixed(0),'MW','#2f81f7'],
+      ['Solar',(tm.solar||0).toFixed(0),'MW','#f0883e'],
+      ['Wind',(tm.wind||0).toFixed(0),'MW','#3fb950'],
+      ['Storage',(tm.storage||0).toFixed(0),'MW','#39c5cf'],
+      ['Projects',detail.projects.length,'','#a371f7'],
     ].map(([l,v,u,c])=>`<div class="kpi" style="--kpi-color:${c}"><div class="kpi-lbl">${l}</div><div class="kpi-val">${v}<span class="kpi-unit">${u}</span></div></div>`).join('');
 
-    // P50/P90
     plot('cQueue',[
-      {x:queue.years,y:queue.p50_mw,mode:'lines+markers',name:'P50',line:{color:'#a371f7',width:2.5},marker:{size:6}},
-      {x:queue.years,y:queue.p90_mw,mode:'lines+markers',name:'P90',line:{color:'#f85149',width:2,dash:'dot'},marker:{size:6}},
+      {x:queue.years,y:queue.p50_mw,mode:'lines+markers',name:'P50',line:{color:'#a371f7',width:2.5},marker:{size:5}},
+      {x:queue.years,y:queue.p90_mw,mode:'lines+markers',name:'P90',line:{color:'#f85149',width:2,dash:'dot'},marker:{size:5}},
     ],{...L(),yaxis:{...L().yaxis,title:'MW'}});
 
-    // Cumulative
-    plot('cQueueCum',[
-      {x:queue.years,y:queue.cumulative_p50,mode:'lines',fill:'tozeroy',fillcolor:'rgba(47,129,247,.1)',line:{color:'#2f81f7',width:2.5},name:'Cumulative P50 MW'},
-    ],{...L(),yaxis:{...L().yaxis,title:'MW'}});
+    plot('cQueueCum',[{x:queue.years,y:queue.cumulative_p50,mode:'lines',fill:'tozeroy',
+      fillcolor:'rgba(47,129,247,.1)',line:{color:'#2f81f7',width:2.5},name:'Cumulative P50'}],
+      {...L(),yaxis:{...L().yaxis,title:'MW'}});
 
-    // Tech stack
-    const techs = Object.keys(queue.by_technology);
-    plot('cQueueTech', techs.map((t,i)=>({
-      x:queue.years,y:queue.years.map(y=>queue.by_technology[t][y]||0),
-      type:'bar',name:t,marker:{color:COLORS[i%COLORS.length]},
-    })),{...L(),barmode:'stack',yaxis:{...L().yaxis,title:'MW'}});
+    const techs=Object.keys(queue.by_technology);
+    plot('cQueueTech',techs.map((t,i)=>({x:queue.years,y:queue.years.map(y=>queue.by_technology[t][y]||0),
+      type:'bar',name:t,marker:{color:COLORS[i%COLORS.length]}})),
+      {...L(),barmode:'stack',yaxis:{...L().yaxis,title:'MW'}});
 
-    // Status donut
-    const stMw = detail.by_status_mw;
-    const stKeys = Object.keys(stMw);
-    plot('cQueueStatus',[{labels:stKeys,values:stKeys.map(k=>stMw[k]),type:'pie',
-      hole:.45,textinfo:'label+percent',
-      marker:{colors:['#3fb950','#2f81f7','#a371f7','#39c5cf','#f85149','#d29922']},
-    }],{...L(),margin:{l:0,r:0,t:20,b:20},showlegend:true});
+    const stMw=detail.by_status_mw, stK=Object.keys(stMw);
+    plot('cQueueStatus',[{labels:stK,values:stK.map(k=>stMw[k]),type:'pie',hole:.45,
+      textinfo:'label+percent',marker:{colors:['#3fb950','#2f81f7','#a371f7','#39c5cf','#f85149','#d29922']}}],
+      {...L(),margin:{l:0,r:0,t:18,b:18},showlegend:true});
 
-    // Populate filter dropdowns & table
-    const allTechs = [...new Set(detail.projects.map(p=>p.technology))];
-    const allStatus = [...new Set(detail.projects.map(p=>p.status))];
-    const sel = (id,vals) => { const el=document.getElementById(id); const cur=el.value; el.innerHTML='<option value="">All</option>'+vals.map(v=>`<option${v===cur?' selected':''}>${v}</option>`).join(''); };
-    sel('qTech',allTechs); sel('qStatus',allStatus);
+    // Storage KPIs
+    document.getElementById('storageKpis').innerHTML=[
+      ['Annual Revenue',storage.annual_revenue_musd.toFixed(2),'MUSD/yr','#3fb950'],
+      ['Total Capex',storage.total_capex_musd.toFixed(0),'MUSD','#2f81f7'],
+      ['Simple Payback',storage.simple_payback_yrs||'N/A','yrs','#f0883e'],
+      ['Avg Daily Spread',storage.avg_daily_spread.toFixed(2),'$/MWh','#a371f7'],
+      ['Battery Size',`${storage.capacity_mw} MW / ${storage.duration_hrs}hr`,'','#39c5cf'],
+    ].map(([l,v,u,c])=>`<div class="kpi" style="--kpi-color:${c}"><div class="kpi-lbl">${l}</div><div class="kpi-val">${typeof v==='number'?v:v}<span class="kpi-unit">${u}</span></div></div>`).join('');
+
+    plot('cStorageRev',[{x:storage.days,y:storage.daily_revenue_k,type:'bar',
+      marker:{color:storage.daily_revenue_k.map(v=>v>=0?'#3fb950':'#f85149')},name:'$k/day'}],
+      {...L(),yaxis:{...L().yaxis,title:'Revenue ($k)'}});
+
+    // Daily spread (derived from revenue: spread = revenue_k*1000 / (capacity_mw * duration_hrs * rte) ... approximate)
+    const spreads = storage.daily_revenue_k.map(v => v*1000/(storage.capacity_mw*storage.rte));
+    plot('cStorageSpread',[{x:storage.days,y:spreads,type:'bar',
+      marker:{color:spreads.map(v=>v>=0?'rgba(47,129,247,.7)':'rgba(248,81,73,.7)')},name:'$/MWh spread'}],
+      {...L(),yaxis:{...L().yaxis,title:'Spread ($/MWh)'}});
+
+    // Queue filters
+    const allT=[...new Set(detail.projects.map(p=>p.technology))];
+    const allS=[...new Set(detail.projects.map(p=>p.status))];
+    const sel=(id,vals)=>{const el=document.getElementById(id);const cur=el.value;el.innerHTML='<option value="">All</option>'+vals.map(v=>`<option${v===cur?' selected':''}>${v}</option>`).join('');};
+    sel('qTech',allT); sel('qStatus',allS);
     filterQueue();
-  } catch(e) { err('supErr','Failed to load supply queue for '+iso+': '+e.message); }
+  } catch(e){ err('supErr','Failed to load supply for '+iso+': '+e.message); }
 }
-
-function filterQueue() {
-  if (!queueData) return;
-  const ft = document.getElementById('qTech').value;
-  const fs = document.getElementById('qStatus').value;
-  const fm = parseFloat(document.getElementById('qMinMw').value)||0;
-  const rows = queueData.projects.filter(p=>
-    (!ft||p.technology===ft)&&(!fs||p.status===fs)&&p.mw>=fm);
-  document.getElementById('qCount').textContent = rows.length+' projects';
-  document.getElementById('queueTbody').innerHTML = rows.map(p=>`<tr>
-    <td class="num">${p.queue_id}</td>
-    <td>${p.project_name}</td>
+function filterQueue(){
+  if(!queueData) return;
+  const ft=document.getElementById('qTech').value;
+  const fs=document.getElementById('qStatus').value;
+  const fm=parseFloat(document.getElementById('qMinMw').value)||0;
+  const rows=queueData.projects.filter(p=>(!ft||p.technology===ft)&&(!fs||p.status===fs)&&p.mw>=fm);
+  document.getElementById('qCount').textContent=rows.length+' projects';
+  document.getElementById('queueTbody').innerHTML=rows.map(p=>`<tr>
+    <td class="num">${p.queue_id}</td><td>${p.project_name}</td>
     <td><span class="badge b-${p.technology}">${p.technology}</span></td>
     <td class="num">${p.mw.toFixed(0)}</td>
     <td><span class="badge b-${p.status}">${p.status.replace('_',' ')}</span></td>
@@ -798,125 +849,154 @@ function filterQueue() {
   </tr>`).join('');
 }
 
-// ── FORECAST VIEW ─────────────────────────────────────────────────────────────
-async function loadForecast(iso) {
+// ── FORECAST ──────────────────────────────────────────────────────────────────
+async function loadForecast(iso){
   clearErr('fcErr');
-  try {
-    const [fc, bt] = await Promise.all([api(iso,'forecast'), api(iso,'backtest')]);
-
+  try{
+    const [fc,bt]=await Promise.all([api(iso,'forecast'),api(iso,'backtest')]);
     plot('cForecast',[
       {x:fc.years,y:fc.high,mode:'lines',name:'High',line:{color:'#f85149',width:2,dash:'dot'}},
       {x:fc.years,y:fc.base,mode:'lines',name:'Base',line:{color:'#2f81f7',width:3},fill:'tonexty',fillcolor:'rgba(47,129,247,.05)'},
-      {x:fc.years,y:fc.low,mode:'lines',name:'Low',line:{color:'#3fb950',width:2,dash:'dot'},fill:'tonexty',fillcolor:'rgba(47,129,247,.05)'},
-    ],{...L(),yaxis:{...L().yaxis,title:'Avg MW'},margin:{l:50,r:14,t:16,b:38}});
+      {x:fc.years,y:fc.low,mode:'lines',name:'Low',line:{color:'#3fb950',width:2,dash:'dot'},fill:'tonexty',fillcolor:'rgba(47,129,247,.04)'},
+    ],{...L(),yaxis:{...L().yaxis,title:'Avg MW'},margin:{l:50,r:12,t:14,b:36}});
 
-    // Range band
-    const range = fc.years.map((_,i)=>fc.high[i]-fc.low[i]);
-    plot('cFcRange',[{x:fc.years,y:range,type:'bar',marker:{color:'#a371f7'},name:'High-Low MW'}],
+    const range=fc.years.map((_,i)=>fc.high[i]-fc.low[i]);
+    plot('cFcRange',[{x:fc.years,y:range,type:'bar',marker:{color:'#a371f7'},name:'MW band'}],
       {...L(),yaxis:{...L().yaxis,title:'MW'}});
 
-    // YoY growth base
-    const growth = fc.base.slice(1).map((v,i)=>fc.base[i]>0?(v/fc.base[i]-1)*100:0);
+    const growth=fc.base.slice(1).map((v,i)=>fc.base[i]>0?(v/fc.base[i]-1)*100:0);
     plot('cFcGrowth',[{x:fc.years.slice(1),y:growth,type:'bar',
-      marker:{color:growth.map(g=>g>=0?'#3fb950':'#f85149')},name:'YoY %',
+      marker:{color:growth.map(g=>g>=0?'#3fb950':'#f85149')},
       text:growth.map(g=>(g>=0?'+':'')+g.toFixed(1)+'%'),textposition:'outside'}],
-      {...L(),yaxis:{...L().yaxis,title:'YoY Growth %'}});
+      {...L(),yaxis:{...L().yaxis,title:'YoY %'}});
 
-    // Backtest
     plot('cBacktest',[
       {x:bt.timestamps,y:bt.actuals,mode:'lines',name:'Actual',line:{color:'#2f81f7',width:2}},
       {x:bt.timestamps,y:bt.predicted,mode:'lines',name:'Predicted',line:{color:'#f0883e',width:2,dash:'dot'}},
     ],{...L(),yaxis:{...L().yaxis,title:'Load MW'}});
 
-    // Metrics table
-    const m = bt.metrics;
-    document.getElementById('backtestMetrics').innerHTML =
-      `<table style="width:100%"><tbody>`+
-      Object.entries(m).map(([k,v])=>`<tr><td style="color:var(--muted);padding:6px 8px;font-size:12px">${k.replace(/_/g,' ')}</td><td style="font-weight:700;padding:6px 8px;font-size:13px">${parseFloat(v).toFixed(3)}</td></tr>`).join('')+
-      `</tbody></table>`;
-  } catch(e) { err('fcErr','Failed to load forecast for '+iso+': '+e.message); }
+    document.getElementById('backtestMet').innerHTML=
+      '<table style="width:100%">'+Object.entries(bt.metrics).map(([k,v])=>
+        `<tr><td style="color:var(--muted);padding:5px 8px;font-size:11px">${k.replace(/_/g,' ')}</td><td style="font-weight:700;padding:5px 8px;font-size:12px">${parseFloat(v).toFixed(3)}</td></tr>`
+      ).join('')+'</table>';
+  } catch(e){ err('fcErr','Failed to load forecast for '+iso+': '+e.message); }
 }
 
-// ── FINANCE VIEW ──────────────────────────────────────────────────────────────
-async function loadFinance(iso) {
+// ── FINANCE ───────────────────────────────────────────────────────────────────
+let sliderAssumptions = {};
+async function loadFinance(iso){
   clearErr('finErr');
-  try {
-    const [fin, cf] = await Promise.all([api(iso,'finance'), api(iso,'cashflows')]);
-    finData = fin;
+  try{
+    const [fin,cf]=await Promise.all([api(iso,'finance'),api(iso,'cashflows')]);
+    finData=fin;
 
-    // Summary cards
-    const s = fin.summary;
-    const f2 = (k,d=2)=>parseFloat(s[k]||0).toFixed(d);
-    const npv = parseFloat(s.base_npv_musd||0);
-    document.getElementById('finSummary').innerHTML = `
-      <div class="sum-card">
-        <h3>Project Economics</h3>
+    const s=fin.summary;
+    const f2=(k,d=2)=>parseFloat(s[k]||0).toFixed(d);
+    const npv=parseFloat(s.base_npv_musd||0);
+    document.getElementById('finSummary').innerHTML=`
+      <div class="sum-card"><h3>Project Economics</h3>
         <div class="sum-row"><span class="lbl">Capacity</span><span class="v">${cf.capacity_mw} MW</span></div>
         <div class="sum-row"><span class="lbl">Total Capex</span><span class="v">${cf.total_capex_musd.toFixed(1)} MUSD</span></div>
-        <div class="sum-row"><span class="lbl">Strike Price</span><span class="v">$${cf.strike_price_usd_mwh} / MWh</span></div>
-        <div class="sum-row"><span class="lbl">Solar Capture</span><span class="v">$${f2('base_solar_capture_price_usd_mwh')} / MWh</span></div>
+        <div class="sum-row"><span class="lbl">Strike Price</span><span class="v">$${cf.strike_price_usd_mwh}/MWh</span></div>
+        <div class="sum-row"><span class="lbl">Solar Capture</span><span class="v">$${f2('base_solar_capture_price_usd_mwh')}/MWh</span></div>
       </div>
-      <div class="sum-card">
-        <h3>Returns (Contracted Base)</h3>
+      <div class="sum-card"><h3>Returns (Contracted Base)</h3>
         <div class="sum-row"><span class="lbl">Project NPV</span><span class="v ${npv>=0?'pos':'neg'}">${f2('base_npv_musd')} MUSD</span></div>
         <div class="sum-row"><span class="lbl">After-Tax NPV</span><span class="v ${parseFloat(s.base_after_tax_npv_musd||0)>=0?'pos':'neg'}">${f2('base_after_tax_npv_musd')} MUSD</span></div>
         <div class="sum-row"><span class="lbl">Equity IRR</span><span class="v">${(parseFloat(s.base_irr||0)*100).toFixed(2)}%</span></div>
         <div class="sum-row"><span class="lbl">Min DSCR</span><span class="v">${f2('base_min_dscr')}</span></div>
-        <div class="sum-row"><span class="lbl">LCOE</span><span class="v">$${f2('base_lcoe_usd_mwh')} / MWh</span></div>
+        <div class="sum-row"><span class="lbl">LCOE</span><span class="v">$${f2('base_lcoe_usd_mwh')}/MWh</span></div>
       </div>`;
 
-    // Cash flows
     plot('cCashflow',[
       {x:cf.years,y:cf.revenue_musd,type:'bar',name:'Revenue',marker:{color:'#3fb950'}},
       {x:cf.years,y:cf.opex_musd.map(v=>-v),type:'bar',name:'Opex',marker:{color:'#d29922'}},
       {x:cf.years,y:cf.debt_service_musd.map(v=>-v),type:'bar',name:'Debt Svc',marker:{color:'#f85149'}},
     ],{...L(),barmode:'relative',yaxis:{...L().yaxis,title:'MUSD/yr'}});
 
-    // Equity CF + DSCR
-    const dscrClean = cf.dscr.map(v=>v===null?null:v);
     plot('cDscr',[
       {x:cf.years,y:cf.equity_cf_musd,type:'bar',name:'Equity FCF',marker:{color:cf.equity_cf_musd.map(v=>v>=0?'rgba(47,129,247,.7)':'rgba(248,81,73,.7)')}},
-      {x:cf.years,y:dscrClean,mode:'lines+markers',name:'DSCR',yaxis:'y2',line:{color:'#f0883e',width:2.5},marker:{size:6}},
+      {x:cf.years,y:cf.dscr,mode:'lines+markers',name:'DSCR',yaxis:'y2',line:{color:'#f0883e',width:2.5},marker:{size:5}},
     ],{...L(),barmode:'relative',
       yaxis:{...L().yaxis,title:'MUSD'},
-      yaxis2:{title:'DSCR',overlaying:'y',side:'right',zeroline:false,tickfont:{size:10},gridcolor:'transparent'},
-      margin:{l:50,r:50,t:6,b:38}});
+      yaxis2:{title:'DSCR',overlaying:'y',side:'right',zeroline:false,tickfont:{size:9},gridcolor:'transparent'},
+      margin:{l:48,r:48,t:6,b:36}});
 
-    // Sensitivity
-    const sens = fin.sensitivity;
-    const svals = sens.map(s=>s.delta_npv_musd);
-    plot('cSens',[{type:'bar',orientation:'h',x:svals,y:sens.map(s=>s.driver),
-      marker:{color:svals.map(v=>v>=0?'#3fb950':'#f85149')},
-      text:svals.map(v=>(v>=0?'+':'')+v.toFixed(2)+' M'),textposition:'outside'}],
-      {...L(),margin:{l:180,r:70,t:6,b:38},
+    const sens=fin.sensitivity, sv=sens.map(s=>s.delta_npv_musd);
+    plot('cSens',[{type:'bar',orientation:'h',x:sv,y:sens.map(s=>s.driver),
+      marker:{color:sv.map(v=>v>=0?'#3fb950':'#f85149')},
+      text:sv.map(v=>(v>=0?'+':'')+v.toFixed(2)+' M'),textposition:'outside'}],
+      {...L(),margin:{l:176,r:68,t:6,b:36},
         xaxis:{...L().xaxis,title:'Delta NPV (MUSD)',zeroline:true,zerolinecolor:'#8b949e'},
         yaxis:{...L().yaxis,autorange:'reversed'}});
 
-    // NPV matrix heatmap (contracted scenarios)
-    const contr = fin.scenarios.filter(s=>s.contract_type==='contracted');
-    const priceLabels = ['low','base','high'];
-    const capexLabels = ['low','base','high'];
-    const z = capexLabels.map(cap=>priceLabels.map(pr=>{
-      const s = contr.find(s=>s.price_case===pr&&s.capex_case===cap);
-      return s ? s.npv_musd : 0;
-    }));
-    plot('cNpvMatrix',[{z,x:priceLabels.map(p=>'Price: '+p),y:capexLabels.map(c=>'Capex: '+c),
-      type:'heatmap',colorscale:'RdYlGn',text:z.map(row=>row.map(v=>v.toFixed(1)+' M')),
-      texttemplate:'%{text}',colorbar:{thickness:12,len:.8}}],
-      {...L(),margin:{l:80,r:60,t:6,b:50}});
+    const contr=fin.scenarios.filter(s=>s.contract_type==='contracted');
+    const pL=['low','base','high'], cL=['low','base','high'];
+    const zM=cL.map(cap=>pL.map(pr=>{const s=contr.find(s=>s.price_case===pr&&s.capex_case===cap);return s?s.npv_musd:0;}));
+    plot('cNpvMatrix',[{z:zM,x:pL.map(p=>'Price: '+p),y:cL.map(c=>'Capex: '+c),type:'heatmap',
+      colorscale:'RdYlGn',text:zM.map(r=>r.map(v=>v.toFixed(1)+' M')),texttemplate:'%{text}',
+      colorbar:{thickness:10,len:.8}}],
+      {...L(),margin:{l:76,r:56,t:6,b:48}});
 
+    // Sliders
+    buildSliders(cf, iso);
+
+    // Portfolio
+    loadPortfolio();
     filterFin();
-  } catch(e) { err('finErr','Failed to load finance for '+iso+': '+e.message); }
+  } catch(e){ err('finErr','Failed to load finance for '+iso+': '+e.message); }
 }
 
-function filterFin() {
-  if (!finData) return;
-  const fc = document.getElementById('fCtract').value;
-  const fp = document.getElementById('fPrice').value;
-  const fk = document.getElementById('fCapex').value;
-  const rows = finData.scenarios.filter(r=>(!fc||r.contract_type===fc)&&(!fp||r.price_case===fp)&&(!fk||r.capex_case===fk));
-  document.getElementById('finCount').textContent = rows.length+' scenarios';
-  document.getElementById('finTbody').innerHTML = rows.map(r=>`<tr>
+function buildSliders(cf, iso){
+  const defs=[
+    {key:'capex_per_kw',label:'Capex ($/kW)',min:500,max:2000,step:50,val:cf.total_capex_musd*1e6/(cf.capacity_mw*1000)},
+    {key:'solar_capacity_factor',label:'Capacity Factor',min:0.1,max:0.35,step:0.01,val:0.22,pct:true},
+    {key:'debt_fraction',label:'Debt Fraction',min:0.3,max:0.85,step:0.05,val:0.6,pct:true},
+    {key:'debt_rate',label:'Debt Rate',min:0.03,max:0.12,step:0.005,val:0.055,pct:true},
+    {key:'equity_discount_rate',label:'Equity Discount Rate',min:0.05,max:0.20,step:0.005,val:0.10,pct:true},
+    {key:'project_life_years',label:'Project Life (yrs)',min:10,max:35,step:1,val:25},
+  ];
+  sliderAssumptions={};
+  defs.forEach(d=>sliderAssumptions[d.key]=d.val);
+  document.getElementById('slidersGrid').innerHTML=defs.map(d=>`
+    <div class="slider-item">
+      <label>${d.label} <span id="sv_${d.key}">${d.pct?(d.val*100).toFixed(1)+'%':d.val}</span></label>
+      <input type="range" min="${d.min}" max="${d.max}" step="${d.step}" value="${d.val}"
+        oninput="updateSlider('${d.key}',this.value,${d.pct?'true':'false'},'${iso}')">
+    </div>`).join('');
+}
+
+let sliderTimer=null;
+async function updateSlider(key,val,isPct,iso){
+  sliderAssumptions[key]=parseFloat(val);
+  document.getElementById('sv_'+key).textContent=isPct?(parseFloat(val)*100).toFixed(1)+'%':val;
+  clearTimeout(sliderTimer);
+  sliderTimer=setTimeout(()=>recalcFinance(iso),400);
+}
+
+async function recalcFinance(iso){
+  try{
+    const r=await fetch(`/api/finance/custom?iso=${iso}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sliderAssumptions)});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.detail);
+    const npv=d.npv_musd, irr=d.irr*100;
+    document.getElementById('sliderResults').innerHTML=`
+      <div class="sr-item"><div class="sr-val ${npv>=0?'pos':'neg'}">${npv.toFixed(2)}</div><div class="sr-lbl">NPV (MUSD)</div></div>
+      <div class="sr-item"><div class="sr-val">${irr.toFixed(2)}%</div><div class="sr-lbl">IRR</div></div>
+      <div class="sr-item"><div class="sr-val">${d.min_dscr.toFixed(2)}</div><div class="sr-lbl">Min DSCR</div></div>
+      <div class="sr-item"><div class="sr-val">${d.lcoe_usd_mwh.toFixed(2)}</div><div class="sr-lbl">LCOE ($/MWh)</div></div>
+      <div class="sr-item"><div class="sr-val">${d.avg_dscr.toFixed(2)}</div><div class="sr-lbl">Avg DSCR</div></div>`;
+  } catch(e){ document.getElementById('sliderResults').innerHTML=`<span style="color:var(--red);font-size:12px">Error: ${e.message}</span>`; }
+}
+
+function filterFin(){
+  if(!finData) return;
+  const fc=document.getElementById('fCtract').value;
+  const fp=document.getElementById('fPrice').value;
+  const fk=document.getElementById('fCapex').value;
+  const rows=finData.scenarios.filter(r=>(!fc||r.contract_type===fc)&&(!fp||r.price_case===fp)&&(!fk||r.capex_case===fk));
+  document.getElementById('finCount').textContent=rows.length+' scenarios';
+  document.getElementById('finTbody').innerHTML=rows.map(r=>`<tr>
     <td class="num">${r.scenario_id}</td>
     <td><span class="badge b-${r.contract_type}">${r.contract_type}</span></td>
     <td><span class="badge b-${r.price_case}">${r.price_case}</span></td>
@@ -931,27 +1011,46 @@ function filterFin() {
   </tr>`).join('');
 }
 
+function loadPortfolio(){
+  const isos=Object.keys(cmpData);
+  if(!isos.length){document.getElementById('portfolioTbody').innerHTML='<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:14px">Load ISO Compare view first to populate portfolio data.</td></tr>';return;}
+  document.getElementById('portfolioTbody').innerHTML=isos.map(iso=>{
+    const m=cmpData[iso].market;
+    const b=cmpData[iso].finance.scenarios.find(s=>s.contract_type==='contracted'&&s.price_case==='base'&&s.capex_case==='base')||{};
+    return `<tr>
+      <td><b>${iso}</b></td>
+      <td class="num">${(m.solar_capture_price_usd_mwh||0).toFixed(2)}</td>
+      <td class="${(b.npv_musd||0)>=0?'pos':'neg'} num">${(b.npv_musd||0).toFixed(2)}</td>
+      <td class="${(b.after_tax_npv_musd||0)>=0?'pos':'neg'} num">${(b.after_tax_npv_musd||0).toFixed(2)}</td>
+      <td class="num">${((b.irr||0)*100).toFixed(2)}%</td>
+      <td class="num">${(b.min_dscr||0).toFixed(2)}</td>
+      <td class="num">${(b.lcoe_usd_mwh||0).toFixed(2)}</td>
+      <td class="num">${(b.year1_revenue_musd||0).toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+}
+
 // ── ISO COMPARE ───────────────────────────────────────────────────────────────
-async function prefetchCompare() {
-  for (const {iso,ready} of isoList) {
-    if (!ready || cmpData[iso]) continue;
-    try {
-      const [market,finance,panel] = await Promise.all([api(iso,'market'),api(iso,'finance'),api(iso,'panel')]);
-      cmpData[iso] = {market,finance,panel};
+async function prefetchCompare(){
+  for(const {iso,ready} of isoList){
+    if(!ready||cmpData[iso]) continue;
+    try{
+      const [market,finance,panel]=await Promise.all([api(iso,'market'),api(iso,'finance'),api(iso,'panel')]);
+      cmpData[iso]={market,finance,panel};
     } catch(_){}
   }
 }
 
-function renderCompare() {
-  const isos = Object.keys(cmpData);
-  if (!isos.length) { document.getElementById('cmpBody').innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">Run the pipeline for at least one ISO first.</td></tr>'; return; }
-  const colors = isos.map((_,i)=>COLORS[i%COLORS.length]);
+async function renderCompare(){
+  const isos=Object.keys(cmpData);
+  const colors=isos.map((_,i)=>COLORS[i%COLORS.length]);
 
-  // Table
-  document.getElementById('cmpBody').innerHTML = isos.map(iso => {
-    const m = cmpData[iso].market;
-    const base = cmpData[iso].finance.scenarios.find(s=>s.contract_type==='contracted'&&s.price_case==='base'&&s.capex_case==='base')||{};
-    const npv = base.npv_musd||0;
+  if(!isos.length){document.getElementById('cmpBody').innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:18px">Run the pipeline first.</td></tr>';return;}
+
+  document.getElementById('cmpBody').innerHTML=isos.map(iso=>{
+    const m=cmpData[iso].market;
+    const b=cmpData[iso].finance.scenarios.find(s=>s.contract_type==='contracted'&&s.price_case==='base'&&s.capex_case==='base')||{};
+    const npv=b.npv_musd||0;
     return `<tr>
       <td><b>${iso}</b></td>
       <td class="num">${(m.avg_price_usd_mwh||0).toFixed(2)}</td>
@@ -959,91 +1058,123 @@ function renderCompare() {
       <td class="num">${(m.wind_capture_price_usd_mwh||0).toFixed(2)}</td>
       <td class="num">${((m.negative_price_share||0)*100).toFixed(1)}%</td>
       <td class="num">${(m.congestion_proxy_mean||0).toFixed(2)}</td>
-      <td class="num ${npv>=0?'pos':'neg'}">${npv.toFixed(2)}</td>
-      <td class="num">${((base.irr||0)*100).toFixed(2)}%</td>
-      <td class="num">${(base.lcoe_usd_mwh||0).toFixed(2)}</td>
+      <td class="${npv>=0?'pos':'neg'} num">${npv.toFixed(2)}</td>
+      <td class="num">${((b.irr||0)*100).toFixed(2)}%</td>
+      <td class="num">${(b.lcoe_usd_mwh||0).toFixed(2)}</td>
     </tr>`;
   }).join('');
 
-  // Avg load
-  const avgLoads = isos.map(iso=>{const l=cmpData[iso].panel.load_mw; return l.reduce((a,b)=>a+b,0)/l.length;});
-  plot('cCmpLoad',[{type:'bar',x:isos,y:avgLoads,marker:{color:colors},
-    text:avgLoads.map(v=>v.toFixed(0)+' MW'),textposition:'outside'}],
-    {...L(),margin:{l:50,r:14,t:20,b:38},yaxis:{...L().yaxis,title:'Avg Load (MW)'}});
+  const avgLoads=isos.map(iso=>{const l=cmpData[iso].panel.load_mw;return l.reduce((a,b)=>a+b,0)/l.length;});
+  plot('cCmpLoad',[{type:'bar',x:isos,y:avgLoads,marker:{color:colors},text:avgLoads.map(v=>v.toFixed(0)+' MW'),textposition:'outside'}],
+    {...L(),margin:{l:50,r:12,t:18,b:36},yaxis:{...L().yaxis,title:'Avg Load (MW)'}});
 
-  // Capture prices
   plot('cCmpCapture',[
     {type:'bar',x:isos,y:isos.map(iso=>(cmpData[iso].market.solar_capture_price_usd_mwh||0)),name:'Solar',marker:{color:'#f0883e'}},
     {type:'bar',x:isos,y:isos.map(iso=>(cmpData[iso].market.wind_capture_price_usd_mwh||0)),name:'Wind',marker:{color:'#3fb950'}},
     {type:'bar',x:isos,y:isos.map(iso=>(cmpData[iso].market.avg_price_usd_mwh||0)),name:'Avg Price',marker:{color:'rgba(47,129,247,.5)'}},
   ],{...L(),barmode:'group',yaxis:{...L().yaxis,title:'$/MWh'}});
 
-  // IRR
-  const irrs = isos.map(iso=>{const b=cmpData[iso].finance.scenarios.find(s=>s.contract_type==='contracted'&&s.price_case==='base'&&s.capex_case==='base')||{}; return (b.irr||0)*100;});
-  plot('cCmpIrr',[{type:'bar',x:isos,y:irrs,marker:{color:irrs.map(v=>v>=0?'#3fb950':'#f85149')},
-    text:irrs.map(v=>v.toFixed(1)+'%'),textposition:'outside'}],
+  const irrs=isos.map(iso=>{const b=cmpData[iso].finance.scenarios.find(s=>s.contract_type==='contracted'&&s.price_case==='base'&&s.capex_case==='base')||{};return (b.irr||0)*100;});
+  plot('cCmpIrr',[{type:'bar',x:isos,y:irrs,marker:{color:irrs.map(v=>v>=0?'#3fb950':'#f85149')},text:irrs.map(v=>v.toFixed(1)+'%'),textposition:'outside'}],
     {...L(),yaxis:{...L().yaxis,title:'IRR (%)'}});
 
-  // LCOE vs Price gap
-  const lcoes = isos.map(iso=>{const b=cmpData[iso].finance.scenarios.find(s=>s.contract_type==='contracted'&&s.price_case==='base'&&s.capex_case==='base')||{}; return b.lcoe_usd_mwh||0;});
-  const avgs = isos.map(iso=>cmpData[iso].market.avg_price_usd_mwh||0);
+  const lcoes=isos.map(iso=>{const b=cmpData[iso].finance.scenarios.find(s=>s.contract_type==='contracted'&&s.price_case==='base'&&s.capex_case==='base')||{};return b.lcoe_usd_mwh||0;});
+  const avgs=isos.map(iso=>cmpData[iso].market.avg_price_usd_mwh||0);
   plot('cCmpLcoe',[
     {type:'bar',x:isos,y:lcoes,name:'LCOE',marker:{color:'#a371f7'}},
     {type:'bar',x:isos,y:avgs,name:'Avg Price',marker:{color:'rgba(47,129,247,.5)'}},
   ],{...L(),barmode:'group',yaxis:{...L().yaxis,title:'$/MWh'}});
 
-  // Bubble: NPV vs IRR
-  const npvs = isos.map(iso=>{const b=cmpData[iso].finance.scenarios.find(s=>s.contract_type==='contracted'&&s.price_case==='base'&&s.capex_case==='base')||{}; return b.npv_musd||0;});
-  plot('cCmpBubble',[{type:'scatter',mode:'markers+text',
-    x:irrs,y:npvs,
-    text:isos,textposition:'top center',
-    marker:{size:avgLoads.map(v=>Math.max(12,v/2000)),color:colors,opacity:.85,line:{color:'#fff',width:1}},
-  }],{...L(),margin:{l:50,r:20,t:20,b:50},
-    xaxis:{...L().xaxis,title:'Base IRR (%)'},
-    yaxis:{...L().yaxis,title:'Base NPV (MUSD)'},
-    showlegend:false});
+  // Bubble
+  const npvs=isos.map(iso=>{const b=cmpData[iso].finance.scenarios.find(s=>s.contract_type==='contracted'&&s.price_case==='base'&&s.capex_case==='base')||{};return b.npv_musd||0;});
+  plot('cCmpBubble',[{type:'scatter',mode:'markers+text',x:irrs,y:npvs,text:isos,textposition:'top center',
+    marker:{size:avgLoads.map(v=>Math.max(14,v/2500)),color:irrs,colorscale:'RdYlGn',showscale:true,
+      colorbar:{title:'IRR %',thickness:10,len:.7,tickfont:{size:8}},opacity:.85,line:{color:'#fff',width:1}},
+  }],{...L(),margin:{l:50,r:80,t:18,b:50},showlegend:false,
+    xaxis:{...L().xaxis,title:'Base IRR (%)'},yaxis:{...L().yaxis,title:'Base NPV (MUSD)'}});
 
-  // Negative price exposure
-  const negHrs = isos.map(iso=>cmpData[iso].market.negative_price_hours||0);
-  const negPct = isos.map(iso=>(cmpData[iso].market.negative_price_share||0)*100);
+  // Correlation matrix
+  try{
+    const corr=await apiRoot('correlation');
+    if(corr.isos.length){
+      const zText=corr.matrix.map(row=>row.map(v=>v.toFixed(2)));
+      plot('cCorr',[{z:corr.matrix,x:corr.isos,y:corr.isos,type:'heatmap',
+        colorscale:'RdBu',zmin:-1,zmax:1,text:zText,texttemplate:'%{text}',
+        colorbar:{thickness:12,len:.8,title:'r',tickfont:{size:9}}}],
+        {...L(),margin:{l:70,r:80,t:12,b:70},
+          xaxis:{...L().xaxis,tickangle:-30},yaxis:{...L().yaxis,autorange:'reversed'}});
+    }
+  } catch(_){}
+
+  // US Map
+  const mapLats=isos.map(iso=>(ISO_COORDS[iso]||[0,0])[0]);
+  const mapLons=isos.map(iso=>(ISO_COORDS[iso]||[0,0])[1]);
+  plot('cMap',[{type:'scattergeo',mode:'markers+text',lat:mapLats,lon:mapLons,
+    text:isos,textposition:'top center',
+    marker:{size:avgLoads.map(v=>Math.max(16,v/2000)),color:irrs,colorscale:'RdYlGn',showscale:true,
+      colorbar:{title:'IRR %',thickness:10,len:.6,tickfont:{size:8}},opacity:.85,line:{color:'#fff',width:1.5}},
+    hovertemplate:isos.map((iso,i)=>`<b>${iso}</b><br>Avg Load: ${avgLoads[i].toFixed(0)} MW<br>IRR: ${irrs[i].toFixed(1)}%<br>NPV: ${npvs[i].toFixed(2)} MUSD<extra></extra>`),
+  }],{geo:{scope:'usa',bgcolor:'transparent',lakecolor:'transparent',landcolor:'#1a2030',
+      subunitcolor:'#30363d',countrycolor:'#30363d',showlakes:true,showland:true,showsubunits:true},
+    paper_bgcolor:'transparent',margin:{l:0,r:0,t:10,b:0},font:{color:'#8b949e',size:10}});
+
+  // Neg price exposure
+  const negHrs=isos.map(iso=>cmpData[iso].market.negative_price_hours||0);
+  const negPct=isos.map(iso=>(cmpData[iso].market.negative_price_share||0)*100);
   plot('cCmpNeg',[
     {type:'bar',x:isos,y:negHrs,name:'Neg Price Hours',marker:{color:'#f85149'},yaxis:'y'},
     {type:'scatter',x:isos,y:negPct,name:'% of Hours',mode:'markers',marker:{size:10,color:'#d29922'},yaxis:'y2'},
   ],{...L(),yaxis:{...L().yaxis,title:'Hours'},
-    yaxis2:{title:'%',overlaying:'y',side:'right',gridcolor:'transparent',tickfont:{size:10}},
-    margin:{l:46,r:50,t:6,b:38}});
+    yaxis2:{title:'%',overlaying:'y',side:'right',gridcolor:'transparent',tickfont:{size:9}},
+    margin:{l:46,r:48,t:6,b:36}});
+
+  loadPortfolio();
 }
 
 // ── Pipeline ──────────────────────────────────────────────────────────────────
-async function runPipeline(iso) {
-  const log = document.getElementById('runLog');
-  log.className='run-log on'; log.textContent='Running '+iso+' pipeline…';
-  try {
-    const r = await fetch('/api/run/'+iso,{method:'POST'});
-    const d = await r.json();
+async function runPipeline(iso){
+  const log=document.getElementById('runLog');
+  log.className='run-log on';log.textContent='Running '+iso+'…';
+  try{
+    const r=await fetch('/api/run/'+iso,{method:'POST'});
+    const d=await r.json();
     if(!r.ok) throw new Error(d.detail);
     log.textContent='✓ Done: '+iso+'\nStages: '+d.stages_run.join(', ');
     delete cache[iso]; delete cmpData[iso];
-  } catch(e) { log.className='run-log err'; log.textContent='✗ '+e.message; }
+  } catch(e){ log.className='run-log err';log.textContent='✗ '+e.message; }
 }
-
-async function runAll() {
-  const log = document.getElementById('runLog');
-  log.className='run-log on'; log.textContent='Running all ISO pipelines…';
-  try {
-    const r = await fetch('/api/run-all',{method:'POST'});
-    const d = await r.json();
+async function runAll(){
+  const log=document.getElementById('runLog');
+  log.className='run-log on';log.textContent='Running all ISOs… this may take a minute.';
+  try{
+    const r=await fetch('/api/run-all',{method:'POST'});
+    const d=await r.json();
     if(!r.ok) throw new Error(d.detail);
     log.textContent='✓ All pipelines complete\nISOs: '+d.isos_run.join(', ');
-    cache={}; cmpData={};
-  } catch(e) { log.className='run-log err'; log.textContent='✗ '+e.message; }
+    cache={};cmpData={};
+  } catch(e){ log.className='run-log err';log.textContent='✗ '+e.message; }
+}
+
+// ── Exports ───────────────────────────────────────────────────────────────────
+function exportPng(divId,filename){
+  Plotly.downloadImage(document.getElementById(divId),{format:'png',width:1400,height:700,filename:'energy-analytics-'+filename});
+}
+function exportTableCsv(tbodyId,headers,filename){
+  const rows=document.getElementById(tbodyId).querySelectorAll('tr');
+  const lines=[headers.join(',')];
+  rows.forEach(tr=>{
+    const cells=[...tr.querySelectorAll('td')].map(td=>'"'+td.textContent.trim().replace(/"/g,'""')+'"');
+    lines.push(cells.join(','));
+  });
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='energy-analytics-'+filename+'.csv';a.click();
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function plot(id,traces,layout){ Plotly.newPlot(id,traces,layout,CFG); }
-function loading(msg){ document.getElementById('spinMsg').textContent=msg||'Loading…'; document.getElementById('overlay').classList.add('on'); }
+function loading(msg){ document.getElementById('spinMsg').textContent=msg||'Loading…';document.getElementById('overlay').classList.add('on'); }
 function doneLoading(){ document.getElementById('overlay').classList.remove('on'); }
-function err(id,msg){ const e=document.getElementById(id); e.textContent=msg; e.classList.add('on'); }
+function err(id,msg){ const e=document.getElementById(id);e.textContent=msg;e.classList.add('on'); }
 function clearErr(id){ document.getElementById(id).classList.remove('on'); }
 </script>
 </body>
