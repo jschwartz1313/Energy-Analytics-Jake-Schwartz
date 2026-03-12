@@ -2,22 +2,67 @@
 from __future__ import annotations
 
 import csv
-import math
 import subprocess
 import sys
+import threading
 from collections import defaultdict
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from energy_analytics.config import load_config
 from energy_analytics.finance import _build_case
 
-app = FastAPI(title="Energy Analytics API", version="2.0.0")
+
+def _bootstrap_data() -> None:
+    """Run the full pipeline for all ISOs on first boot if data is missing."""
+    missing = False
+    for cfg_path in [
+        "config/data_sources.yml", "config/caiso.yml", "config/pjm.yml",
+        "config/miso.yml", "config/spp.yml", "config/nyiso.yml", "config/isone.yml",
+    ]:
+        try:
+            cfg = load_config(cfg_path)
+            if not Path(cfg["curated_output"]["panel_csv"]).exists():
+                missing = True
+                break
+        except Exception:
+            missing = True
+            break
+
+    if not missing:
+        return
+
+    print("⚡ First boot: running full pipeline for all ISOs…")
+    for cfg_path in [
+        "config/data_sources.yml", "config/caiso.yml", "config/pjm.yml",
+        "config/miso.yml", "config/spp.yml", "config/nyiso.yml", "config/isone.yml",
+    ]:
+        for stage in ["ingest", "transform", "forecast", "queue", "markets", "finance", "charts"]:
+            result = subprocess.run(
+                [sys.executable, "-m", "energy_analytics", stage, "--config", cfg_path],
+                capture_output=True, text=True,
+            )
+            if result.returncode != 0:
+                print(f"  ✗ {cfg_path}/{stage}: {result.stderr.strip()[:200]}")
+            else:
+                print(f"  ✓ {cfg_path}/{stage}")
+    print("⚡ Pipeline bootstrap complete.")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    thread = threading.Thread(target=_bootstrap_data, daemon=True)
+    thread.start()
+    yield
+
+
+app = FastAPI(title="Energy Analytics API", version="2.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
