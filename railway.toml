@@ -1,0 +1,8 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "uvicorn energy_analytics.api:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/api/isos"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"

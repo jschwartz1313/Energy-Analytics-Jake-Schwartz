@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: energy-analytics
+    runtime: python
+    buildCommand: pip install -e .
+    startCommand: uvicorn energy_analytics.api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+    disk:
+      name: data
+      mountPath: /opt/render/project/src
+      sizeGB: 1
