@@ -49,33 +49,82 @@ def _build_summary_report(cfg: dict[str, Any], metrics: dict[str, float], base_f
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <title>Energy Analytics Summary Report</title>
   <style>
-    body {{ font-family: 'IBM Plex Sans','Segoe UI',sans-serif; margin: 24px; color:#102027; }}
-    h1,h2 {{ margin: 0 0 10px; }}
-    .meta {{ color:#425a65; margin-bottom: 18px; }}
-    .card {{ border:1px solid #d8e1e5; border-radius:10px; padding:12px 14px; margin:10px 0; }}
-    table {{ border-collapse: collapse; width: 100%; }}
-    th,td {{ border:1px solid #d8e1e5; padding:8px; text-align:left; }}
-    th {{ background:#eef3f5; }}
+    :root {{
+      --ink:#0f1f24; --muted:#5b727c; --accent:#0b5f83;
+      --bg:#eef4f7; --card:#ffffff; --line:#d9e2e7; --hero-bg:#0b3d52;
+    }}
+    * {{ box-sizing:border-box; margin:0; padding:0; }}
+    body {{ font-family:'IBM Plex Sans','Segoe UI',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; }}
+    .navbar {{ background:#fff; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:100; }}
+    .navbar-inner {{ max-width:900px; margin:0 auto; padding:0 20px; display:flex; align-items:center; justify-content:space-between; height:52px; }}
+    .navbar-brand {{ font-weight:700; font-size:15px; color:var(--hero-bg); text-decoration:none; }}
+    .navbar-links {{ display:flex; gap:4px; align-items:center; }}
+    .navbar-links a {{ font-size:13px; font-weight:500; color:var(--muted); text-decoration:none; padding:6px 12px; border-radius:6px; transition:background .15s,color .15s; }}
+    .navbar-links a:hover {{ background:var(--bg); color:var(--ink); }}
+    .navbar-links a.active {{ color:var(--accent); font-weight:600; background:#e8f2f8; }}
+    .page-header {{ background:linear-gradient(135deg,#0b3d52 0%,#0b5f83 100%); color:#fff; padding:36px 20px 28px; }}
+    .page-header-inner {{ max-width:900px; margin:0 auto; }}
+    .page-header h1 {{ font-size:clamp(20px,4vw,30px); font-weight:700; margin-bottom:6px; }}
+    .page-header .meta {{ opacity:.75; font-size:13px; }}
+    .content {{ max-width:900px; margin:0 auto; padding:32px 20px 48px; }}
+    h2 {{ font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--ink); }}
+    h2:first-child {{ margin-top:0; }}
+    .card-row {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:8px; }}
+    .card {{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }}
+    .card .label {{ font-size:12px; color:var(--muted); margin-bottom:4px; }}
+    .card .value {{ font-size:22px; font-weight:700; color:var(--accent); }}
+    .card .unit {{ font-size:12px; color:var(--muted); margin-top:2px; }}
+    table {{ width:100%; border-collapse:collapse; font-size:14px; background:var(--card); border-radius:12px; overflow:hidden; border:1px solid var(--line); }}
+    th,td {{ border-bottom:1px solid var(--line); padding:10px 14px; text-align:left; }}
+    th {{ background:#eef3f5; font-weight:600; font-size:13px; }}
+    tbody tr:last-child td {{ border-bottom:none; }}
+    tbody tr:hover {{ background:#f7fafc; }}
+    ul {{ padding-left:20px; }}
+    ul li {{ font-size:14px; color:var(--muted); margin-bottom:6px; }}
+    footer {{ background:var(--hero-bg); color:rgba(255,255,255,.65); text-align:center; padding:20px; font-size:13px; }}
+    footer a {{ color:rgba(255,255,255,.85); }}
+    @media (max-width:600px) {{ .navbar-links a {{ padding:6px 8px; font-size:12px; }} .content {{ padding:24px 16px 40px; }} }}
   </style>
 </head>
 <body>
-  <h1>Energy Analytics Portfolio Summary</h1>
-  <div class='meta'>Region: {cfg['region']} | Hub: {cfg['hub']} | Generated from processed artifacts only.</div>
-
+<nav class='navbar'>
+  <div class='navbar-inner'>
+    <a class='navbar-brand' href='../../index.html'>Energy Analytics</a>
+    <div class='navbar-links'>
+      <a href='../../index.html'>Home</a>
+      <a href='index.html'>Dashboard</a>
+      <a href='#' class='active'>Summary Report</a>
+      <a href='https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz' target='_blank' rel='noopener'>GitHub</a>
+    </div>
+  </div>
+</nav>
+<div class='page-header'>
+  <div class='page-header-inner'>
+    <h1>Energy Analytics Portfolio Summary</h1>
+    <div class='meta'>Region: {cfg['region']} &nbsp;|&nbsp; Hub: {cfg['hub']} &nbsp;|&nbsp; Generated from processed artifacts only.</div>
+  </div>
+</div>
+<div class='content'>
   <h2>Market Highlights</h2>
-  <div class='card'>Average hub price: <b>{metrics.get('avg_price_usd_mwh', 0.0):.2f} USD/MWh</b></div>
-  <div class='card'>Solar capture price: <b>{metrics.get('solar_capture_price_usd_mwh', 0.0):.2f} USD/MWh</b> | Wind capture price: <b>{metrics.get('wind_capture_price_usd_mwh', 0.0):.2f} USD/MWh</b></div>
-  <div class='card'>Congestion proxy mean: <b>{metrics.get('congestion_proxy_mean', 0.0):.2f} USD/MWh</b> | Negative price share: <b>{100*metrics.get('negative_price_share', 0.0):.1f}%</b></div>
+  <div class='card-row'>
+    <div class='card'><div class='label'>Average Hub Price</div><div class='value'>{metrics.get('avg_price_usd_mwh', 0.0):.2f}</div><div class='unit'>USD / MWh</div></div>
+    <div class='card'><div class='label'>Solar Capture Price</div><div class='value'>{metrics.get('solar_capture_price_usd_mwh', 0.0):.2f}</div><div class='unit'>USD / MWh</div></div>
+    <div class='card'><div class='label'>Wind Capture Price</div><div class='value'>{metrics.get('wind_capture_price_usd_mwh', 0.0):.2f}</div><div class='unit'>USD / MWh</div></div>
+    <div class='card'><div class='label'>Congestion Proxy Mean</div><div class='value'>{metrics.get('congestion_proxy_mean', 0.0):.2f}</div><div class='unit'>USD / MWh</div></div>
+    <div class='card'><div class='label'>Negative Price Share</div><div class='value'>{100*metrics.get('negative_price_share', 0.0):.1f}%</div><div class='unit'>of modeled hours</div></div>
+  </div>
 
   <h2>Base Solar Finance Case</h2>
   <table>
-    <tr><th>Metric</th><th>Value</th></tr>
-    <tr><td>NPV (MUSD)</td><td>{base_fin['npv_musd']:.2f}</td></tr>
-    <tr><td>After-tax NPV (MUSD)</td><td>{base_fin.get('after_tax_npv_musd', base_fin['npv_musd']):.2f}</td></tr>
-    <tr><td>IRR</td><td>{base_fin['irr']:.3f}</td></tr>
-    <tr><td>Min DSCR</td><td>{base_fin['min_dscr']:.3f}</td></tr>
-    <tr><td>LCOE (USD/MWh)</td><td>{base_fin['lcoe_usd_mwh']:.2f}</td></tr>
-    <tr><td>Year 1 Revenue (MUSD)</td><td>{base_fin['year1_revenue_musd']:.2f}</td></tr>
+    <thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>NPV</td><td>{base_fin['npv_musd']:.2f} MUSD</td><td>10% WACC, 20-yr project life</td></tr>
+      <tr><td>After-tax NPV</td><td>{base_fin.get('after_tax_npv_musd', base_fin['npv_musd']):.2f} MUSD</td><td>25% corporate tax rate proxy</td></tr>
+      <tr><td>IRR</td><td>{base_fin['irr']:.3f}</td><td>Contracted base scenario</td></tr>
+      <tr><td>Min DSCR</td><td>{base_fin['min_dscr']:.3f}×</td><td>60% debt, 6% rate, 15-yr tenor</td></tr>
+      <tr><td>LCOE</td><td>{base_fin['lcoe_usd_mwh']:.2f} USD/MWh</td><td>1,150 USD/kW capex, 18 USD/kW-yr opex</td></tr>
+      <tr><td>Year 1 Revenue</td><td>{base_fin['year1_revenue_musd']:.2f} MUSD</td><td>Capture price × generation × PPA premium</td></tr>
+    </tbody>
   </table>
 
   <h2>Limitations</h2>
@@ -84,6 +133,15 @@ def _build_summary_report(cfg: dict[str, Any], metrics: dict[str, float], base_f
     <li>Congestion is proxy-based, not a transmission power-flow model.</li>
     <li>Finance assumptions are centralized and scenario-based, not an investment recommendation.</li>
   </ul>
+</div>
+<footer>
+  <p>Energy Analytics Portfolio · {cfg['region']} region · Data is stylized sample output for demonstration purposes.</p>
+  <p style='margin-top:6px;'>
+    <a href='../../index.html'>Home</a> ·
+    <a href='index.html'>Dashboard</a> ·
+    <a href='https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz' target='_blank' rel='noopener'>GitHub</a>
+  </p>
+</footer>
 </body>
 </html>
 """
@@ -163,9 +221,14 @@ def run_dashboard() -> None:
     }}
     * {{ box-sizing:border-box; }}
     body {{ margin:0; background:linear-gradient(130deg,#eef4f7,#f8fbfc); color:var(--ink); font-family:'IBM Plex Sans','Segoe UI',sans-serif; }}
-    header {{ padding:16px 20px; border-bottom:1px solid var(--line); background:rgba(255,255,255,.9); position:sticky; top:0; z-index:10; backdrop-filter: blur(4px); }}
-    h1 {{ margin:0; font-size:20px; }}
-    .sub {{ color:var(--muted); font-size:13px; margin-top:4px; }}
+    header {{ padding:12px 20px; border-bottom:1px solid var(--line); background:rgba(255,255,255,.9); position:sticky; top:0; z-index:10; backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }}
+    .header-left h1 {{ margin:0; font-size:20px; }}
+    .sub {{ color:var(--muted); font-size:13px; margin-top:2px; }}
+    .header-nav {{ display:flex; gap:4px; align-items:center; }}
+    .header-nav a {{ font-size:12px; font-weight:500; color:var(--muted); text-decoration:none; padding:6px 10px; border-radius:6px; transition:background .15s,color .15s; white-space:nowrap; }}
+    .header-nav a:hover {{ background:var(--bg); color:var(--ink); }}
+    .header-nav a.active {{ color:var(--accent); font-weight:600; background:#e8f2f8; }}
+    @media (max-width:600px) {{ .header-nav {{ display:none; }} }}
     .layout {{ display:grid; grid-template-columns:280px 1fr; min-height:calc(100vh - 74px); }}
     .side {{ border-right:1px solid var(--line); padding:14px; background:#fbfdfe; }}
     .main {{ padding:18px; }}
@@ -190,8 +253,16 @@ def run_dashboard() -> None:
 </head>
 <body>
 <header>
-  <h1>Energy Analytics Dashboard</h1>
-  <div class='sub'>Processed-data dashboard for {cfg['region']} ({cfg['hub']}) covering milestones 1-5.</div>
+  <div class='header-left'>
+    <h1>Energy Analytics Dashboard</h1>
+    <div class='sub'>Processed-data dashboard for {cfg['region']} ({cfg['hub']}) covering milestones 1-5.</div>
+  </div>
+  <nav class='header-nav'>
+    <a href='../../index.html'>Home</a>
+    <a href='#' class='active'>Dashboard</a>
+    <a href='summary_report.html'>Summary Report</a>
+    <a href='https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz' target='_blank' rel='noopener'>GitHub</a>
+  </nav>
 </header>
 <div class='layout'>
   <aside class='side'>
