@@ -27,6 +27,33 @@
     .nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
     .last-updated{font-size:11px;color:var(--muted2)}
 
+    /* Tooltip info icons */
+    .info{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--surface3);color:var(--muted2);font-size:9px;font-weight:700;cursor:default;position:relative;margin-left:5px;flex-shrink:0;vertical-align:middle}
+    .info:hover{background:var(--accent);color:#fff}
+    .info:hover .tip{display:block}
+    .tip{display:none;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#1c2128;border:1px solid var(--border);border-radius:8px;padding:10px 13px;font-size:11px;color:var(--muted);width:260px;line-height:1.55;z-index:500;font-weight:400;text-align:left;white-space:normal;pointer-events:none}
+    .tip::after{content:'';position:absolute;left:50%;transform:translateX(-50%);top:100%;border:6px solid transparent;border-top-color:#1c2128}
+
+    /* Docs view */
+    .doc-section{margin-bottom:40px}
+    .doc-section h2{font-size:17px;font-weight:700;margin-bottom:4px;color:var(--text)}
+    .doc-section .sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+    .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+    .doc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
+    .doc-card h3{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .doc-card h3 .icon{font-size:16px}
+    .doc-card p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+    .doc-card p:last-child{margin-bottom:0}
+    .doc-card ul{padding-left:16px;margin-top:4px}
+    .doc-card ul li{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:3px}
+    .doc-card .term{font-weight:700;color:var(--text)}
+    .pipeline-flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:16px 0}
+    .pipeline-step{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--text)}
+    .pipeline-arrow{color:var(--muted2);font-size:14px}
+    .doc-hero{background:linear-gradient(135deg,var(--surface) 0%,#0d1f3c 100%);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:28px}
+    .doc-hero h2{font-size:20px;font-weight:800;margin-bottom:8px}
+    .doc-hero p{font-size:13px;color:var(--muted);max-width:700px;line-height:1.65}
+
     /* ISO Bar */
     .iso-bar{background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto}
     .iso-bar-inner{max-width:1400px;margin:0 auto;display:flex;gap:6px;padding:8px 24px}
@@ -156,6 +183,7 @@
     <button class="nav-btn" onclick="showView('finance')">Finance</button>
     <button class="nav-btn" onclick="showView('compare')">ISO Compare</button>
     <button class="nav-btn" onclick="showView('admin')">Pipeline</button>
+    <button class="nav-btn" onclick="showView('docs')">Docs</button>
     <div class="nav-right">
       <span class="last-updated" id="lastUpdated"></span>
       <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener" style="font-size:12px;color:var(--muted)">GitHub &#8599;</a>
@@ -188,25 +216,25 @@
 
     <div class="sec"><h2>Load &amp; Price Time Series</h2></div>
     <div class="grid2">
-      <div class="card"><div class="card-title">Hourly Load (MW)</div><div id="cLoad" style="height:260px"></div></div>
-      <div class="card"><div class="card-title">Hub Price ($/MWh) <span id="hubLabel"></span></div><div id="cPrice" style="height:260px"></div></div>
+      <div class="card"><div class="card-title">Hourly Load (MW)<span class="info">i<span class="tip">Total electricity demand across the ISO in megawatts (MW) for each hour. Higher load typically correlates with higher prices. Peaks in summer (AC) and winter (heating) are normal.</span></span></div><div id="cLoad" style="height:260px"></div></div>
+      <div class="card"><div class="card-title">Hub Price ($/MWh)<span class="info">i<span class="tip">The wholesale electricity price at the ISO's primary hub in dollars per megawatt-hour. This is the real-time or day-ahead locational marginal price (LMP) — what generators are paid and large buyers pay.</span></span> <span id="hubLabel"></span></div><div id="cPrice" style="height:260px"></div></div>
     </div>
     <div class="grid2">
-      <div class="card"><div class="card-title">Temperature (°F)</div><div id="cTemp" style="height:220px"></div></div>
-      <div class="card"><div class="card-title">Load vs Price Scatter <span>price spike / correlation</span></div><div id="cScatter" style="height:220px"></div></div>
+      <div class="card"><div class="card-title">Temperature (°F)<span class="info">i<span class="tip">Ambient air temperature at a representative weather station in the ISO region. Temperature is the single strongest driver of electricity demand — heat drives cooling load, cold drives heating load.</span></span></div><div id="cTemp" style="height:220px"></div></div>
+      <div class="card"><div class="card-title">Load vs Price Scatter<span class="info">i<span class="tip">Each dot is one hour. X-axis = load (MW), Y-axis = price ($/MWh). A positive slope means higher demand → higher prices. Price spikes (dots high on Y) during moderate load indicate scarcity events or transmission congestion.</span></span></div><div id="cScatter" style="height:220px"></div></div>
     </div>
 
     <div class="sec"><h2>Price Analytics</h2></div>
     <div class="grid3">
-      <div class="card"><div class="card-title">Price Duration Curve</div><div id="cPDC" style="height:240px"></div></div>
-      <div class="card"><div class="card-title">Avg Price by Hour of Day</div><div id="cHourly" style="height:240px"></div></div>
-      <div class="card"><div class="card-title">Monthly Avg Price ($/MWh)</div><div id="cMonthly" style="height:240px"></div></div>
+      <div class="card"><div class="card-title">Price Duration Curve<span class="info">i<span class="tip">All hours sorted from highest to lowest price. The X-axis shows what % of the time prices exceeded a given level. A steep curve = volatile market. A flat curve = stable prices. Negative prices appear at the far right.</span></span></div><div id="cPDC" style="height:240px"></div></div>
+      <div class="card"><div class="card-title">Avg Price by Hour of Day<span class="info">i<span class="tip">Average price for each of the 24 hours. Shows the daily shape — typically a morning ramp (7–9am), midday dip, and evening peak (5–8pm). Solar-heavy ISOs like CAISO show a midday price dip (the "duck curve").</span></span></div><div id="cHourly" style="height:240px"></div></div>
+      <div class="card"><div class="card-title">Monthly Avg Price ($/MWh)<span class="info">i<span class="tip">Monthly min, average, and max prices. The shaded band shows price volatility. Wide bands indicate months with scarcity events or extreme weather. Useful for spotting seasonal price patterns.</span></span></div><div id="cMonthly" style="height:240px"></div></div>
     </div>
 
     <div class="sec"><h2>Renewable Integration</h2></div>
     <div class="grid2">
-      <div class="card"><div class="card-title">Solar vs Wind Profile vs Price <span>generation shape against spot</span></div><div id="cRenew" style="height:280px"></div></div>
-      <div class="card"><div class="card-title">Price Heatmap — Hour of Day × Day <span>darker = higher price</span></div><div id="cHeatmap" style="height:280px"></div></div>
+      <div class="card"><div class="card-title">Solar &amp; Wind Profile vs Price<span class="info">i<span class="tip">Solar capacity factor (0–1) and wind capacity factor overlaid on the spot price. When renewable generation is high and prices drop, that's "price cannibalization" — the effect renewables have on their own revenue. The capture ratio KPI quantifies this.</span></span></div><div id="cRenew" style="height:280px"></div></div>
+      <div class="card"><div class="card-title">Price Heatmap — Hour × Day<span class="info">i<span class="tip">Each cell is one hour of one day. Color intensity shows price — red = expensive, green = cheap. Patterns reveal: morning/evening price peaks (vertical bands), high-price days (horizontal bands), and overnight negative prices.</span></span></div><div id="cHeatmap" style="height:280px"></div></div>
     </div>
 
     <div class="sec"><h2>Market Findings</h2></div>
@@ -222,12 +250,12 @@
 
     <div class="sec"><h2>Queue Outlook</h2></div>
     <div class="grid2">
-      <div class="card"><div class="card-title">Expected Online MW by COD Year (P50 vs P90)</div><div id="cQueue" style="height:280px"></div></div>
-      <div class="card"><div class="card-title">Cumulative P50 MW Coming Online</div><div id="cQueueCum" style="height:280px"></div></div>
+      <div class="card"><div class="card-title">Expected Online MW by COD Year (P50 vs P90)<span class="info">i<span class="tip">MW of new capacity expected to come online each year based on Commercial Operation Date (COD) targets. P50 = 50th percentile probability scenario (base case). P90 = 90th percentile (more conservative — fewer projects complete). The gap between them shows completion uncertainty.</span></span></div><div id="cQueue" style="height:280px"></div></div>
+      <div class="card"><div class="card-title">Cumulative P50 MW Coming Online<span class="info">i<span class="tip">Running total of P50 MW added to the grid over time. Steep slope = rapid capacity additions. Flattening = pipeline thinning out. This shows how much new supply the ISO is expected to absorb cumulatively.</span></span></div><div id="cQueueCum" style="height:280px"></div></div>
     </div>
     <div class="grid2">
-      <div class="card"><div class="card-title">Queue by Technology (P50 stacked)</div><div id="cQueueTech" style="height:280px"></div></div>
-      <div class="card"><div class="card-title">Queue MW by Status</div><div id="cQueueStatus" style="height:280px"></div></div>
+      <div class="card"><div class="card-title">Queue by Technology (P50 stacked)<span class="info">i<span class="tip">Breakdown of expected online MW by technology type each year. Shows the mix of solar, wind, storage, gas, etc. entering the grid. Dominated by solar and wind in most ISOs, reflecting the current renewables buildout.</span></span></div><div id="cQueueTech" style="height:280px"></div></div>
+      <div class="card"><div class="card-title">Queue MW by Status<span class="info">i<span class="tip">Total MW in the interconnection queue broken down by project status. Active/In Study = progressing through interconnection. Submitted = just entered. Withdrawn/Cancelled = attrition (historically 60–80% of queue MW never gets built). Operational = already online.</span></span></div><div id="cQueueStatus" style="height:280px"></div></div>
     </div>
 
     <div class="sec"><h2>Project List</h2></div>
@@ -252,17 +280,17 @@
     <div class="err-bar" id="fcErr"></div>
     <div class="sec"><h2>Load Forecast Scenarios</h2></div>
     <div class="grid1">
-      <div class="card"><div class="card-title">Annual Avg Load — Low / Base / High (MW)</div><div id="cForecast" style="height:340px"></div></div>
+      <div class="card"><div class="card-title">Annual Avg Load — Low / Base / High (MW)<span class="info">i<span class="tip">Long-range load forecast showing three scenarios. Base = expected growth trajectory. High = accelerated electrification (EVs, data centers, industrial load). Low = slower growth or efficiency gains. The shaded band between Low and High is the uncertainty range.</span></span></div><div id="cForecast" style="height:340px"></div></div>
     </div>
     <div class="grid2">
-      <div class="card"><div class="card-title">Forecast Range Band (High − Low MW)</div><div id="cFcRange" style="height:260px"></div></div>
-      <div class="card"><div class="card-title">YoY Growth Rate (Base Case %)</div><div id="cFcGrowth" style="height:260px"></div></div>
+      <div class="card"><div class="card-title">Forecast Range Band (High − Low MW)<span class="info">i<span class="tip">The gap between the High and Low scenarios each year. A widening band means growing uncertainty further into the future — small differences in growth assumptions compound over time. Useful for risk planning.</span></span></div><div id="cFcRange" style="height:260px"></div></div>
+      <div class="card"><div class="card-title">YoY Growth Rate — Base Case<span class="info">i<span class="tip">Year-over-year percentage change in average load under the base scenario. Positive = growing demand. The US average is ~1–2%/yr but many ISOs project acceleration due to EV adoption, data center growth, and industrial electrification.</span></span></div><div id="cFcGrowth" style="height:260px"></div></div>
     </div>
 
     <div class="sec"><h2>Model Backtest</h2></div>
     <div class="grid2">
-      <div class="card"><div class="card-title">Actual vs Predicted Load</div><div id="cBacktest" style="height:260px"></div></div>
-      <div class="card"><div class="card-title">Backtest Metrics</div><div id="backtestMetrics" style="padding:8px"></div></div>
+      <div class="card"><div class="card-title">Actual vs Predicted Load<span class="info">i<span class="tip">How well the forecast model predicts historical load. The closer the orange (predicted) line tracks the blue (actual) line, the better the model. Divergence during extreme weather shows model limitations.</span></span></div><div id="cBacktest" style="height:260px"></div></div>
+      <div class="card"><div class="card-title">Backtest Metrics<span class="info">i<span class="tip">RMSE (Root Mean Square Error) = average prediction error in MW — lower is better. MAPE (Mean Absolute Percentage Error) = average % error. Best model shows which approach performed better: naive 24-hour lag or weather-adjusted regression.</span></span></div><div id="backtestMetrics" style="padding:8px"></div></div>
     </div>
   </div>
 </div>
@@ -276,14 +304,14 @@
 
     <div class="sec"><h2>Annual Cash Flow Projection</h2></div>
     <div class="grid2">
-      <div class="card"><div class="card-title">Revenue, Opex &amp; Debt Service (MUSD/yr)</div><div id="cCashflow" style="height:300px"></div></div>
-      <div class="card"><div class="card-title">Equity Free Cash Flow &amp; DSCR</div><div id="cDscr" style="height:300px"></div></div>
+      <div class="card"><div class="card-title">Revenue, Opex &amp; Debt Service (MUSD/yr)<span class="info">i<span class="tip">Annual project cash flows in millions of USD. Green bars = energy revenue (declines slightly each year due to panel degradation). Yellow = operating expenses (fixed $/kW/yr). Red = debt service (principal + interest, zeroes out after the loan tenor). The net of these is cash available for equity.</span></span></div><div id="cCashflow" style="height:300px"></div></div>
+      <div class="card"><div class="card-title">Equity Free Cash Flow &amp; DSCR<span class="info">i<span class="tip">Blue bars = cash left for equity holders after paying opex and debt. Orange line = Debt Service Coverage Ratio (DSCR = EBITDA ÷ Debt Service). Lenders typically require DSCR ≥ 1.25x. A DSCR below 1.0 means the project cannot cover its debt from operations.</span></span></div><div id="cDscr" style="height:300px"></div></div>
     </div>
 
     <div class="sec"><h2>Sensitivity</h2></div>
     <div class="grid2">
-      <div class="card"><div class="card-title">Delta NPV vs Base (MUSD)</div><div id="cSens" style="height:280px"></div></div>
-      <div class="card"><div class="card-title">NPV by Price × Capex Case (Contracted)</div><div id="cNpvMatrix" style="height:280px"></div></div>
+      <div class="card"><div class="card-title">Delta NPV vs Base (MUSD)<span class="info">i<span class="tip">How much the project NPV changes from the base case when each driver is stressed. Green bars = scenarios that improve NPV (e.g. lower capex). Red bars = scenarios that reduce NPV (e.g. lower prices). The longest bars identify the biggest risks and opportunities.</span></span></div><div id="cSens" style="height:280px"></div></div>
+      <div class="card"><div class="card-title">NPV by Price × Capex Case<span class="info">i<span class="tip">A 3×3 matrix of NPV outcomes across all combinations of price scenario (columns) and capex scenario (rows) for contracted projects. Green = positive NPV (project creates value). Red = negative NPV (destroys value). Read across a row to see price risk; read down a column to see capex risk.</span></span></div><div id="cNpvMatrix" style="height:280px"></div></div>
     </div>
 
     <div class="sec"><h2>Full Scenario Matrix</h2></div>
@@ -372,6 +400,144 @@ POST /api/run-all                → trigger all ISOs</div>
   </div>
 </div>
 
+<!-- ── DOCS VIEW ──────────────────────────────────────────────────────────── -->
+<div class="view" id="view-docs">
+  <div class="content">
+
+    <div class="doc-hero">
+      <h2>&#9889; How This Dashboard Works</h2>
+      <p>This tool runs a 7-stage analytics pipeline across all 7 US electricity markets (ISOs/RTOs). Each stage transforms raw data into structured outputs that power every chart, KPI, and table you see. Select any ISO tab at the top to switch markets. Use the nav to explore each analytical layer.</p>
+    </div>
+
+    <!-- Pipeline -->
+    <div class="doc-section">
+      <h2>The Analytics Pipeline</h2>
+      <div class="sub">Each stage runs in sequence — outputs of one feed into the next</div>
+      <div class="pipeline-flow">
+        <div class="pipeline-step">1. Ingest</div><div class="pipeline-arrow">&#8594;</div>
+        <div class="pipeline-step">2. Transform</div><div class="pipeline-arrow">&#8594;</div>
+        <div class="pipeline-step">3. Forecast</div><div class="pipeline-arrow">&#8594;</div>
+        <div class="pipeline-step">4. Queue</div><div class="pipeline-arrow">&#8594;</div>
+        <div class="pipeline-step">5. Markets</div><div class="pipeline-arrow">&#8594;</div>
+        <div class="pipeline-step">6. Finance</div><div class="pipeline-arrow">&#8594;</div>
+        <div class="pipeline-step">7. Charts</div>
+      </div>
+      <div class="doc-grid">
+        <div class="doc-card">
+          <h3><span class="icon">&#128229;</span> Stage 1 — Ingest</h3>
+          <p>Pulls raw electricity load, hub price, weather, and interconnection queue data for each ISO. Supports live API sources (ERCOT, Open-Meteo weather) or sample CSV files. Validates data against schema contracts and logs a signed manifest with SHA-256 checksums for data lineage.</p>
+          <ul><li>Load: hourly MW demand from ISO feeds</li><li>Price: hourly LMP at the primary trading hub</li><li>Weather: hourly temperature at a representative station</li><li>Queue: interconnection project list from ISO filings</li></ul>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#128260;</span> Stage 2 — Transform</h3>
+          <p>Cleans and joins the four raw datasets into a single hourly panel with consistent timestamps, units, and column names. Normalizes the queue data into a standardized project table with completion probabilities.</p>
+          <ul><li>Joins load, price, and weather on timestamp</li><li>Fills minor gaps via forward-fill</li><li>Outputs: staged hourly panel CSV + normalized queue CSV</li></ul>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#128202;</span> Stage 3 — Forecast</h3>
+          <p>Builds a long-range load forecast using two models: a naive 24-hour lag baseline and a weather-adjusted regression. Backtests both models on held-out data, selects the best, then projects load 10 years forward under Low, Base, and High growth scenarios.</p>
+          <ul><li>Low: conservative growth (efficiency gains)</li><li>Base: trend-line continuation</li><li>High: accelerated electrification (EVs, data centers)</li></ul>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#128204;</span> Stage 4 — Queue Model</h3>
+          <p>Applies completion probability weights to each project in the interconnection queue. Uses P50 (base) and P90 (conservative) probability scenarios to estimate how much new capacity will actually come online each year by technology type.</p>
+          <ul><li>Historically 60–80% of queued MW never completes</li><li>P90 is always ≤ P50 (fewer projects complete)</li><li>Output: expected online MW by year and technology</li></ul>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#9889;</span> Stage 5 — Markets</h3>
+          <p>Computes wholesale market analytics from the hourly panel. Calculates capture prices for solar and wind (what a perfectly correlated generator would earn), identifies negative price hours, measures congestion via a proxy spread, and generates the market findings report.</p>
+          <ul><li>Capture price = generation-weighted average price</li><li>Capture ratio = capture price ÷ avg hub price</li><li>Congestion proxy = price spread between on/off-peak hours</li></ul>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#128181;</span> Stage 6 — Finance</h3>
+          <p>Runs a full project finance model for a representative utility-scale solar project. Computes 18 scenarios across combinations of contract type, price case, and capex case. Outputs NPV, IRR, DSCR, and LCOE for each scenario.</p>
+          <ul><li>Merchant: revenues at spot price × discount</li><li>Contracted: fixed-price PPA with adder above capture price</li><li>Debt: annuity-style senior loan over the tenor</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key terms -->
+    <div class="doc-section">
+      <h2>Key Terms Explained</h2>
+      <div class="sub">Definitions for every metric shown in the dashboard</div>
+      <div class="doc-grid">
+        <div class="doc-card">
+          <h3><span class="icon">&#128200;</span> Market Terms</h3>
+          <ul>
+            <li><span class="term">LMP (Locational Marginal Price)</span> — The wholesale price of electricity at a specific node, in $/MWh. Reflects the cost of the next MW of generation plus congestion and losses.</li>
+            <li><span class="term">Capture Price</span> — What a solar or wind plant actually earns, weighted by when it generates. Solar generates midday when prices are often lower, so its capture price is usually below the average hub price.</li>
+            <li><span class="term">Capture Ratio</span> — Capture price ÷ average hub price. A ratio below 1.0 means the technology earns less than the average — a sign of price cannibalization.</li>
+            <li><span class="term">Price Duration Curve</span> — All hourly prices sorted from highest to lowest. Shows what % of hours prices exceed any given level.</li>
+            <li><span class="term">Negative Price Hours</span> — Hours when the price went below $0. Generators pay to produce. Caused by too much must-run generation (wind, nuclear) relative to demand.</li>
+            <li><span class="term">Congestion</span> — Price differences caused by transmission line limits. High congestion = infrastructure bottlenecks preventing cheap power from reaching load centers.</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#128185;</span> Finance Terms</h3>
+          <ul>
+            <li><span class="term">NPV (Net Present Value)</span> — Total project value in today's dollars after discounting future cash flows. Positive NPV = the project creates value above the required return. In MUSD (millions).</li>
+            <li><span class="term">IRR (Internal Rate of Return)</span> — The discount rate at which NPV = 0. Compare to the equity discount rate in assumptions — if IRR &gt; hurdle rate, the project clears the return threshold.</li>
+            <li><span class="term">DSCR (Debt Service Coverage Ratio)</span> — EBITDA ÷ Annual Debt Service. Must stay above 1.0x (lender breakeven). Banks typically require ≥ 1.20–1.30x minimum.</li>
+            <li><span class="term">LCOE (Levelized Cost of Energy)</span> — All-in cost per MWh over the project life, discounted to present value. The minimum price at which the project breaks even.</li>
+            <li><span class="term">PPA (Power Purchase Agreement)</span> — A long-term contracted price for electricity output. Reduces merchant price risk; the contracted scenario uses a fixed strike price.</li>
+            <li><span class="term">Capex</span> — Capital expenditure to build the project ($/kW installed). A major NPV driver — lower capex directly increases returns.</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#128204;</span> Queue Terms</h3>
+          <ul>
+            <li><span class="term">Interconnection Queue</span> — The list of power plant projects that have applied to connect to the grid. The ISO must study each project's impact on the transmission system before approving interconnection.</li>
+            <li><span class="term">COD (Commercial Operation Date)</span> — The target date a project expects to start generating commercially.</li>
+            <li><span class="term">P50 / P90</span> — Probability scenarios. P50 = 50% chance projects achieve at least this MW online (base case). P90 = 90% chance (conservative). P90 is always ≤ P50.</li>
+            <li><span class="term">Queue Attrition</span> — Most queued projects never get built. Historically 60–80% of MW in interconnection queues withdraw before completion due to cost, permitting, or financing issues.</li>
+            <li><span class="term">Active / In Study / Submitted</span> — Stages of interconnection. Submitted → In Study (ISO impact analysis) → Active (studying detailed costs) → Approved → Built.</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#127758;</span> The 7 US ISOs / RTOs</h3>
+          <ul>
+            <li><span class="term">ERCOT</span> — Texas. Isolated grid, market-only state (no FERC jurisdiction). Known for price volatility and rapid wind/solar growth.</li>
+            <li><span class="term">CAISO</span> — California. High solar penetration, frequent negative midday prices, aggressive clean energy mandates.</li>
+            <li><span class="term">PJM</span> — Mid-Atlantic + Midwest. Largest ISO by load. Competitive capacity market (RPM). Heavy on gas, nuclear, and growing offshore wind.</li>
+            <li><span class="term">MISO</span> — Midwest + South. Wind-dominant generation mix. Low average prices driven by cheap wind.</li>
+            <li><span class="term">SPP</span> — Great Plains. Highest wind penetration in the US. Frequent negative price events. Low average prices.</li>
+            <li><span class="term">NYISO</span> — New York. Urban load centers, premium pricing in NYC zone. Growing offshore wind pipeline.</li>
+            <li><span class="term">ISO-NE</span> — New England. Smallest ISO. Gas-dependent with high prices. Aggressive offshore wind buildout underway.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data disclaimer -->
+    <div class="doc-section">
+      <h2>Data &amp; Methodology Notes</h2>
+      <div class="doc-grid">
+        <div class="doc-card">
+          <h3><span class="icon">&#128203;</span> Data Sources</h3>
+          <p>This dashboard uses <span class="term">stylized sample data</span> based on realistic market parameters for each ISO. Load shapes, price levels, and seasonal patterns reflect real-world market characteristics but are not live feeds.</p>
+          <p>The pipeline is architected to connect to live data sources (ERCOT API, Open-Meteo weather archive, ISO queue filings) when configured with real API endpoints in the config files.</p>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#9888;</span> Model Limitations</h3>
+          <ul>
+            <li>Congestion is a proxy spread — not a full transmission power-flow model</li>
+            <li>Capture prices use stylized generation profiles, not actual plant dispatch</li>
+            <li>Finance model assumes a single utility-scale solar project — not a portfolio</li>
+            <li>Queue completion probabilities are rule-based estimates, not ML-calibrated per project</li>
+            <li>Load forecast uses linear regression — does not capture structural breaks</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3><span class="icon">&#128295;</span> Running the Pipeline</h3>
+          <p>Click <strong>Pipeline</strong> in the nav to trigger a fresh data run for any ISO or all ISOs at once. The pipeline re-runs all 7 stages and refreshes every chart automatically.</p>
+          <p>To run locally: clone the repo and run <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">uvicorn energy_analytics.api:app --reload</code> then open <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">localhost:8000</code>.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <footer style="text-align:center;padding:24px;font-size:11px;color:var(--muted2);border-top:1px solid var(--border)">
   Energy Analytics &mdash; 7 US ISOs/RTOs &mdash;
   Sample data / stylized analytics &mdash;
@@ -381,7 +547,7 @@ POST /api/run-all                → trigger all ISOs</div>
 <script>
 // ── Constants ─────────────────────────────────────────────────────────────────
 const COLORS = ['#2f81f7','#3fb950','#f0883e','#a371f7','#f85149','#d29922','#39c5cf'];
-const VIEWS  = ['market','supply','forecast','finance','compare','admin'];
+const VIEWS  = ['market','supply','forecast','finance','compare','admin','docs'];
 
 const L = () => ({
   paper_bgcolor:'transparent', plot_bgcolor:'transparent',
@@ -443,6 +609,7 @@ async function showView(name) {
   document.getElementById('view-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', VIEWS[i]===name));
   if (name === 'compare') { await prefetchCompare(); renderCompare(); return; }
+  if (name === 'docs') return;
   await loadView(name, currentISO);
 }
 
