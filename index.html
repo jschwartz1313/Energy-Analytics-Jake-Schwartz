@@ -18,33 +18,84 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'IBM Plex Sans','Segoe UI',system-ui,sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
 
+    /* ── Navbar ── */
+    .navbar {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+    }
+    .navbar-brand {
+      font-weight: 700; font-size: 15px;
+      color: var(--hero-bg); text-decoration: none; letter-spacing: -.01em;
+      cursor: pointer;
+    }
+    .navbar-links { display: flex; gap: 4px; align-items: center; }
+    .navbar-links button {
+      font-size: 13px; font-weight: 500; color: var(--muted);
+      background: none; border: none; cursor: pointer;
+      padding: 6px 12px; border-radius: 6px;
+      font-family: inherit;
+      transition: background .15s, color .15s;
+    }
+    .navbar-links button:hover { background: var(--bg); color: var(--ink); }
+    .navbar-links button.active { color: var(--accent); font-weight: 600; background: #e8f2f8; }
+    .navbar-links a {
+      font-size: 13px; font-weight: 500; color: var(--muted);
+      text-decoration: none; padding: 6px 12px; border-radius: 6px;
+      transition: background .15s, color .15s;
+    }
+    .navbar-links a:hover { background: var(--bg); color: var(--ink); }
+
+    /* ── Views ── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── Page-section jump strip (home only) ── */
+    .page-nav {
+      background: var(--card); border-bottom: 1px solid var(--line);
+      display: flex; flex-wrap: wrap; gap: 0; overflow-x: auto;
+    }
+    .page-nav a {
+      font-size: 12px; font-weight: 600; color: var(--muted);
+      text-decoration: none; padding: 10px 18px; white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+    .page-nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
     /* ── Hero ── */
     .hero {
       background: linear-gradient(135deg, #0b3d52 0%, #0b5f83 60%, #0f7ea8 100%);
-      color: #fff;
-      padding: 56px 24px 48px;
-      text-align: center;
+      color: #fff; padding: 56px 24px 48px; text-align: center;
     }
     .hero-tag {
-      display: inline-block;
-      background: rgba(255,255,255,.15);
-      border: 1px solid rgba(255,255,255,.25);
-      border-radius: 999px;
-      font-size: 12px;
-      letter-spacing: .06em;
-      padding: 4px 14px;
-      margin-bottom: 18px;
-      text-transform: uppercase;
+      display: inline-block; background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25); border-radius: 999px;
+      font-size: 12px; letter-spacing: .06em; padding: 4px 14px;
+      margin-bottom: 18px; text-transform: uppercase;
     }
     .hero h1 { font-size: clamp(24px,5vw,42px); font-weight: 700; margin-bottom: 14px; }
     .hero p  { max-width: 640px; margin: 0 auto 28px; opacity: .85; font-size: 16px; }
     .btn-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
     .btn {
       display: inline-block; padding: 12px 26px; border-radius: 8px;
-      font-size: 14px; font-weight: 600; text-decoration: none; transition: opacity .15s;
+      font-size: 14px; font-weight: 600; text-decoration: none;
+      border: none; cursor: pointer; font-family: inherit;
+      transition: opacity .15s;
     }
     .btn:hover { opacity: .85; }
-    .btn-primary  { background: #fff; color: var(--hero-bg); }
+    .btn-primary { background: #fff; color: var(--hero-bg); }
     .btn-outline  { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.6); }
 
     /* ── Layout ── */
@@ -56,29 +107,20 @@
 
     /* ── KPI strip ── */
     .kpi-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 14px; }
-    .kpi {
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: 12px; padding: 16px 18px;
-    }
+    .kpi { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
     .kpi .label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
     .kpi .value { font-size: 28px; font-weight: 700; color: var(--accent); }
     .kpi .unit  { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
     /* ── Charts grid ── */
     .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: 16px; }
-    .chart-card {
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: 12px; padding: 14px; overflow: hidden;
-    }
+    .chart-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; overflow: hidden; }
     .chart-card h3 { font-size: 13px; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .05em; }
     .chart-card img { width: 100%; border-radius: 6px; display: block; }
 
     /* ── Modules ── */
     .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 14px; }
-    .module-card {
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: 12px; padding: 18px;
-    }
+    .module-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
     .module-letter {
       width: 34px; height: 34px; border-radius: 8px;
       background: var(--accent); color: #fff;
@@ -108,91 +150,65 @@
 
     /* ── Tech stack ── */
     .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .tag {
-      background: #deeaf0; color: #0b3d52; border-radius: 6px;
-      font-size: 12px; font-weight: 600; padding: 4px 10px;
-    }
+    .tag { background: #deeaf0; color: #0b3d52; border-radius: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px; }
 
     /* ── Pipeline ── */
-    .pipeline {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
-      font-size: 13px; margin-top: 14px;
-    }
-    .pipe-step {
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: 8px; padding: 8px 14px; font-weight: 600;
-    }
+    .pipeline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; margin-top: 14px; }
+    .pipe-step { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; font-weight: 600; }
     .pipe-arrow { color: var(--muted); font-size: 18px; }
 
+    /* ── Dashboard view ── */
+    .dash-layout { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 52px); }
+    .dash-side { border-right: 1px solid var(--line); padding: 14px; background: #fbfdfe; overflow-y: auto; }
+    .dash-main { padding: 18px; }
+    .dash-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    .dash-card label { display: block; font-size: 12px; color: var(--muted); margin: 8px 0 4px; }
+    .dash-card select, .dash-card input { width: 100%; padding: 8px; border: 1px solid #c9d6dd; border-radius: 8px; font-family: inherit; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .tab-btn { border: 1px solid #c8d5dd; background: #fff; padding: 7px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; font-family: inherit; }
+    .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tab { display: none; }
+    .tab.active { display: block; }
+    .grid3 { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+    .dash-kpi { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+    .dash-kpi .v { font-size: 22px; font-weight: 700; margin: 6px 0 2px; }
+    .m { color: var(--muted); font-size: 12px; }
+    .chart { width: 100%; border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 6px; display: block; margin-bottom: 10px; }
+    .foot { color: var(--muted); font-size: 12px; margin-top: 12px; }
+    .dl a { display: block; margin: 4px 0; color: #0a4f6f; text-decoration: none; }
+
+    /* ── Summary view ── */
+    .summary-header {
+      background: linear-gradient(135deg, #0b3d52 0%, #0b5f83 100%);
+      color: #fff; padding: 36px 20px 28px;
+    }
+    .summary-header-inner { max-width: 900px; margin: 0 auto; }
+    .summary-header h1 { font-size: clamp(20px,4vw,30px); font-weight: 700; margin-bottom: 6px; }
+    .summary-header .meta { opacity: .75; font-size: 13px; }
+    .summary-content { max-width: 900px; margin: 0 auto; padding: 32px 20px 48px; }
+    .summary-content h2 { font-size: 18px; font-weight: 700; margin: 28px 0 12px; }
+    .summary-content h2:first-child { margin-top: 0; }
+    .card-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 12px; margin-bottom: 8px; }
+    .s-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+    .s-card .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .s-card .value { font-size: 22px; font-weight: 700; color: var(--accent); }
+    .s-card .unit { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .summary-content ul { padding-left: 20px; }
+    .summary-content ul li { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+
     /* ── Footer ── */
-    footer {
-      background: var(--hero-bg); color: rgba(255,255,255,.65);
-      text-align: center; padding: 20px; font-size: 13px;
-    }
-    footer a { color: rgba(255,255,255,.85); }
+    footer { background: var(--hero-bg); color: rgba(255,255,255,.65); text-align: center; padding: 20px; font-size: 13px; }
+    footer a { color: rgba(255,255,255,.85); text-decoration: none; }
 
-    /* ── Navbar ── */
-    .navbar {
-      background: #fff;
-      border-bottom: 1px solid var(--line);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+    @media (max-width: 900px) {
+      .dash-layout { grid-template-columns: 1fr; }
+      .dash-side { border-right: 0; border-bottom: 1px solid var(--line); }
+      .grid3 { grid-template-columns: 1fr; }
     }
-    .navbar-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 52px;
-    }
-    .navbar-brand {
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--hero-bg);
-      text-decoration: none;
-      letter-spacing: -.01em;
-    }
-    .navbar-links { display: flex; gap: 4px; align-items: center; }
-    .navbar-links a {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--muted);
-      text-decoration: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: background .15s, color .15s;
-    }
-    .navbar-links a:hover { background: var(--bg); color: var(--ink); }
-    .navbar-links a.active { color: var(--accent); font-weight: 600; background: #e8f2f8; }
-
-    /* ── Page-section jump strip ── */
-    .page-nav {
-      background: var(--card);
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0;
-      overflow-x: auto;
-    }
-    .page-nav a {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
-      text-decoration: none;
-      padding: 10px 18px;
-      white-space: nowrap;
-      border-bottom: 2px solid transparent;
-      transition: color .15s, border-color .15s;
-    }
-    .page-nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
-
     @media (max-width: 600px) {
       .hero { padding: 40px 16px 36px; }
       section { padding: 30px 0; }
-      .navbar-links a { padding: 6px 8px; font-size: 12px; }
+      .navbar-links button, .navbar-links a { padding: 6px 8px; font-size: 12px; }
     }
   </style>
 </head>
@@ -201,222 +217,396 @@
 <!-- ── Navbar ── -->
 <nav class="navbar">
   <div class="navbar-inner">
-    <a class="navbar-brand" href="#">Energy Analytics</a>
+    <span class="navbar-brand" onclick="showView('home')">Energy Analytics</span>
     <div class="navbar-links">
-      <a href="#" class="active">Home</a>
-      <a href="reports/dashboard/index.html">Dashboard</a>
-      <a href="reports/dashboard/summary_report.html">Summary Report</a>
+      <button id="nav-home" class="active" onclick="showView('home')">Home</button>
+      <button id="nav-dashboard" onclick="showView('dashboard')">Dashboard</button>
+      <button id="nav-summary" onclick="showView('summary')">Summary Report</button>
       <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
 </nav>
 
-<!-- ── Section jump strip ── -->
-<div class="page-nav">
-  <a href="#metrics">Key Metrics</a>
-  <a href="#charts">Charts</a>
-  <a href="#modules">Modules</a>
-  <a href="#finance">Finance</a>
-  <a href="#pipeline">Pipeline</a>
-  <a href="#docs">Documentation</a>
+<!-- ════════════════════════════════════════
+     VIEW: HOME
+════════════════════════════════════════ -->
+<div id="view-home" class="view active">
+
+  <!-- Section jump strip -->
+  <div class="page-nav">
+    <a href="#metrics">Key Metrics</a>
+    <a href="#charts">Charts</a>
+    <a href="#modules">Modules</a>
+    <a href="#finance">Finance</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#docs">Documentation</a>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">Energy Analytics Portfolio</div>
+    <h1>Data Center Load Growth,<br>Renewables &amp; Market Impacts</h1>
+    <p>An end-to-end analytics pipeline covering load forecasting, interconnection queue analytics,
+       wholesale market metrics, and solar project finance — focused on ERCOT.</p>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="showView('dashboard')">View Interactive Dashboard</button>
+      <button class="btn btn-outline" onclick="showView('summary')">Summary Report</button>
+      <a class="btn btn-outline" href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener">GitHub Repo</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <section id="metrics">
+      <h2>Key Metrics — ERCOT (HB_NORTH)</h2>
+      <p class="section-sub">Base scenario outputs from the processed analytics pipeline.</p>
+      <div class="kpi-strip">
+        <div class="kpi"><div class="label">Average Hub Price</div><div class="value">36.55</div><div class="unit">USD / MWh</div></div>
+        <div class="kpi"><div class="label">Solar Capture Price</div><div class="value">36.46</div><div class="unit">USD / MWh</div></div>
+        <div class="kpi"><div class="label">Wind Capture Price</div><div class="value">36.73</div><div class="unit">USD / MWh</div></div>
+        <div class="kpi"><div class="label">Congestion Proxy (mean)</div><div class="value">5.86</div><div class="unit">USD / MWh</div></div>
+        <div class="kpi"><div class="label">Base Case IRR</div><div class="value">0.6%</div><div class="unit">Contracted · 100 MW solar</div></div>
+        <div class="kpi"><div class="label">Base Case LCOE</div><div class="value">60.16</div><div class="unit">USD / MWh</div></div>
+      </div>
+    </section>
+
+    <section id="charts">
+      <h2>Pipeline Outputs</h2>
+      <p class="section-sub">Charts generated from the reproducible pipeline — open the dashboard for interactive controls.</p>
+      <div class="charts-grid">
+        <div class="chart-card"><h3>Hourly Load (MW)</h3><img src="reports/charts/ercot_load.svg" alt="ERCOT hourly load"></div>
+        <div class="chart-card"><h3>Hub Price (USD/MWh)</h3><img src="reports/charts/ercot_price.svg" alt="ERCOT hub price"></div>
+        <div class="chart-card"><h3>Temperature (°F)</h3><img src="reports/charts/ercot_temperature.svg" alt="ERCOT temperature"></div>
+        <div class="chart-card"><h3>Load Forecast Scenarios</h3><img src="reports/charts/ercot_load_forecast_scenarios.svg" alt="Load forecast scenarios"></div>
+        <div class="chart-card"><h3>Queue Expected Online MW</h3><img src="reports/charts/ercot_queue_expected_online_mw.svg" alt="Queue expected online MW"></div>
+        <div class="chart-card"><h3>Finance Sensitivity</h3><img src="reports/charts/ercot_finance_sensitivity.svg" alt="Finance sensitivity"></div>
+      </div>
+    </section>
+
+    <section id="modules">
+      <h2>Analytics Modules</h2>
+      <p class="section-sub">Four modules built in sequence, each producing validated analytical outputs.</p>
+      <div class="modules-grid">
+        <div class="module-card">
+          <div class="module-letter">A</div>
+          <h3>Load &amp; Demand Forecasting</h3>
+          <p>Baseline regional load model with temperature sensitivity, day-of-week, and seasonality. Data center growth overlay with Low / Base / High scenarios to 2030.</p>
+        </div>
+        <div class="module-card">
+          <div class="module-letter">B</div>
+          <h3>Interconnection Queue</h3>
+          <p>Normalized ISO queue data with completion-probability modeling. Expected online MW by year per technology — P50 / P90 buildout trajectories for solar, wind, and storage.</p>
+        </div>
+        <div class="module-card">
+          <div class="module-letter">C</div>
+          <h3>Market Metrics</h3>
+          <p>Generation-weighted capture prices for solar and wind, congestion proxy (basis deviation), negative-price hours, and curtailment indicators.</p>
+        </div>
+        <div class="module-card">
+          <div class="module-letter">D</div>
+          <h3>Project Finance</h3>
+          <p>Transparent solar pro-forma with merchant and contracted structures. Outputs: LCOE, NPV, IRR, DSCR, and a full scenario matrix across load × supply × price assumptions.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="finance">
+      <h2>Base Solar Finance Case — Contracted, 100 MW</h2>
+      <p class="section-sub">Stylized pro-forma under base price and base capex assumptions. Not an investment recommendation.</p>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>NPV</td><td>−32.04 MUSD</td><td>10% WACC, 20-yr project life</td></tr>
+          <tr><td>After-tax NPV</td><td>−35.53 MUSD</td><td>25% corporate tax rate proxy</td></tr>
+          <tr><td>IRR</td><td>0.6%</td><td>Contracted base scenario</td></tr>
+          <tr><td>Min DSCR</td><td>1.07×</td><td>60% debt, 6% rate, 15-yr tenor</td></tr>
+          <tr><td>LCOE</td><td>60.16 USD/MWh</td><td>1,150 USD/kW capex, 18 USD/kW-yr opex</td></tr>
+          <tr><td>Year 1 Revenue</td><td>10.11 MUSD</td><td>Capture price × generation × PPA premium</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="pipeline">
+      <h2>Pipeline Architecture</h2>
+      <p class="section-sub">Layered, reproducible data flow — one command rebuilds all outputs.</p>
+      <div class="pipeline">
+        <div class="pipe-step">Samples / URLs</div><div class="pipe-arrow">→</div>
+        <div class="pipe-step">data/raw</div><div class="pipe-arrow">→</div>
+        <div class="pipe-step">data/staged</div><div class="pipe-arrow">→</div>
+        <div class="pipe-step">data/curated</div><div class="pipe-arrow">→</div>
+        <div class="pipe-step">data/marts</div><div class="pipe-arrow">→</div>
+        <div class="pipe-step">Charts · Dashboard · Reports</div>
+      </div>
+      <p style="margin-top:16px;font-size:13px;color:var(--muted);">
+        All transforms are reproducible via <code>make all</code>. Schema contracts, QA checks, and ingestion
+        manifests are enforced at each stage. Dependency versions are pinned in <code>requirements-lock.txt</code>.
+      </p>
+      <div class="tech-tags" style="margin-top:14px;">
+        <span class="tag">Python 3.12</span><span class="tag">pandas</span><span class="tag">DuckDB</span>
+        <span class="tag">pyarrow / Parquet</span><span class="tag">statsmodels</span><span class="tag">scikit-learn</span>
+        <span class="tag">Makefile</span><span class="tag">GitHub Actions CI</span><span class="tag">ruff · black</span><span class="tag">pre-commit</span>
+      </div>
+    </section>
+
+    <section id="docs">
+      <h2>Documentation</h2>
+      <p class="section-sub">Method notes, assumptions, and data dictionary for full transparency.</p>
+      <div class="docs-grid">
+        <a class="doc-link" href="docs/assumptions.md"><span class="icon">📋</span> Assumptions Table</a>
+        <a class="doc-link" href="docs/data_dictionary.md"><span class="icon">📖</span> Data Dictionary</a>
+        <a class="doc-link" href="docs/architecture.md"><span class="icon">🏗</span> Architecture</a>
+        <a class="doc-link" href="docs/method_load.md"><span class="icon">📈</span> Load Model</a>
+        <a class="doc-link" href="docs/method_queue.md"><span class="icon">🔌</span> Queue Model</a>
+        <a class="doc-link" href="docs/method_markets.md"><span class="icon">💹</span> Markets Model</a>
+        <a class="doc-link" href="docs/method_finance.md"><span class="icon">💰</span> Finance Model</a>
+        <a class="doc-link" href="reports/qa_report.md"><span class="icon">✅</span> QA Report</a>
+      </div>
+      <p style="margin-top:14px;font-size:13px;color:var(--muted);">
+        Note: <code>.md</code> links open the raw Markdown on GitHub Pages. For formatted views, browse the
+        <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz/tree/main/docs" target="_blank" rel="noopener">docs/ folder on GitHub</a>.
+      </p>
+    </section>
+  </div>
+
+  <footer>
+    <p>Energy Analytics Portfolio · ERCOT region · Data is stylized sample output for demonstration purposes.</p>
+    <p style="margin-top:6px;">
+      <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener">GitHub</a> ·
+      <span style="cursor:pointer;color:rgba(255,255,255,.85);" onclick="showView('dashboard')">Dashboard</span> ·
+      <span style="cursor:pointer;color:rgba(255,255,255,.85);" onclick="showView('summary')">Summary Report</span>
+    </p>
+  </footer>
 </div>
 
-<!-- ── Hero ── -->
-<div class="hero">
-  <div class="hero-tag">Energy Analytics Portfolio</div>
-  <h1>Data Center Load Growth,<br>Renewables &amp; Market Impacts</h1>
-  <p>An end-to-end analytics pipeline covering load forecasting, interconnection queue analytics,
-     wholesale market metrics, and solar project finance — focused on ERCOT.</p>
-  <div class="btn-row">
-    <a class="btn btn-primary" href="reports/dashboard/index.html">View Interactive Dashboard</a>
-    <a class="btn btn-outline"  href="reports/dashboard/summary_report.html">Summary Report</a>
-    <a class="btn btn-outline"  href="https://github.com/jschwartz1313/Energy-Analytics" target="_blank" rel="noopener">GitHub Repo</a>
+<!-- ════════════════════════════════════════
+     VIEW: DASHBOARD
+════════════════════════════════════════ -->
+<div id="view-dashboard" class="view">
+  <div class="dash-layout">
+    <aside class="dash-side">
+      <div class="dash-card">
+        <b>Scenario Controls</b>
+        <label title="Select market region/zone for all pages.">Region selector</label>
+        <select id="region"><option>ERCOT</option></select>
+        <label title="Load scenario multiplier for KPI projections.">Load scenario</label>
+        <select id="load_scn"><option value="0.95">Low</option><option value="1.0" selected>Base</option><option value="1.07">High</option></select>
+        <label title="Queue completion assumption used in supply KPIs.">Queue completion</label>
+        <select id="queue_scn"><option value="p50" selected>P50</option><option value="p90">P90</option></select>
+        <label title="Market tightness modifies implied congestion assumptions.">Market tightness</label>
+        <select id="tight_scn"><option value="0.85">Low congestion</option><option value="1.0" selected>Base</option><option value="1.25">High congestion</option></select>
+      </div>
+      <div class="dash-card">
+        <b>Finance Knobs</b>
+        <label title="Installed cost per kW.">Capex (USD/kW)</label>
+        <input id="capex" type="number" value="1150" step="25">
+        <label title="Fixed annual operating cost per kW.">Opex (USD/kW-yr)</label>
+        <input id="opex" type="number" value="18" step="1">
+        <label title="Discount rate proxy for weighted average cost of capital.">WACC</label>
+        <input id="wacc" type="number" value="0.1" step="0.005">
+        <label title="Debt interest rate assumption.">Debt rate</label>
+        <input id="debt" type="number" value="0.06" step="0.005">
+        <label title="Revenue structure for the project case.">Contract type</label>
+        <select id="contract_type"><option value="contracted" selected>Contracted</option><option value="merchant">Merchant</option></select>
+        <label title="Power purchase agreement proxy price.">PPA price (USD/MWh)</label>
+        <input id="ppa" type="number" value="36.46" step="0.5">
+        <label title="Annual energy degradation assumption.">Degradation</label>
+        <input id="degrade" type="number" value="0.005" step="0.001">
+      </div>
+    </aside>
+    <main class="dash-main">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="d-overview">Overview</button>
+        <button class="tab-btn" data-tab="d-load">Load</button>
+        <button class="tab-btn" data-tab="d-supply">Supply</button>
+        <button class="tab-btn" data-tab="d-markets">Markets</button>
+        <button class="tab-btn" data-tab="d-finance">Finance</button>
+        <button class="tab-btn" data-tab="d-downloads">Downloads</button>
+      </div>
+
+      <section id="d-overview" class="tab active">
+        <div class="grid3">
+          <div class="dash-kpi"><div class="m">Average Price (USD/MWh)</div><div class="v" id="k_avg_price">-</div></div>
+          <div class="dash-kpi"><div class="m">Solar Capture (USD/MWh)</div><div class="v" id="k_solar">-</div></div>
+          <div class="dash-kpi"><div class="m">Base NPV (MUSD)</div><div class="v" id="k_npv">-</div></div>
+        </div>
+        <div class="foot">Definitions: capture price = profile-weighted average price; congestion proxy = absolute deviation from 24h moving-average price.</div>
+      </section>
+
+      <section id="d-load" class="tab">
+        <h3>Load and Weather</h3>
+        <img class="chart" src="reports/charts/ercot_load.svg" alt="Hourly load chart (MW)">
+        <img class="chart" src="reports/charts/ercot_temperature.svg" alt="Hourly temperature chart (F)">
+        <img class="chart" src="reports/charts/ercot_load_forecast_scenarios.svg" alt="Load forecast scenarios chart (avg MW)">
+        <div class="foot">Units: MW for load, F for temperature.</div>
+      </section>
+
+      <section id="d-supply" class="tab">
+        <h3>Supply Queue Outlook</h3>
+        <img class="chart" src="reports/charts/ercot_queue_expected_online_mw.svg" alt="Queue expected online MW by year">
+        <div class="dash-kpi"><div class="m">Selected Queue Scenario Total (MW)</div><div class="v" id="k_queue_total">-</div></div>
+        <div class="foot">P50/P90 represent expected online capacity under different completion assumptions.</div>
+      </section>
+
+      <section id="d-markets" class="tab">
+        <h3>Market Metrics</h3>
+        <img class="chart" src="reports/charts/ercot_price.svg" alt="Hub price chart (USD/MWh)">
+        <div class="grid3">
+          <div class="dash-kpi"><div class="m">Wind Capture (USD/MWh)</div><div class="v" id="k_wind">-</div></div>
+          <div class="dash-kpi"><div class="m">Congestion Mean (USD/MWh)</div><div class="v" id="k_cong">-</div></div>
+          <div class="dash-kpi"><div class="m">Negative Price Share (%)</div><div class="v" id="k_neg">-</div></div>
+        </div>
+        <details><summary>Metric Notes</summary><div class="foot">Negative price share = hours with price &lt; 0 divided by total hours in modeled period.</div></details>
+      </section>
+
+      <section id="d-finance" class="tab">
+        <h3>Project Finance</h3>
+        <div class="grid3">
+          <div class="dash-kpi"><div class="m">Scenario IRR</div><div class="v" id="k_irr">-</div></div>
+          <div class="dash-kpi"><div class="m">Min DSCR</div><div class="v" id="k_dscr">-</div></div>
+          <div class="dash-kpi"><div class="m">LCOE (USD/MWh)</div><div class="v" id="k_lcoe">-</div></div>
+        </div>
+        <img class="chart" src="reports/charts/ercot_finance_sensitivity.svg" alt="Finance sensitivity chart">
+        <div class="foot">Finance KPIs are scenario-linked to price/capex controls and provide directional screening outputs.</div>
+      </section>
+
+      <section id="d-downloads" class="tab">
+        <h3>Downloads and Report</h3>
+        <div class="dl">
+          <a href="data/marts/ercot_market_metrics.csv" download>Download market metrics CSV</a>
+          <a href="data/marts/ercot_load_backtest.csv" download>Download load backtest CSV</a>
+          <a href="data/marts/ercot_load_forecast_scenarios.csv" download>Download load scenarios CSV</a>
+          <a href="data/marts/ercot_finance_scenarios.csv" download>Download finance scenarios CSV</a>
+          <a href="data/marts/ercot_finance_sensitivity.csv" download>Download finance sensitivity CSV</a>
+          <a href="data/marts/ercot_queue_calibration.csv" download>Download queue calibration CSV</a>
+          <a href="data/curated/ercot_queue_expected_online_mw.csv" download>Download queue outlook CSV</a>
+          <a href="#" onclick="showView('summary');return false;">Open summary report</a>
+        </div>
+        <div class="foot">Dashboard runtime uses processed tables only and does not fetch external data.</div>
+      </section>
+    </main>
   </div>
 </div>
 
-<!-- ── Key metrics ── -->
-<div class="container">
-  <section id="metrics">
-    <h2>Key Metrics — ERCOT (HB_NORTH)</h2>
-    <p class="section-sub">Base scenario outputs from the processed analytics pipeline.</p>
-    <div class="kpi-strip">
-      <div class="kpi">
-        <div class="label">Average Hub Price</div>
-        <div class="value">36.55</div>
-        <div class="unit">USD / MWh</div>
-      </div>
-      <div class="kpi">
-        <div class="label">Solar Capture Price</div>
-        <div class="value">36.46</div>
-        <div class="unit">USD / MWh</div>
-      </div>
-      <div class="kpi">
-        <div class="label">Wind Capture Price</div>
-        <div class="value">36.73</div>
-        <div class="unit">USD / MWh</div>
-      </div>
-      <div class="kpi">
-        <div class="label">Congestion Proxy (mean)</div>
-        <div class="value">5.86</div>
-        <div class="unit">USD / MWh</div>
-      </div>
-      <div class="kpi">
-        <div class="label">Base Case IRR</div>
-        <div class="value">0.6%</div>
-        <div class="unit">Contracted · 100 MW solar</div>
-      </div>
-      <div class="kpi">
-        <div class="label">Base Case LCOE</div>
-        <div class="value">60.16</div>
-        <div class="unit">USD / MWh</div>
-      </div>
+<!-- ════════════════════════════════════════
+     VIEW: SUMMARY REPORT
+════════════════════════════════════════ -->
+<div id="view-summary" class="view">
+  <div class="summary-header">
+    <div class="summary-header-inner">
+      <h1>Energy Analytics Portfolio Summary</h1>
+      <div class="meta">Region: ERCOT &nbsp;|&nbsp; Hub: HB_NORTH &nbsp;|&nbsp; Generated from processed artifacts only.</div>
     </div>
-  </section>
-
-  <!-- ── Charts ── -->
-  <section id="charts">
-    <h2>Pipeline Outputs</h2>
-    <p class="section-sub">Charts generated from the reproducible pipeline — open the dashboard for interactive controls.</p>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <h3>Hourly Load (MW)</h3>
-        <img src="reports/charts/ercot_load.svg" alt="ERCOT hourly load">
-      </div>
-      <div class="chart-card">
-        <h3>Hub Price (USD/MWh)</h3>
-        <img src="reports/charts/ercot_price.svg" alt="ERCOT hub price">
-      </div>
-      <div class="chart-card">
-        <h3>Temperature (°F)</h3>
-        <img src="reports/charts/ercot_temperature.svg" alt="ERCOT temperature">
-      </div>
-      <div class="chart-card">
-        <h3>Load Forecast Scenarios</h3>
-        <img src="reports/charts/ercot_load_forecast_scenarios.svg" alt="Load forecast scenarios">
-      </div>
-      <div class="chart-card">
-        <h3>Queue Expected Online MW</h3>
-        <img src="reports/charts/ercot_queue_expected_online_mw.svg" alt="Queue expected online MW">
-      </div>
-      <div class="chart-card">
-        <h3>Finance Sensitivity</h3>
-        <img src="reports/charts/ercot_finance_sensitivity.svg" alt="Finance sensitivity">
-      </div>
+  </div>
+  <div class="summary-content">
+    <h2>Market Highlights</h2>
+    <div class="card-row">
+      <div class="s-card"><div class="label">Average Hub Price</div><div class="value">36.55</div><div class="unit">USD / MWh</div></div>
+      <div class="s-card"><div class="label">Solar Capture Price</div><div class="value">36.46</div><div class="unit">USD / MWh</div></div>
+      <div class="s-card"><div class="label">Wind Capture Price</div><div class="value">36.73</div><div class="unit">USD / MWh</div></div>
+      <div class="s-card"><div class="label">Congestion Proxy Mean</div><div class="value">5.86</div><div class="unit">USD / MWh</div></div>
+      <div class="s-card"><div class="label">Negative Price Share</div><div class="value">0.0%</div><div class="unit">of modeled hours</div></div>
     </div>
-  </section>
 
-  <!-- ── Analytics Modules ── -->
-  <section id="modules">
-    <h2>Analytics Modules</h2>
-    <p class="section-sub">Four modules built in sequence, each producing validated analytical outputs.</p>
-    <div class="modules-grid">
-      <div class="module-card">
-        <div class="module-letter">A</div>
-        <h3>Load &amp; Demand Forecasting</h3>
-        <p>Baseline regional load model with temperature sensitivity, day-of-week, and seasonality. Data center growth overlay with Low / Base / High scenarios to 2030.</p>
-      </div>
-      <div class="module-card">
-        <div class="module-letter">B</div>
-        <h3>Interconnection Queue</h3>
-        <p>Normalized ISO queue data with completion-probability modeling. Expected online MW by year per technology — P50 / P90 buildout trajectories for solar, wind, and storage.</p>
-      </div>
-      <div class="module-card">
-        <div class="module-letter">C</div>
-        <h3>Market Metrics</h3>
-        <p>Generation-weighted capture prices for solar and wind, congestion proxy (basis deviation), negative-price hours, and curtailment indicators.</p>
-      </div>
-      <div class="module-card">
-        <div class="module-letter">D</div>
-        <h3>Project Finance</h3>
-        <p>Transparent solar pro-forma with merchant and contracted structures. Outputs: LCOE, NPV, IRR, DSCR, and a full scenario matrix across load × supply × price assumptions.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Finance table ── -->
-  <section id="finance">
-    <h2>Base Solar Finance Case — Contracted, 100 MW</h2>
-    <p class="section-sub">Stylized pro-forma under base price and base capex assumptions. Not an investment recommendation.</p>
+    <h2>Base Solar Finance Case</h2>
     <table>
-      <thead>
-        <tr><th>Metric</th><th>Value</th><th>Notes</th></tr>
-      </thead>
+      <thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td>NPV</td><td>−32.04 MUSD</td><td>10% WACC, 20-yr project life</td></tr>
-        <tr><td>After-tax NPV</td><td>−35.53 MUSD</td><td>25% corporate tax rate proxy</td></tr>
+        <tr><td>NPV</td><td>-32.04 MUSD</td><td>10% WACC, 20-yr project life</td></tr>
+        <tr><td>After-tax NPV</td><td>-35.53 MUSD</td><td>25% corporate tax rate proxy</td></tr>
         <tr><td>IRR</td><td>0.6%</td><td>Contracted base scenario</td></tr>
-        <tr><td>Min DSCR</td><td>1.07×</td><td>60% debt, 6% rate, 15-yr tenor</td></tr>
+        <tr><td>Min DSCR</td><td>1.073×</td><td>60% debt, 6% rate, 15-yr tenor</td></tr>
         <tr><td>LCOE</td><td>60.16 USD/MWh</td><td>1,150 USD/kW capex, 18 USD/kW-yr opex</td></tr>
         <tr><td>Year 1 Revenue</td><td>10.11 MUSD</td><td>Capture price × generation × PPA premium</td></tr>
       </tbody>
     </table>
-  </section>
 
-  <!-- ── Data pipeline ── -->
-  <section id="pipeline">
-    <h2>Pipeline Architecture</h2>
-    <p class="section-sub">Layered, reproducible data flow — one command rebuilds all outputs.</p>
-    <div class="pipeline">
-      <div class="pipe-step">Samples / URLs</div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">data/raw</div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">data/staged</div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">data/curated</div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">data/marts</div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">Charts · Dashboard · Reports</div>
-    </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--muted);">
-      All transforms are reproducible via <code>make all</code>. Schema contracts, QA checks, and ingestion
-      manifests are enforced at each stage. Dependency versions are pinned in <code>requirements-lock.txt</code>.
+    <h2>Limitations</h2>
+    <ul>
+      <li>Uses sample data and stylized renewable generation profiles.</li>
+      <li>Congestion is proxy-based, not a transmission power-flow model.</li>
+      <li>Finance assumptions are centralized and scenario-based, not an investment recommendation.</li>
+    </ul>
+  </div>
+  <footer>
+    <p>Energy Analytics Portfolio · ERCOT region · Data is stylized sample output for demonstration purposes.</p>
+    <p style="margin-top:6px;">
+      <a href="https://github.com/jschwartz1313/Energy-Analytics-Jake-Schwartz" target="_blank" rel="noopener">GitHub</a>
     </p>
-    <div class="tech-tags" style="margin-top:14px;">
-      <span class="tag">Python 3.12</span>
-      <span class="tag">pandas</span>
-      <span class="tag">DuckDB</span>
-      <span class="tag">pyarrow / Parquet</span>
-      <span class="tag">statsmodels</span>
-      <span class="tag">scikit-learn</span>
-      <span class="tag">Makefile</span>
-      <span class="tag">GitHub Actions CI</span>
-      <span class="tag">ruff · black</span>
-      <span class="tag">pre-commit</span>
-    </div>
-  </section>
-
-  <!-- ── Documentation ── -->
-  <section id="docs">
-    <h2>Documentation</h2>
-    <p class="section-sub">Method notes, assumptions, and data dictionary for full transparency.</p>
-    <div class="docs-grid">
-      <a class="doc-link" href="docs/assumptions.md"><span class="icon">📋</span> Assumptions Table</a>
-      <a class="doc-link" href="docs/data_dictionary.md"><span class="icon">📖</span> Data Dictionary</a>
-      <a class="doc-link" href="docs/architecture.md"><span class="icon">🏗</span> Architecture</a>
-      <a class="doc-link" href="docs/method_load.md"><span class="icon">📈</span> Load Model</a>
-      <a class="doc-link" href="docs/method_queue.md"><span class="icon">🔌</span> Queue Model</a>
-      <a class="doc-link" href="docs/method_markets.md"><span class="icon">💹</span> Markets Model</a>
-      <a class="doc-link" href="docs/method_finance.md"><span class="icon">💰</span> Finance Model</a>
-      <a class="doc-link" href="reports/qa_report.md"><span class="icon">✅</span> QA Report</a>
-    </div>
-    <p style="margin-top:14px;font-size:13px;color:var(--muted);">
-      Note: <code>.md</code> links open the raw Markdown on GitHub Pages. For formatted views, browse the
-      <a href="https://github.com/jschwartz1313/Energy-Analytics/tree/main/docs" target="_blank" rel="noopener">docs/ folder on GitHub</a>.
-    </p>
-  </section>
+  </footer>
 </div>
 
-<!-- ── Footer ── -->
-<footer>
-  <p>Energy Analytics Portfolio · ERCOT region · Data is stylized sample output for demonstration purposes.</p>
-  <p style="margin-top:6px;">
-    <a href="https://github.com/jschwartz1313/Energy-Analytics" target="_blank" rel="noopener">GitHub</a> ·
-    <a href="reports/dashboard/index.html">Dashboard</a> ·
-    <a href="reports/dashboard/summary_report.html">Summary Report</a>
-  </p>
-</footer>
+<script>
+// ── View switcher ──
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.navbar-links button').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'dashboard') refresh();
+}
 
+// ── Dashboard tab switching ──
+for (const btn of document.querySelectorAll('.tab-btn')) {
+  btn.addEventListener('click', () => {
+    const panel = btn.closest('.dash-main') || btn.closest('main');
+    btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+}
+
+// ── Dashboard data & KPI refresh ──
+const DATA = {"region": "ERCOT", "hub": "HB_NORTH", "kpis": {"avg_price": 36.552778, "solar_capture": 36.460153, "wind_capture": 36.729282, "congestion_mean": 5.856129, "negative_share": 0.0, "base_npv": -32.0446, "base_irr": 0.0059}, "series": {"load": [44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0, 44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0, 44500.0, 44535.0, 44570.0, 44605.0, 44640.0, 44675.0, 47210.0, 47245.0, 47280.0, 47315.0, 47350.0, 47385.0, 47420.0, 47455.0, 50490.0, 50525.0, 50560.0, 50595.0, 50630.0, 50665.0, 47700.0, 47735.0, 47770.0, 47805.0], "price": [29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 36.4, 37.2, 38.0, 38.8, 34.0, 34.8, 49.6, 50.4, 51.2, 52.0, 52.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 38.8, 34.0, 34.8, 35.6, 36.4, 37.2, 52.0, 52.8, 48.0, 48.8, 49.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 30.6, 31.4, 32.2, 33.0, 33.8, 29.0, 29.8, 35.6, 36.4, 37.2, 38.0, 38.8, 34.0, 48.8, 49.6, 50.4, 51.2, 52.0, 33.8, 29.0, 29.8], "temperature": [53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 60.0, 60.0, 60.0, 60.0, 69.0, 69.0, 69.0, 69.0, 69.0, 53.0, 53.0, 53.0, 53.0, 53.0, 53.0, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 61.5, 61.5, 61.5, 61.5, 70.5, 70.5, 70.5, 70.5, 70.5, 54.5, 54.5, 54.5, 54.5, 54.5, 54.5, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0, 63.0, 63.0, 63.0, 63.0, 72.0, 72.0, 72.0, 72.0, 72.0, 56.0, 56.0, 56.0, 56.0, 56.0, 56.0], "years": ["2024", "2025", "2026", "2027", "2028", "2029", "2030"], "queue_p50": [260.0, 160.0, 326.55, 54.8, 37.5, 49.5, 35.0], "queue_p90": [260.0, 160.0, 230.55, 0.0, 12.5, 27.5, 0.0]}, "finance_scenarios": {"merchant|low|low": {"npv_musd": -43.5921, "after_tax_npv_musd": -43.0441, "irr": -0.0503, "min_dscr": 0.8109, "avg_dscr": 0.8502, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 7.4929}, "merchant|low|base": {"npv_musd": -53.5958, "after_tax_npv_musd": -51.6968, "irr": -0.0701, "min_dscr": 0.7298, "avg_dscr": 0.7652, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 7.4929}, "merchant|low|high": {"npv_musd": -63.5994, "after_tax_npv_musd": -60.3496, "irr": -0.0874, "min_dscr": 0.6635, "avg_dscr": 0.6956, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 7.4929}, "merchant|base|low": {"npv_musd": -32.6923, "after_tax_npv_musd": -34.8692, "irr": -0.008, "min_dscr": 1.0037, "avg_dscr": 1.0499, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 8.8152}, "merchant|base|base": {"npv_musd": -42.696, "after_tax_npv_musd": -43.522, "irr": -0.0295, "min_dscr": 0.9033, "avg_dscr": 0.9449, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 8.8152}, "merchant|base|high": {"npv_musd": -52.6996, "after_tax_npv_musd": -52.1747, "irr": -0.0481, "min_dscr": 0.8212, "avg_dscr": 0.859, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 8.8152}, "merchant|high|low": {"npv_musd": -21.7925, "after_tax_npv_musd": -26.6944, "irr": 0.0301, "min_dscr": 1.1965, "avg_dscr": 1.2496, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 10.1375}, "merchant|high|base": {"npv_musd": -31.7962, "after_tax_npv_musd": -35.3471, "irr": 0.0067, "min_dscr": 1.0769, "avg_dscr": 1.1247, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 10.1375}, "merchant|high|high": {"npv_musd": -41.7998, "after_tax_npv_musd": -43.9999, "irr": -0.0134, "min_dscr": 0.979, "avg_dscr": 1.0224, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 10.1375}, "contracted|low|low": {"npv_musd": -33.8885, "after_tax_npv_musd": -35.7664, "irr": -0.0124, "min_dscr": 0.9826, "avg_dscr": 1.028, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 8.6701}, "contracted|low|base": {"npv_musd": -43.8922, "after_tax_npv_musd": -44.4192, "irr": -0.0337, "min_dscr": 0.8843, "avg_dscr": 0.9252, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 8.6701}, "contracted|low|high": {"npv_musd": -53.8959, "after_tax_npv_musd": -53.0719, "irr": -0.0521, "min_dscr": 0.8039, "avg_dscr": 0.8411, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 8.6701}, "contracted|base|low": {"npv_musd": -22.0409, "after_tax_npv_musd": -26.8807, "irr": 0.0293, "min_dscr": 1.1921, "avg_dscr": 1.2451, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 10.1073}, "contracted|base|base": {"npv_musd": -32.0446, "after_tax_npv_musd": -35.5335, "irr": 0.0059, "min_dscr": 1.0729, "avg_dscr": 1.1206, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 10.1073}, "contracted|base|high": {"npv_musd": -42.0483, "after_tax_npv_musd": -44.1862, "irr": -0.0142, "min_dscr": 0.9754, "avg_dscr": 1.0187, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 10.1073}, "contracted|high|low": {"npv_musd": -10.1933, "after_tax_npv_musd": -17.995, "irr": 0.068, "min_dscr": 1.4017, "avg_dscr": 1.4622, "lcoe_usd_mwh": 54.851, "year1_revenue_musd": 11.5446}, "contracted|high|base": {"npv_musd": -20.197, "after_tax_npv_musd": -26.6478, "irr": 0.0422, "min_dscr": 1.2615, "avg_dscr": 1.316, "lcoe_usd_mwh": 60.1596, "year1_revenue_musd": 11.5446}, "contracted|high|high": {"npv_musd": -30.2007, "after_tax_npv_musd": -35.3005, "irr": 0.0203, "min_dscr": 1.1468, "avg_dscr": 1.1963, "lcoe_usd_mwh": 65.4682, "year1_revenue_musd": 11.5446}}};
+
+function fmt(n, d=2) { return Number(n).toFixed(d); }
+function scenarioKeyFromControls() {
+  const price = document.getElementById('tight_scn').value;
+  const contractType = document.getElementById('contract_type').value;
+  const capex = Number(document.getElementById('capex').value);
+  const baseCapex = 1150;
+  let priceCase = 'base';
+  if (Number(price) < 1) priceCase = 'low';
+  if (Number(price) > 1) priceCase = 'high';
+  let capexCase = 'base';
+  if (capex < baseCapex) capexCase = 'low';
+  if (capex > baseCapex) capexCase = 'high';
+  return contractType + '|' + priceCase + '|' + capexCase;
+}
+
+function refresh() {
+  const loadMult = Number(document.getElementById('load_scn').value);
+  const tightMult = Number(document.getElementById('tight_scn').value);
+  const queueMode = document.getElementById('queue_scn').value;
+  const avgPrice = DATA.kpis.avg_price * tightMult;
+  const solar = DATA.kpis.solar_capture * tightMult;
+  const wind = DATA.kpis.wind_capture * tightMult;
+  const cong = DATA.kpis.congestion_mean * tightMult;
+  const neg = Math.min(DATA.kpis.negative_share * tightMult, 1);
+  document.getElementById('k_avg_price').textContent = fmt(avgPrice);
+  document.getElementById('k_solar').textContent = fmt(solar);
+  document.getElementById('k_wind').textContent = fmt(wind);
+  document.getElementById('k_cong').textContent = fmt(cong);
+  document.getElementById('k_neg').textContent = fmt(neg * 100, 1);
+  const qArr = queueMode === 'p50' ? DATA.series.queue_p50 : DATA.series.queue_p90;
+  const qTotal = qArr.reduce((a,b)=>a+b,0) * loadMult;
+  document.getElementById('k_queue_total').textContent = fmt(qTotal, 1);
+  const key = scenarioKeyFromControls();
+  const s = DATA.finance_scenarios[key] || DATA.finance_scenarios['contracted|base|base'];
+  document.getElementById('k_npv').textContent = fmt(s.npv_musd, 2);
+  document.getElementById('k_irr').textContent = fmt(s.irr, 3);
+  document.getElementById('k_dscr').textContent = fmt(s.min_dscr, 2);
+  document.getElementById('k_lcoe').textContent = fmt(s.lcoe_usd_mwh, 2);
+}
+
+for (const id of ['load_scn','queue_scn','tight_scn','contract_type','capex','opex','wacc','debt','ppa','degrade']) {
+  document.getElementById(id).addEventListener('input', refresh);
+}
+
+// Handle hash-based routing on page load
+const hashMap = { '#dashboard': 'dashboard', '#summary': 'summary', '#home': 'home' };
+if (hashMap[location.hash]) showView(hashMap[location.hash]);
+else refresh();
+</script>
 </body>
 </html>
