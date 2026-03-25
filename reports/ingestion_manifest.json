@@ -1,5 +1,5 @@
 {
-  "manifest_generated_at_utc": "2026-03-12T01:47:10.770954Z",
+  "manifest_generated_at_utc": "2026-03-25T00:25:47.431817Z",
   "record_count": 4,
   "records": [
     {
@@ -7,7 +7,7 @@
       "target_path": "data/raw/ercot_load.csv",
       "source_type": "sample",
       "source_ref": "data/samples/ercot_load_sample.csv",
-      "retrieved_at_utc": "2026-03-12T01:47:10.767634Z",
+      "retrieved_at_utc": "2026-03-25T00:25:47.429106Z",
       "file_bytes": 2405,
       "sha256": "e33ec06a9c04367c5c3f02d22c7d9ddf381044ebd5a601658c5024beb5047e35",
       "row_count": 72,
@@ -24,7 +24,7 @@
       "target_path": "data/raw/ercot_price.csv",
       "source_type": "sample",
       "source_ref": "data/samples/ercot_price_sample.csv",
-      "retrieved_at_utc": "2026-03-12T01:47:10.768415Z",
+      "retrieved_at_utc": "2026-03-25T00:25:47.429739Z",
       "file_bytes": 3063,
       "sha256": "3ed02848809a1cb786e6fa35b2368516ee2a6b787447af0f4cf2c2a57fc57306",
       "row_count": 72,
@@ -42,7 +42,7 @@
       "target_path": "data/raw/ercot_weather.csv",
       "source_type": "sample",
       "source_ref": "data/samples/ercot_weather_sample.csv",
-      "retrieved_at_utc": "2026-03-12T01:47:10.768987Z",
+      "retrieved_at_utc": "2026-03-25T00:25:47.430231Z",
       "file_bytes": 2339,
       "sha256": "a8293968180b7112530c65d1aa23a84e077ab0b7660d66404d5ccbe58642f951",
       "row_count": 72,
@@ -59,7 +59,7 @@
       "target_path": "data/raw/ercot_queue.csv",
       "source_type": "sample",
       "source_ref": "data/samples/ercot_queue_sample.csv",
-      "retrieved_at_utc": "2026-03-12T01:47:10.770889Z",
+      "retrieved_at_utc": "2026-03-25T00:25:47.431761Z",
       "file_bytes": 1085,
       "sha256": "d6c3f74e63164c6e5c62707a846e1f9dfd0006343422269b4f6a7678d69c3765",
       "row_count": 12,

@@ -44,16 +44,39 @@ finance_assumptions:
   capacity_mw: 100
   solar_capacity_factor: 0.18
   project_life_years: 20
-  degradation_rate: 0.005
+  degradation_rate: 0.008  # industry standard ~0.7-0.9%/yr for crystalline silicon
   capex_per_kw: 1400
   fixed_opex_per_kw_year: 17
   debt_fraction: 0.60
   debt_rate: 0.06
   debt_tenor_years: 15
   equity_discount_rate: 0.10
-  merchant_basis_discount: 0.90
-  contracted_price_adder_usd_mwh: 2.0
+  # Merchant basis discount: NYISO has high transmission congestion in NYC zone
+  merchant_basis_discount: 0.88
+  contracted_price_adder_usd_mwh: 3.0  # NYC/upstate basis premium
   tax_rate: 0.25
+  itc_rate: 0.30  # 30% Investment Tax Credit (Inflation Reduction Act, utility-scale solar)
+
+# Carbon intensity for grid emissions calculations (lbs CO2/MWh)
+carbon_intensity_lbs_mwh: 390.0  # NYISO: cleaner grid due to nuclear and hydro
+
+# Region-specific hourly generation shapes (24 values, hour 0-23 UTC)
+# NYISO: eastern timezone — solar peaks 15-17 UTC (11am-1pm ET)
+solar_generation_shape:
+  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.02, 0.10, 0.26, 0.48, 0.70, 0.88,
+   0.98, 1.0, 0.94, 0.80, 0.58, 0.28, 0.07, 0.01, 0.0, 0.0, 0.0, 0.0]
+wind_generation_shape:
+  [0.65, 0.66, 0.68, 0.68, 0.66, 0.62, 0.56, 0.50, 0.46, 0.44, 0.42, 0.42,
+   0.42, 0.43, 0.45, 0.48, 0.52, 0.56, 0.60, 0.63, 0.65, 0.65, 0.65, 0.65]
+
+# Forecast model assumptions
+forecast_assumptions:
+  growth_rates:
+    low: 0.005
+    base: 0.020
+    high: 0.040
+  peak_multiplier: 1.25  # NYC summer peaks are extreme
+
 reports:
   qa_report: reports/nyiso_qa_report.md
   metadata_log: reports/nyiso_ingestion_metadata.log

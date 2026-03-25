@@ -2,7 +2,7 @@ PYTHON ?= python3
 
 ISO_CONFIGS = config/data_sources.yml config/caiso.yml config/pjm.yml config/miso.yml config/spp.yml config/nyiso.yml config/isone.yml
 
-.PHONY: all all-regions ingest ingest-real ingest-hybrid transform forecast queue markets finance charts dashboard qa clean test
+.PHONY: all all-regions ingest ingest-real ingest-hybrid transform forecast queue markets finance charts dashboard qa status status-all clean test
 
 # Default: run ERCOT only then build combined dashboard
 all: ingest transform forecast queue markets finance charts dashboard qa
@@ -55,6 +55,12 @@ dashboard:
 
 qa:
 	$(PYTHON) -m energy_analytics qa
+
+status:
+	$(PYTHON) -m energy_analytics status
+
+status-all:
+	$(PYTHON) -m energy_analytics status-all
 
 test:
 	$(PYTHON) -m unittest discover -s tests -q

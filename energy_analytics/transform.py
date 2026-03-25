@@ -37,6 +37,19 @@ def run_transform(config_path: str = "config/data_sources.yml") -> None:
     weather_rows = _read_table(raw["weather"], "timestamp_utc")
 
     timestamps = sorted(set(load_rows) & set(price_rows) & set(weather_rows))
+
+    # Warn if the inner join drops more than 5% of available timestamps
+    total_possible = max(len(load_rows), len(price_rows), len(weather_rows))
+    dropped = total_possible - len(timestamps)
+    if total_possible > 0 and dropped / total_possible > 0.05:
+        msg = (
+            f"WARNING: transform dropped {dropped}/{total_possible} rows "
+            f"({100 * dropped / total_possible:.1f}%) due to timestamp mismatch. "
+            "Check that load, price, and weather data cover the same time range."
+        )
+        print(msg)
+        log_metadata(log_path, msg)
+
     merged: list[dict[str, str]] = []
     for ts in timestamps:
         l = load_rows[ts]

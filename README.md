@@ -39,6 +39,8 @@ make finance
 make charts
 make dashboard
 make qa
+make status
+make status-all
 ```
 
 ## Key Artifacts

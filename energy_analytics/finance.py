@@ -90,10 +90,17 @@ def _build_case(
     merchant_discount = float(assumptions.get("merchant_basis_discount", 0.92))
     contracted_adder = float(assumptions.get("contracted_price_adder_usd_mwh", 2.0))
 
+    # ITC (Investment Tax Credit): reduces net equity required at close via tax equity monetization.
+    # Industry standard for utility-scale solar is 30% under the Inflation Reduction Act.
+    # merchant_basis_discount reflects basis risk on uncontracted revenues (documented in config).
+    itc_rate = float(assumptions.get("itc_rate", 0.0))
+
     capacity_kw = capacity_mw * 1000.0
     capex = capacity_kw * capex_kw
     debt = capex * debt_fraction
     equity = capex - debt
+    # ITC reduces effective equity basis: tax equity investor contributes ITC value at COD
+    net_equity = max(equity - itc_rate * capex, 0.0)
     annual_debt_service = _annuity_payment(debt, debt_rate, debt_tenor)
 
     annual_energy = capacity_mw * 8760.0 * cap_factor
@@ -103,8 +110,8 @@ def _build_case(
         strike_price = (base_capture * price_multiplier) * merchant_discount
 
     cfads: list[float] = []
-    equity_cfs = [-equity]
-    equity_cfs_after_tax = [-equity]
+    equity_cfs = [-net_equity]
+    equity_cfs_after_tax = [-net_equity]
     debt_dscr: list[float] = []
     discounted_cost = capex
     discounted_energy = 0.0

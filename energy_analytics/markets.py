@@ -6,58 +6,20 @@ from pathlib import Path
 from energy_analytics.config import load_config
 from energy_analytics.metadata import log_metadata
 
-SOLAR_SHAPE_24 = [
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.02,
-    0.08,
-    0.20,
-    0.40,
-    0.62,
-    0.80,
-    0.92,
-    1.0,
-    0.96,
-    0.84,
-    0.62,
-    0.35,
-    0.12,
-    0.03,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
+# Default generation shapes (24 hourly values, hour 0-23 UTC).
+# These are used as fallbacks when a config does not define region-specific shapes.
+_DEFAULT_SOLAR_SHAPE_24 = [
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.02,
+    0.08, 0.20, 0.40, 0.62, 0.80, 0.92,
+    1.0, 0.96, 0.84, 0.62, 0.35, 0.12,
+    0.03, 0.0, 0.0, 0.0, 0.0, 0.0,
 ]
 
-WIND_SHAPE_24 = [
-    0.70,
-    0.72,
-    0.74,
-    0.76,
-    0.73,
-    0.68,
-    0.60,
-    0.54,
-    0.50,
-    0.46,
-    0.44,
-    0.42,
-    0.40,
-    0.41,
-    0.43,
-    0.48,
-    0.56,
-    0.64,
-    0.72,
-    0.78,
-    0.82,
-    0.80,
-    0.76,
-    0.72,
+_DEFAULT_WIND_SHAPE_24 = [
+    0.70, 0.72, 0.74, 0.76, 0.73, 0.68,
+    0.60, 0.54, 0.50, 0.46, 0.44, 0.42,
+    0.40, 0.41, 0.43, 0.48, 0.56, 0.64,
+    0.72, 0.78, 0.82, 0.80, 0.76, 0.72,
 ]
 
 HOURLY_COLUMNS = [
@@ -103,6 +65,12 @@ def run_markets(config_path: str = "config/data_sources.yml") -> None:
     findings_out = Path(cfg["markets_output"]["findings_md"])
     log_path = cfg["reports"]["metadata_log"]
 
+    # Load region-specific generation shapes from config, falling back to defaults
+    solar_shape = cfg.get("solar_generation_shape", _DEFAULT_SOLAR_SHAPE_24)
+    wind_shape = cfg.get("wind_generation_shape", _DEFAULT_WIND_SHAPE_24)
+    if len(solar_shape) != 24 or len(wind_shape) != 24:
+        raise ValueError("solar_generation_shape and wind_generation_shape must each have exactly 24 values")
+
     rows: list[dict[str, str]] = []
     with panel_path.open("r", encoding="utf-8", newline="") as f:
         for row in csv.DictReader(f):
@@ -122,8 +90,8 @@ def run_markets(config_path: str = "config/data_sources.yml") -> None:
     for idx, row in enumerate(rows):
         hr = _hour(row["timestamp_utc"])
         price = float(row["price_usd_mwh"])
-        solar_p = SOLAR_SHAPE_24[hr]
-        wind_p = WIND_SHAPE_24[hr]
+        solar_p = solar_shape[hr]
+        wind_p = wind_shape[hr]
         solar_w = solar_p * price
         wind_w = wind_p * price
         congestion = abs(price - rolling_price[idx])

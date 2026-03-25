@@ -44,16 +44,39 @@ finance_assumptions:
   capacity_mw: 100
   solar_capacity_factor: 0.28
   project_life_years: 20
-  degradation_rate: 0.005
+  degradation_rate: 0.008  # industry standard ~0.7-0.9%/yr for crystalline silicon
   capex_per_kw: 1100
   fixed_opex_per_kw_year: 17
   debt_fraction: 0.60
   debt_rate: 0.06
   debt_tenor_years: 15
   equity_discount_rate: 0.10
+  # Merchant basis discount: CAISO has higher curtailment risk due to duck curve
   merchant_basis_discount: 0.90
   contracted_price_adder_usd_mwh: 2.0
   tax_rate: 0.25
+  itc_rate: 0.30  # 30% Investment Tax Credit (Inflation Reduction Act, utility-scale solar)
+
+# Carbon intensity for grid emissions calculations (lbs CO2/MWh)
+carbon_intensity_lbs_mwh: 490.0  # CAISO: high renewables penetration, cleaner grid
+
+# Region-specific hourly generation shapes (24 values, hour 0-23 UTC)
+# CAISO: solar peaks 19-21 UTC (11am-1pm PT); sea breeze wind peaks afternoon/evening
+solar_generation_shape:
+  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.06, 0.18, 0.42, 0.65,
+   0.85, 0.96, 1.0, 0.98, 0.88, 0.65, 0.32, 0.08, 0.01, 0.0, 0.0, 0.0]
+wind_generation_shape:
+  [0.45, 0.42, 0.40, 0.38, 0.36, 0.34, 0.32, 0.32, 0.36, 0.42, 0.52, 0.62,
+   0.72, 0.80, 0.86, 0.90, 0.92, 0.90, 0.85, 0.76, 0.68, 0.60, 0.54, 0.48]
+
+# Forecast model assumptions
+forecast_assumptions:
+  growth_rates:
+    low: 0.005   # CAISO load growth is slower due to efficiency and mild climate
+    base: 0.020
+    high: 0.045
+  peak_multiplier: 1.20  # California summer peaks are more pronounced
+
 reports:
   qa_report: reports/caiso_qa_report.md
   metadata_log: reports/caiso_ingestion_metadata.log

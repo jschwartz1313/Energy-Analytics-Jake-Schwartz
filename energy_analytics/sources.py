@@ -4,9 +4,21 @@ import csv
 import json
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+
+def _resolve_date(val: str | None, offset_days: int = 0) -> str:
+    """Resolve 'auto' (or missing) to a date offset from today.
+
+    Args:
+        val: A date string like '2025-01-01', or 'auto', or None.
+        offset_days: When val is 'auto'/None, go this many days back from today.
+    """
+    if not val or val.strip().lower() == "auto":
+        return (date.today() - timedelta(days=offset_days)).isoformat()
+    return val
 
 
 def fetch_bytes(url: str, timeout_sec: int = 45, retries: int = 2) -> bytes:
@@ -69,11 +81,14 @@ def fetch_real_dataset_to_csv(dataset: str, source_cfg: dict[str, Any], out_path
 
     if source_type == "open_meteo_archive":
         base_url = source_cfg["url"]
+        # 'auto' resolves to the trailing 365 days; end is yesterday (archive lag)
+        start_date = _resolve_date(source_cfg.get("start_date"), offset_days=365)
+        end_date = _resolve_date(source_cfg.get("end_date"), offset_days=1)
         params = {
             "latitude": source_cfg["latitude"],
             "longitude": source_cfg["longitude"],
-            "start_date": source_cfg["start_date"],
-            "end_date": source_cfg["end_date"],
+            "start_date": start_date,
+            "end_date": end_date,
             "timezone": source_cfg.get("timezone", "UTC"),
             "hourly": source_cfg.get("hourly", "temperature_2m"),
             "temperature_unit": source_cfg.get("temperature_unit", "fahrenheit"),

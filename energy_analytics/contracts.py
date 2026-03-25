@@ -7,9 +7,11 @@ from typing import Any
 
 import yaml
 
+from energy_analytics.config import resolve_project_path
+
 
 def load_contracts(path: str = "config/schema_contracts.yml") -> dict[str, Any]:
-    with Path(path).open("r", encoding="utf-8") as f:
+    with resolve_project_path(path).open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 

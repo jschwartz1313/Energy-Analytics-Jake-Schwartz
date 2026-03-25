@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from energy_analytics.config import load_config
+from energy_analytics.config import load_config, resolve_project_path
 from energy_analytics.metadata import log_metadata
 
 
@@ -97,7 +97,7 @@ def _load_iso_data(cfg: dict[str, Any]) -> dict[str, Any]:
 def _build_summary_report(
     all_iso_data: dict[str, dict[str, Any]],
 ) -> Path:
-    report_path = Path("reports/dashboard/summary_report.html")
+    report_path = resolve_project_path("reports/dashboard/summary_report.html")
     report_path.parent.mkdir(parents=True, exist_ok=True)
 
     rows_html = ""
@@ -257,7 +257,7 @@ def run_all_iso_dashboard(config_paths: list[str]) -> None:
         f"        <option value='{r}'>{r}</option>" for r in iso_names
     )
 
-    dashboard_path = Path("index.html")
+    dashboard_path = resolve_project_path("index.html")
 
     html = _build_index_html(
         iso_option_tags=iso_option_tags,

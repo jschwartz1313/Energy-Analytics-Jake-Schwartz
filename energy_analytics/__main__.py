@@ -10,6 +10,7 @@ from energy_analytics.ingest import run_ingest
 from energy_analytics.markets import run_markets
 from energy_analytics.qa import run_qa
 from energy_analytics.queue import run_queue_transform
+from energy_analytics.status import build_status, format_status_report
 from energy_analytics.transform import run_transform
 
 ALL_ISO_CONFIGS = [
@@ -50,6 +51,8 @@ def main() -> None:
             "charts",
             "dashboard",
             "qa",
+            "status",
+            "status-all",
             "run-all",
             "all-regions",
         ],
@@ -84,6 +87,10 @@ def main() -> None:
         run_all_iso_dashboard(ALL_ISO_CONFIGS)
     elif args.command == "qa":
         run_qa(config_path=args.config)
+    elif args.command == "status":
+        print(format_status_report(build_status([args.config])))
+    elif args.command == "status-all":
+        print(format_status_report(build_status(ALL_ISO_CONFIGS)))
     elif args.command == "all-regions":
         for cfg_path in ALL_ISO_CONFIGS:
             print(f"\n=== Running pipeline for {cfg_path} ===")

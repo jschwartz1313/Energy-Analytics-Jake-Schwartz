@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import math
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -41,7 +42,8 @@ CALIBRATION_COLUMNS = [
     "brier_score",
 ]
 
-HEURISTIC_STATUS_PROB = {
+# Default status probabilities — can be overridden per-ISO via queue_assumptions.status_probabilities in config
+DEFAULT_HEURISTIC_STATUS_PROB: dict[str, float] = {
     "operational": 1.00,
     "under_construction": 0.85,
     "active": 0.45,
@@ -51,6 +53,21 @@ HEURISTIC_STATUS_PROB = {
     "withdrawn": 0.00,
     "cancelled": 0.00,
 }
+
+# Per-status uncertainty (1-sigma), used to derive P90 when no historical variance is available
+_STATUS_SIGMA: dict[str, float] = {
+    "operational": 0.00,
+    "under_construction": 0.05,
+    "active": 0.15,
+    "in_study": 0.12,
+    "submitted": 0.10,
+    "suspended": 0.06,
+    "withdrawn": 0.00,
+    "cancelled": 0.00,
+}
+
+# Keep module-level alias for backward compatibility with tests
+HEURISTIC_STATUS_PROB = DEFAULT_HEURISTIC_STATUS_PROB
 
 TERMINAL_STATUS = {"operational", "withdrawn", "cancelled"}
 
@@ -90,7 +107,8 @@ def _blend_probability(status_prob: float, tech_rate: float | None) -> float:
     return round((0.55 * status_prob) + (0.45 * tech_rate), 4)
 
 
-def _infer_tech_completion_rates(rows: list[dict[str, str]]) -> dict[str, float]:
+def _infer_tech_completion_rates(rows: list[dict[str, str]]) -> dict[str, tuple[float, float]]:
+    """Return per-technology (observed_rate, std_error) from historical terminal-status projects."""
     current_year = datetime.now(timezone.utc).year
     numer: dict[str, float] = defaultdict(float)
     denom: dict[str, float] = defaultdict(float)
@@ -104,11 +122,31 @@ def _infer_tech_completion_rates(rows: list[dict[str, str]]) -> dict[str, float]
         if status == "operational":
             numer[tech] += 1.0
 
-    rates: dict[str, float] = {}
+    rates: dict[str, tuple[float, float]] = {}
     for tech, d in denom.items():
         if d >= 2:
-            rates[tech] = round(numer[tech] / d, 4)
+            p = numer[tech] / d
+            # Standard error of proportion: sqrt(p*(1-p)/n)
+            std_err = math.sqrt(p * (1.0 - p) / d)
+            rates[tech] = (round(p, 4), round(std_err, 4))
     return rates
+
+
+def _compute_p90(p50: float, tech_data: tuple[float, float] | None, status: str) -> float:
+    """Compute conservative P90 using variance-based 10th-percentile lower bound.
+
+    Uses 1.28 standard deviations below P50 (10th percentile of normal distribution).
+    When historical tech variance is available it's blended with status-based uncertainty;
+    otherwise status-based sigma alone is used.
+    """
+    status_sigma = _STATUS_SIGMA.get(status, 0.10)
+    if tech_data is not None:
+        _tech_rate, tech_std = tech_data
+        # Blend uncertainty: 45% weight on empirical tech std, 55% on status-based sigma
+        blended_sigma = 0.45 * tech_std + 0.55 * status_sigma
+    else:
+        blended_sigma = status_sigma
+    return max(round(p50 - 1.28 * blended_sigma, 4), 0.0)
 
 
 def _calibration_rows(rows: list[dict[str, str]]) -> list[dict[str, str]]:
@@ -161,6 +199,12 @@ def run_queue_transform(config_path: str = "config/data_sources.yml") -> None:
     calibration_path = Path(cfg["queue_model_output"]["calibration_csv"])
     log_path = cfg["reports"]["metadata_log"]
 
+    # Load status probabilities: config overrides take precedence over defaults
+    status_prob_map = {
+        **DEFAULT_HEURISTIC_STATUS_PROB,
+        **cfg.get("queue_assumptions", {}).get("status_probabilities", {}),
+    }
+
     normalized_rows: list[dict[str, str]] = []
     with raw_path.open("r", encoding="utf-8", newline="") as f:
         for row in csv.DictReader(f):
@@ -187,16 +231,18 @@ def run_queue_transform(config_path: str = "config/data_sources.yml") -> None:
     tech_rates = _infer_tech_completion_rates(normalized_rows)
 
     for row in normalized_rows:
-        status_prob = HEURISTIC_STATUS_PROB[row["status"]]
-        tech_prob = tech_rates.get(row["technology"])
+        status = row["status"]
+        status_prob = status_prob_map.get(status, DEFAULT_HEURISTIC_STATUS_PROB.get(status, 0.0))
+        tech_data = tech_rates.get(row["technology"])
+        tech_prob = tech_data[0] if tech_data is not None else None
         p50 = _blend_probability(status_prob, tech_prob)
 
-        # P90 here is conservative expected-completion volume.
-        p90 = max(round(p50 - 0.20, 4), 0.0)
-        if row["status"] == "operational":
+        # P90: variance-based 10th-percentile lower bound
+        p90 = _compute_p90(p50, tech_data, status)
+        if status == "operational":
             p50 = 1.0
             p90 = 1.0
-        if row["status"] in {"withdrawn", "cancelled"}:
+        if status in {"withdrawn", "cancelled"}:
             p50 = 0.0
             p90 = 0.0
 

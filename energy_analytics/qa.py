@@ -4,7 +4,7 @@ import csv
 import json
 from pathlib import Path
 
-from energy_analytics.config import load_config
+from energy_analytics.config import load_config, resolve_project_path
 from energy_analytics.metadata import log_metadata
 
 REQUIRED_COLUMNS = {
@@ -72,8 +72,8 @@ def run_qa(config_path: str = "config/data_sources.yml") -> None:
     findings_path = Path(cfg["markets_output"]["findings_md"])
     finance_scenarios_path = Path(cfg["finance_output"]["scenarios_csv"])
     finance_summary_path = Path(cfg["finance_output"]["summary_csv"])
-    dashboard_path = Path("reports/dashboard/index.html")
-    summary_report_path = Path("reports/dashboard/summary_report.html")
+    dashboard_path = resolve_project_path("reports/dashboard/index.html")
+    summary_report_path = resolve_project_path("reports/dashboard/summary_report.html")
     ingest_manifest_path = Path(cfg.get("ingestion", {}).get("manifest_output", "reports/ingestion_manifest.json"))
     report_path = Path(cfg["reports"]["qa_report"])
     log_path = cfg["reports"]["metadata_log"]

@@ -20,8 +20,8 @@ real_data:
     url: https://archive-api.open-meteo.com/v1/archive
     latitude: 30.2672
     longitude: -97.7431
-    start_date: 2025-01-01
-    end_date: 2025-01-03
+    start_date: auto  # resolved dynamically to 365 days ago
+    end_date: auto    # resolved dynamically to yesterday
     timezone: UTC
     hourly: temperature_2m
     temperature_unit: fahrenheit
@@ -64,16 +64,40 @@ finance_assumptions:
   capacity_mw: 100
   solar_capacity_factor: 0.30
   project_life_years: 20
-  degradation_rate: 0.005
+  degradation_rate: 0.008  # industry standard ~0.7-0.9%/yr for crystalline silicon
   capex_per_kw: 1150
   fixed_opex_per_kw_year: 18
   debt_fraction: 0.60
   debt_rate: 0.06
   debt_tenor_years: 15
   equity_discount_rate: 0.10
+  # Merchant basis discount: reflects basis risk between hub and project-level price
+  # Typically 90-95% for ERCOT given liquid hub markets and manageable curtailment risk
   merchant_basis_discount: 0.92
   contracted_price_adder_usd_mwh: 2.0
   tax_rate: 0.25
+  itc_rate: 0.30  # 30% Investment Tax Credit (Inflation Reduction Act, utility-scale solar)
+
+# Carbon intensity for grid emissions calculations (lbs CO2/MWh)
+carbon_intensity_lbs_mwh: 880.0
+
+# Region-specific hourly generation shapes (24 values, hour 0-23 UTC)
+# ERCOT: Great Plains wind resource; symmetric solar peaking noon CT (= 18 UTC)
+solar_generation_shape:
+  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.02, 0.08, 0.20, 0.40, 0.62, 0.80,
+   0.92, 1.0, 0.96, 0.84, 0.62, 0.35, 0.12, 0.03, 0.0, 0.0, 0.0, 0.0]
+wind_generation_shape:
+  [0.78, 0.82, 0.86, 0.88, 0.85, 0.80, 0.70, 0.58, 0.48, 0.40, 0.36, 0.34,
+   0.32, 0.33, 0.36, 0.42, 0.52, 0.62, 0.72, 0.78, 0.80, 0.80, 0.78, 0.76]
+
+# Forecast model assumptions
+forecast_assumptions:
+  growth_rates:
+    low: 0.010
+    base: 0.030
+    high: 0.060
+  peak_multiplier: 1.18  # ratio of peak load to average load
+
 reports:
   qa_report: reports/qa_report.md
   metadata_log: reports/ingestion_metadata.log

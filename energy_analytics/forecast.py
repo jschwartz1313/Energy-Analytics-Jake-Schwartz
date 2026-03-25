@@ -124,7 +124,17 @@ def run_forecast(config_path: str = "config/data_sources.yml") -> None:
     # Long-run scenario projection from recent mean load with annual growth assumptions.
     recent = [float(r["load_mw"]) for r in rows[-24:]]
     base_year_load = sum(recent) / len(recent)
-    scenario_growth = {"low": 0.01, "base": 0.03, "high": 0.06}
+
+    # Growth rates and peak multiplier from config with sensible defaults
+    forecast_assumptions = cfg.get("forecast_assumptions", {})
+    growth_cfg = forecast_assumptions.get("growth_rates", {})
+    scenario_growth = {
+        "low":  float(growth_cfg.get("low",  0.01)),
+        "base": float(growth_cfg.get("base", 0.03)),
+        "high": float(growth_cfg.get("high", 0.06)),
+    }
+    peak_multiplier = float(forecast_assumptions.get("peak_multiplier", 1.18))
+
     start_year = int(rows[-1]["timestamp_utc"][0:4]) + 1
 
     scenario_rows: list[dict[str, str]] = []
@@ -132,7 +142,7 @@ def run_forecast(config_path: str = "config/data_sources.yml") -> None:
         for year in range(start_year, start_year + 7):
             n = year - start_year + 1
             projected = base_year_load * ((1 + g) ** n)
-            peak = projected * 1.18
+            peak = projected * peak_multiplier
             scenario_rows.append(
                 {
                     "scenario": scen,

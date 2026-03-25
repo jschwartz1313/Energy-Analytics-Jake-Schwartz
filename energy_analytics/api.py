@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import csv
+import json
 import math
+import os
+import re
 import subprocess
 import sys
-import threading
+import time
 from collections import defaultdict
-from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
@@ -16,54 +18,36 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
-from energy_analytics.config import load_config
+from energy_analytics.config import load_config, resolve_project_path
 from energy_analytics.finance import _build_case
+from energy_analytics.status import build_region_status, build_status, required_artifacts
+
+# ── Response cache: key → (expires_at, payload) ───────────────────────────────
+_CACHE: dict[str, tuple[float, Any]] = {}
+CACHE_TTL = 300  # seconds
+ENABLE_PIPELINE_RUNS = os.getenv("ENERGY_ANALYTICS_ENABLE_PIPELINE_RUNS", "").lower() in {"1", "true", "yes"}
+PIPELINE_STAGES = ["ingest", "transform", "forecast", "queue", "markets", "finance", "charts"]
 
 
-def _bootstrap_data() -> None:
-    """Run the full pipeline for all ISOs on first boot if data is missing."""
-    missing = False
-    for cfg_path in [
-        "config/data_sources.yml", "config/caiso.yml", "config/pjm.yml",
-        "config/miso.yml", "config/spp.yml", "config/nyiso.yml", "config/isone.yml",
-    ]:
-        try:
-            cfg = load_config(cfg_path)
-            if not Path(cfg["curated_output"]["panel_csv"]).exists():
-                missing = True
-                break
-        except Exception:
-            missing = True
-            break
-
-    if not missing:
-        return
-
-    print("⚡ First boot: running full pipeline for all ISOs…")
-    for cfg_path in [
-        "config/data_sources.yml", "config/caiso.yml", "config/pjm.yml",
-        "config/miso.yml", "config/spp.yml", "config/nyiso.yml", "config/isone.yml",
-    ]:
-        for stage in ["ingest", "transform", "forecast", "queue", "markets", "finance", "charts"]:
-            result = subprocess.run(
-                [sys.executable, "-m", "energy_analytics", stage, "--config", cfg_path],
-                capture_output=True, text=True,
-            )
-            if result.returncode != 0:
-                print(f"  ✗ {cfg_path}/{stage}: {result.stderr.strip()[:200]}")
-            else:
-                print(f"  ✓ {cfg_path}/{stage}")
-    print("⚡ Pipeline bootstrap complete.")
+def _cache_get(key: str) -> Any | None:
+    entry = _CACHE.get(key)
+    if entry and time.monotonic() < entry[0]:
+        return entry[1]
+    return None
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    thread = threading.Thread(target=_bootstrap_data, daemon=True)
-    thread.start()
-    yield
+def _cache_set(key: str, value: Any) -> None:
+    _CACHE[key] = (time.monotonic() + CACHE_TTL, value)
 
 
-app = FastAPI(title="Energy Analytics API", version="2.0.0", lifespan=lifespan)
+def _sanitize_error(msg: str) -> str:
+    """Strip absolute file paths from error messages before returning to clients."""
+    msg = re.sub(r"/[^\s\"']*?/([^/\s\"']+\.(?:py|yml|csv|json))", r"\1", msg)
+    msg = re.sub(r"[A-Za-z]:\\[^\s\"']*?\\([^\\s\"']+)", r"\1", msg)
+    return msg[:500]
+
+
+app = FastAPI(title="Energy Analytics API", version="2.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -82,8 +66,8 @@ ISO_CONFIGS: dict[str, str] = {
     "ISO-NE":"config/isone.yml",
 }
 
-# Base carbon intensities in lbs CO2/MWh by ISO
-ISO_BASE_INTENSITY: dict[str, float] = {
+# Fallback carbon intensities used when not defined in ISO config
+_DEFAULT_INTENSITY: dict[str, float] = {
     "ERCOT":  880.0,
     "CAISO":  490.0,
     "PJM":    840.0,
@@ -108,36 +92,175 @@ def _cfg(iso: str) -> dict[str, Any]:
     return load_config(ISO_CONFIGS[key])
 
 
+def _required_artifacts(cfg: dict[str, Any]) -> list[Path]:
+    return list(required_artifacts(cfg).values())
+
+
+def _missing_artifacts(iso: str) -> list[str]:
+    cfg = _cfg(iso)
+    return [str(path) for path in _required_artifacts(cfg) if not path.exists()]
+
+
+def _readiness_payload() -> dict[str, Any]:
+    statuses = []
+    for iso, config_path in ISO_CONFIGS.items():
+        try:
+            region_status = build_region_status(config_path)
+            statuses.append({"iso": iso, "ready": region_status["ready"], "missing": list(region_status["missing"].values())[:5]})
+        except Exception as exc:  # noqa: BLE001
+            statuses.append({"iso": iso, "ready": False, "missing": [_sanitize_error(str(exc)) or "config load failed"]})
+    not_ready = [status for status in statuses if not status["ready"]]
+    return {
+        "ready": not not_ready,
+        "error": None if not not_ready else f"{len(not_ready)} ISO(s) missing required artifacts.",
+        "isos": statuses,
+    }
+
+
+def _require_ready(iso: str | None = None) -> None:
+    if iso is None:
+        payload = _readiness_payload()
+        if not payload["ready"]:
+            raise HTTPException(status_code=503, detail=payload["error"])
+        return
+    missing = _missing_artifacts(iso)
+    if missing:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "message": f"{iso.upper()} artifacts are not ready. Run the pipeline out-of-band before serving this endpoint.",
+                "missing": missing[:5],
+            },
+        )
+
+
+def _require_pipeline_runs_enabled() -> None:
+    if not ENABLE_PIPELINE_RUNS:
+        raise HTTPException(
+            status_code=503,
+            detail="Pipeline execution endpoints are disabled in the API process. Run the pipeline from CI, cron, or a worker job.",
+        )
+
+
+def _invalidate_iso_cache(iso: str) -> None:
+    key = iso.upper()
+    stale = [cache_key for cache_key in _CACHE if key in cache_key or cache_key == "correlation"]
+    for cache_key in stale:
+        _CACHE.pop(cache_key, None)
+
+
+def _run_pipeline_stages(cfg_path: str) -> list[str]:
+    errors = []
+    for stage in PIPELINE_STAGES:
+        result = subprocess.run(
+            [sys.executable, "-m", "energy_analytics", stage, "--config", cfg_path],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            errors.append(f"{stage}: {_sanitize_error(result.stderr.strip())}")
+    return errors
+
+
 # ── Static files ──────────────────────────────────────────────────────────────
-app.mount("/reports", StaticFiles(directory="reports"), name="reports")
-app.mount("/data", StaticFiles(directory="data"), name="data")
+app.mount("/reports", StaticFiles(directory=resolve_project_path("reports")), name="reports")
+app.mount("/data", StaticFiles(directory=resolve_project_path("data")), name="data")
 
 
 @app.get("/", response_class=HTMLResponse)
 def serve_frontend():
-    p = Path("index.html")
+    p = resolve_project_path("index.html")
     if not p.exists():
         raise HTTPException(status_code=404, detail="index.html not found")
     return HTMLResponse(p.read_text(encoding="utf-8"))
 
 
+# ── Readiness check ───────────────────────────────────────────────────────────
+@app.get("/api/ready")
+def check_ready():
+    return _readiness_payload()
+
+
+@app.get("/api/status")
+def get_status():
+    return build_status([cfg_path for cfg_path in ISO_CONFIGS.values()])
+
+
 # ── ISO list ──────────────────────────────────────────────────────────────────
 @app.get("/api/isos")
 def list_isos():
-    available = []
-    for iso, cfg_path in ISO_CONFIGS.items():
-        try:
-            cfg = load_config(cfg_path)
-            ready = Path(cfg["curated_output"]["panel_csv"]).exists()
-        except Exception:
-            ready = False
-        available.append({"iso": iso, "ready": ready})
-    return {"isos": available}
+    payload = _readiness_payload()
+    return {"isos": payload["isos"]}
+
+
+def _read_text_lines(path: Path, tail: int = 50) -> list[str]:
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"Artifact not found: {path}")
+    lines = path.read_text(encoding="utf-8").splitlines()
+    return lines[-tail:]
+
+
+def _artifact_url(path: Path) -> str:
+    root = resolve_project_path(".")
+    relative = path.resolve().relative_to(root.resolve())
+    return "/" + str(relative).replace("\\", "/")
+
+
+@app.get("/api/{iso}/artifacts")
+def get_artifacts(iso: str):
+    cfg = _cfg(iso)
+    region_status = build_region_status(ISO_CONFIGS[iso.upper()])
+    artifacts = []
+    for name, path in required_artifacts(cfg).items():
+        artifacts.append(
+            {
+                "name": name,
+                "path": str(path),
+                "exists": path.exists(),
+                "size_bytes": path.stat().st_size if path.exists() else None,
+                "url": _artifact_url(path) if path.exists() else None,
+            }
+        )
+    return {
+        "iso": iso.upper(),
+        "region": region_status["region"],
+        "ready": region_status["ready"],
+        "artifacts": artifacts,
+    }
+
+
+@app.get("/api/{iso}/manifest")
+def get_manifest(iso: str):
+    cfg = _cfg(iso)
+    manifest_path = Path(cfg["ingestion"]["manifest_output"])
+    if not manifest_path.exists():
+        raise HTTPException(status_code=404, detail=f"Manifest not found for {iso.upper()}")
+    return json.loads(manifest_path.read_text(encoding="utf-8"))
+
+
+@app.get("/api/{iso}/qa")
+def get_qa_report(iso: str):
+    cfg = _cfg(iso)
+    report_path = Path(cfg["reports"]["qa_report"])
+    lines = _read_text_lines(report_path, tail=400)
+    text = "\n".join(lines)
+    result = "PASS" if "Result: PASS" in text else "FAIL" if "Result: FAIL" in text else "UNKNOWN"
+    return {"iso": iso.upper(), "result": result, "text": text, "path": str(report_path)}
+
+
+@app.get("/api/{iso}/metadata-log")
+def get_metadata_log(iso: str, tail: int = 50):
+    cfg = _cfg(iso)
+    tail = max(1, min(tail, 500))
+    log_path = Path(cfg["reports"]["metadata_log"])
+    lines = _read_text_lines(log_path, tail=tail)
+    return {"iso": iso.upper(), "path": str(log_path), "lines": lines}
 
 
 # ── Panel ─────────────────────────────────────────────────────────────────────
 @app.get("/api/{iso}/panel")
 def get_panel(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["curated_output"]["panel_csv"]))
     timestamps, load, price, temp = [], [], [], []
@@ -152,6 +275,7 @@ def get_panel(iso: str):
 # ── Market metrics ────────────────────────────────────────────────────────────
 @app.get("/api/{iso}/market")
 def get_market(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["markets_output"]["metrics_csv"]))
     return {r["metric"]: float(r["value"]) for r in rows}
@@ -160,6 +284,7 @@ def get_market(iso: str):
 # ── Hourly enriched market data ───────────────────────────────────────────────
 @app.get("/api/{iso}/hourly")
 def get_hourly(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["markets_output"]["hourly_csv"]))
     out = []
@@ -180,6 +305,7 @@ def get_hourly(iso: str):
 # ── Price duration curve ──────────────────────────────────────────────────────
 @app.get("/api/{iso}/price-duration")
 def get_price_duration(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["curated_output"]["panel_csv"]))
     prices = sorted([float(r["price_usd_mwh"]) for r in rows], reverse=True)
@@ -191,6 +317,12 @@ def get_price_duration(iso: str):
 # ── Monthly aggregations ──────────────────────────────────────────────────────
 @app.get("/api/{iso}/monthly")
 def get_monthly(iso: str):
+    cache_key = f"monthly:{iso.upper()}"
+    cached = _cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["curated_output"]["panel_csv"]))
     buckets: dict[str, dict[str, list]] = defaultdict(lambda: {"load": [], "price": [], "temp": []})
@@ -200,7 +332,7 @@ def get_monthly(iso: str):
         buckets[month]["price"].append(float(r["price_usd_mwh"]))
         buckets[month]["temp"].append(float(r["temperature_f"]))
     months = sorted(buckets)
-    return {
+    result = {
         "months": months,
         "avg_load_mw": [sum(buckets[m]["load"]) / len(buckets[m]["load"]) for m in months],
         "avg_price_usd_mwh": [sum(buckets[m]["price"]) / len(buckets[m]["price"]) for m in months],
@@ -209,11 +341,19 @@ def get_monthly(iso: str):
         "avg_temp_f": [sum(buckets[m]["temp"]) / len(buckets[m]["temp"]) for m in months],
         "negative_hours": [sum(1 for p in buckets[m]["price"] if p < 0) for m in months],
     }
+    _cache_set(cache_key, result)
+    return result
 
 
 # ── Hourly price heatmap (hour-of-day × day) ─────────────────────────────────
 @app.get("/api/{iso}/heatmap")
 def get_heatmap(iso: str, metric: str = "price"):
+    cache_key = f"heatmap:{iso.upper()}:{metric}"
+    cached = _cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["curated_output"]["panel_csv"]))
     # Build matrix: 24 hours × up to 31 days
@@ -233,12 +373,15 @@ def get_heatmap(iso: str, metric: str = "price"):
     # Full matrix: days x hours
     days = sorted(by_dow.keys())
     matrix = [[sum(by_dow[d][h]) / len(by_dow[d][h]) if by_dow[d][h] else None for h in hours] for d in days]
-    return {"hours": hours, "avg_by_hour": avg_by_hour, "days": days, "matrix": matrix}
+    result = {"hours": hours, "avg_by_hour": avg_by_hour, "days": days, "matrix": matrix}
+    _cache_set(cache_key, result)
+    return result
 
 
 # ── Queue detail ──────────────────────────────────────────────────────────────
 @app.get("/api/{iso}/queue-detail")
 def get_queue_detail(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["staged_output"]["queue_csv"]))
     projects = []
@@ -270,6 +413,7 @@ def get_queue_detail(iso: str):
 # ── Queue outlook (aggregated) ────────────────────────────────────────────────
 @app.get("/api/{iso}/queue")
 def get_queue(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["curated_output"]["queue_outlook_csv"]))
     by_year: dict[str, dict[str, float]] = defaultdict(lambda: {"p50": 0.0, "p90": 0.0})
@@ -300,6 +444,7 @@ def _cumsum(vals: list[float]) -> list[float]:
 # ── Load forecast ─────────────────────────────────────────────────────────────
 @app.get("/api/{iso}/forecast")
 def get_forecast(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["forecast_output"]["scenarios_csv"]))
     by_sc: dict[str, dict[str, float]] = defaultdict(dict)
@@ -317,6 +462,7 @@ def get_forecast(iso: str):
 # ── Finance ───────────────────────────────────────────────────────────────────
 @app.get("/api/{iso}/finance")
 def get_finance(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["finance_output"]["scenarios_csv"]))
     scenarios = [{
@@ -345,6 +491,7 @@ def get_finance(iso: str):
 # ── Finance cash flows (computed on the fly) ──────────────────────────────────
 @app.get("/api/{iso}/cashflows")
 def get_cashflows(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     assumptions = cfg["finance_assumptions"]
     metrics_path = Path(cfg["markets_output"]["metrics_csv"])
@@ -408,6 +555,7 @@ def get_cashflows(iso: str):
 # ── Market findings text ──────────────────────────────────────────────────────
 @app.get("/api/{iso}/findings")
 def get_findings(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     path = Path(cfg["markets_output"]["findings_md"])
     if not path.exists():
@@ -418,49 +566,51 @@ def get_findings(iso: str):
 # ── Forecast backtest metrics ─────────────────────────────────────────────────
 @app.get("/api/{iso}/backtest")
 def get_backtest(iso: str):
+    _require_ready(iso)
     cfg = _cfg(iso)
     metrics = {r["metric"]: r["value"] for r in _read_csv(Path(cfg["forecast_output"]["backtest_metrics_csv"]))}
     rows = _read_csv(Path(cfg["forecast_output"]["backtest_csv"]))
     actuals = [float(r.get("actual_load_mw", 0)) for r in rows]
-    predicted = [float(r.get("predicted_load_mw", 0)) for r in rows]
+    naive_predicted = [float(r.get("naive_forecast_mw", 0)) for r in rows]
+    weather_predicted = [float(r.get("weather_forecast_mw", 0)) for r in rows]
+    best_model = metrics.get("best_model", "weather_linear")
+    predicted = weather_predicted if best_model == "weather_linear" else naive_predicted
     timestamps = [r.get("timestamp_utc", r.get("year", str(i))) for i, r in enumerate(rows)]
-    return {"metrics": metrics, "timestamps": timestamps, "actuals": actuals, "predicted": predicted}
+    return {
+        "metrics": metrics,
+        "timestamps": timestamps,
+        "actuals": actuals,
+        "predicted": predicted,
+        "naive_predicted": naive_predicted,
+        "weather_predicted": weather_predicted,
+        "best_model": best_model,
+    }
 
 
 # ── Pipeline trigger ──────────────────────────────────────────────────────────
 @app.post("/api/run/{iso}")
 def run_pipeline(iso: str):
+    _require_pipeline_runs_enabled()
     key = iso.upper()
     if key not in ISO_CONFIGS:
         raise HTTPException(status_code=404, detail=f"Unknown ISO: {iso}")
     cfg_path = ISO_CONFIGS[key]
-    stages = ["ingest", "transform", "forecast", "queue", "markets", "finance", "charts"]
-    errors = []
-    for stage in stages:
-        result = subprocess.run(
-            [sys.executable, "-m", "energy_analytics", stage, "--config", cfg_path],
-            capture_output=True, text=True
-        )
-        if result.returncode != 0:
-            errors.append(f"{stage}: {result.stderr.strip()}")
+    errors = _run_pipeline_stages(cfg_path)
     if errors:
         raise HTTPException(status_code=500, detail="\n".join(errors))
-    return {"status": "ok", "iso": key, "stages_run": stages}
+    _invalidate_iso_cache(key)
+    return {"status": "ok", "iso": key, "stages_run": PIPELINE_STAGES}
 
 
 @app.post("/api/run-all")
 def run_all_pipelines():
+    _require_pipeline_runs_enabled()
     errors = []
     for iso, cfg_path in ISO_CONFIGS.items():
-        for stage in ["ingest", "transform", "forecast", "queue", "markets", "finance", "charts"]:
-            result = subprocess.run(
-                [sys.executable, "-m", "energy_analytics", stage, "--config", cfg_path],
-                capture_output=True, text=True
-            )
-            if result.returncode != 0:
-                errors.append(f"{iso}/{stage}: {result.stderr.strip()}")
+        errors.extend(f"{iso}/{error}" for error in _run_pipeline_stages(cfg_path))
     if errors:
         raise HTTPException(status_code=500, detail="\n".join(errors))
+    _CACHE.clear()
     return {"status": "ok", "isos_run": list(ISO_CONFIGS)}
 
 
@@ -468,6 +618,11 @@ def run_all_pipelines():
 @app.get("/api/correlation")
 def get_correlation():
     """Compute Pearson correlation matrix of hourly prices across all ISOs."""
+    cached = _cache_get("correlation")
+    if cached is not None:
+        return cached
+
+    _require_ready()
     iso_prices: dict[str, list[float]] = {}
 
     for iso, cfg_path in ISO_CONFIGS.items():
@@ -510,20 +665,24 @@ def get_correlation():
         for row_iso in isos
     ]
 
-    return {"isos": isos, "matrix": matrix}
+    result = {"isos": isos, "matrix": matrix}
+    _cache_set("correlation", result)
+    return result
 
 
 # ── Grid carbon intensity ─────────────────────────────────────────────────────
 @app.get("/api/{iso}/emissions")
 def get_emissions(iso: str):
     """Estimate hourly grid carbon intensity scaled by price relative to average."""
-    key = iso.upper()
-    if key not in ISO_BASE_INTENSITY:
-        raise HTTPException(status_code=404, detail=f"Unknown ISO: {iso}. Valid: {list(ISO_BASE_INTENSITY)}")
     cfg = _cfg(iso)
+    key = iso.upper()
+    _require_ready(iso)
     rows = _read_csv(Path(cfg["curated_output"]["panel_csv"]))
 
-    base_intensity = ISO_BASE_INTENSITY[key]
+    # Read from config; fall back to hardcoded defaults for backward compatibility
+    base_intensity = float(
+        cfg.get("carbon_intensity_lbs_mwh", _DEFAULT_INTENSITY.get(key, 700.0))
+    )
     prices = [float(r["price_usd_mwh"]) for r in rows]
     timestamps = [r["timestamp_utc"] for r in rows]
 
@@ -563,6 +722,7 @@ def get_emissions(iso: str):
 @app.get("/api/{iso}/storage")
 def get_storage(iso: str):
     """100MW / 4hr battery storage daily arbitrage analysis."""
+    _require_ready(iso)
     cfg = _cfg(iso)
     rows = _read_csv(Path(cfg["curated_output"]["panel_csv"]))
 
@@ -631,6 +791,7 @@ def custom_finance(
     overrides: dict[str, Any] = Body(default={}),
 ):
     """Run finance model with custom assumption overrides."""
+    _require_ready(iso)
     cfg = _cfg(iso)
     assumptions = dict(cfg["finance_assumptions"])
 
@@ -638,14 +799,35 @@ def custom_finance(
     metrics = {r["metric"]: float(r["value"]) for r in _read_csv(metrics_path)}
     base_capture = metrics.get("solar_capture_price_usd_mwh", 40.0)
 
-    # Fields that can be overridden
-    override_fields = {
-        "capex_per_kw", "solar_capacity_factor", "debt_fraction",
-        "debt_rate", "equity_discount_rate", "project_life_years",
+    # Fields that can be overridden with their valid numeric ranges
+    override_schema: dict[str, tuple[float, float]] = {
+        "capex_per_kw":          (400.0,   3000.0),
+        "solar_capacity_factor": (0.05,    0.50),
+        "debt_fraction":         (0.0,     0.95),
+        "debt_rate":             (0.01,    0.20),
+        "equity_discount_rate":  (0.03,    0.30),
+        "project_life_years":    (5.0,     40.0),
+        "itc_rate":              (0.0,     0.50),
     }
-    for field in override_fields:
-        if field in overrides:
-            assumptions[field] = overrides[field]
+    unknown = [k for k in overrides if k not in override_schema]
+    if unknown:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Unknown override field(s): {unknown}. Valid: {sorted(override_schema)}",
+        )
+    for field, (lo, hi) in override_schema.items():
+        if field not in overrides:
+            continue
+        try:
+            val = float(overrides[field])
+        except (TypeError, ValueError):
+            raise HTTPException(status_code=422, detail=f"Field '{field}' must be a number.")
+        if not (lo <= val <= hi):
+            raise HTTPException(
+                status_code=422,
+                detail=f"Field '{field}' value {val} out of range [{lo}, {hi}].",
+            )
+        assumptions[field] = val
 
     result = _build_case(base_capture, assumptions, 1.0, 1.0, "contracted")
 
@@ -663,15 +845,11 @@ def custom_finance(
 @app.post("/api/cron/refresh")
 def cron_refresh():
     """Trigger full all-regions pipeline refresh (for external cron services)."""
+    _require_pipeline_runs_enabled()
     errors = []
     for iso, cfg_path in ISO_CONFIGS.items():
-        for stage in ["ingest", "transform", "forecast", "queue", "markets", "finance", "charts"]:
-            result = subprocess.run(
-                [sys.executable, "-m", "energy_analytics", stage, "--config", cfg_path],
-                capture_output=True, text=True
-            )
-            if result.returncode != 0:
-                errors.append(f"{iso}/{stage}: {result.stderr.strip()}")
+        errors.extend(f"{iso}/{error}" for error in _run_pipeline_stages(cfg_path))
     if errors:
         raise HTTPException(status_code=500, detail="\n".join(errors))
+    _CACHE.clear()
     return {"status": "ok", "message": "Pipeline refresh complete"}
